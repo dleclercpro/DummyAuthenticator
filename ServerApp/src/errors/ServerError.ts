@@ -1,6 +1,6 @@
 export abstract class ServerError extends Error {
     public code: number;
-
+    
     constructor(code: number, message: string) {
         super(message);
 
@@ -8,6 +8,9 @@ export abstract class ServerError extends Error {
     }
 }
 
+
+
+// Generic errors
 export class ErrorInvalidEmail extends ServerError {
     public static code = -100;
     

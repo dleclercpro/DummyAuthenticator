@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import SessionDatabase from '../databases/SessionDatabase';
 
 class Session {
@@ -45,10 +46,10 @@ class Session {
     }
 
     public static async create(email: string) {
-        let id;
+        let id = '';
 
         // Find a unique, non-existent ID for the new session 
-        while (!id || Session.findById(id)) {
+        while (!id || await Session.findById(id)) {
             id = Session.generateId();
         }
 

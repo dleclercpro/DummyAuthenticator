@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import SignOutCommand from '../commands/auth/SignOutCommand';
 import { SESSION_COOKIE } from '../config/AuthConfig';
 import { ClientError } from '../errors/ClientErrors';
-import { ErrorInvalidSessionId } from '../errors/ServerError';
+import { ErrorInvalidSessionId, ServerError } from '../errors/ServerError';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { errorResponse, successResponse } from '../libs/calls';
 import Session from '../models/Session';
@@ -17,7 +17,7 @@ import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
         // Try to find user session
         const session = await Session.findById(sessionId);
 
-        // Missing session: user was never authenticated, abort!
+        // Missing or invalid session ID: user was never authenticated, abort!
         if (!session) {
             throw new ErrorInvalidSessionId(sessionId);
         }
@@ -26,13 +26,13 @@ import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
         await new SignOutCommand({ session }).execute();
 
         // Remove session cookie in client
-        req.cookies.delete(SESSION_COOKIE);
+        res.clearCookie(SESSION_COOKIE);
 
         // Success
         return res.json(successResponse());
 
     } catch (err: any) {
-        console.error(err);
+        console.warn(err.message);
 
         // Do not tell client why user can't sign out: just say they
         // are unauthorized!

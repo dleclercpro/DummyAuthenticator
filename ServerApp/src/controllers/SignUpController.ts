@@ -26,7 +26,7 @@ const SignUpController: RequestHandler = async (req, res) => {
         return res.json(successResponse());
 
     } catch (err: any) {
-        console.error(err);
+        console.warn(err.message);
 
         // Do not tell client why user can't sign up: just pretend
         // everything was fine
@@ -34,6 +34,7 @@ const SignUpController: RequestHandler = async (req, res) => {
             return res.json(successResponse());
         }
 
+        // Unknown error
         return res
             .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
             .send(HttpStatusMessage.INTERNAL_SERVER_ERROR);

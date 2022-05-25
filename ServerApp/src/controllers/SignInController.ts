@@ -25,13 +25,13 @@ const SignInController: RequestHandler = async (req, res) => {
         const { session } = await new SignInCommand({ email, password, staySignedIn }).execute();
 
         // Set cookie with session ID on client's browser
-        req.cookies.set(SESSION_COOKIE, session.getId());
+        res.cookie(SESSION_COOKIE, session.getId());
 
         // Success
         return res.json(successResponse());
 
     } catch (err: any) {
-        console.error(err);
+        console.warn(err.message);
 
         // Do not tell client why user can't sign in: just say that
         // their credentials are invalid

@@ -1,24 +1,24 @@
 import { useState } from 'react';
-import { CallSignIn } from '../calls/auth/CallSignIn';
+import { CallSignUp } from '../calls/auth/CallSignUp';
 
-const useSignIn = () => {
+const useSignUp = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const resetError = () => setError('');
 
-    const signIn = async (email: string, password: string, staySignedIn: boolean) => {
+    const signUp = async (email: string, password: string) => {
         setError('');
         setLoading(true);
 
         try {
-            await new CallSignIn().execute({ email, password, staySignedIn });
+            await new CallSignUp().execute({ email, password });
             
         } catch (err: any) {
-            setError('Invalid credentials.');
-        
-            throw err;
+            setError('Could not sign up.');
 
+            throw err;
+        
         } finally {
             setLoading(false);
         }
@@ -28,8 +28,8 @@ const useSignIn = () => {
         loading,
         error,
         resetError,
-        signIn,
+        signUp,
     };
 }
 
-export default useSignIn;
+export default useSignUp;

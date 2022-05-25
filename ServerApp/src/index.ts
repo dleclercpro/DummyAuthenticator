@@ -74,5 +74,5 @@ const main = async () => {
 
 // Run
 main().catch((err) => {
-    console.error(err.message);
+    console.error(err);
 });
