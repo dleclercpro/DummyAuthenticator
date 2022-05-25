@@ -7,7 +7,7 @@ interface Props {
     onClick: () => void,
 }
 
-const ShowPasswordButton: React.FC<Props> = (props) => {
+const ViewButton: React.FC<Props> = (props) => {
     const { visible, onClick } = props;
 
     return (
@@ -19,4 +19,4 @@ const ShowPasswordButton: React.FC<Props> = (props) => {
     )
 }
 
-export default ShowPasswordButton;
+export default ViewButton;

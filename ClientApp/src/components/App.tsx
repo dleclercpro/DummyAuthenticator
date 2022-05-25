@@ -3,8 +3,9 @@ import { CacheProvider } from '@emotion/react';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import createCache from '@emotion/cache';
 import Login from './Login';
-import Theme from '../styles/Theme';
 import useAppStyles from './AppStyles';
+import { APP_THEME } from '../config/Config';
+import { DarkTheme, LightTheme } from '../styles/Theme';
 
 export const Cache = createCache({ key: 'mui', prepend: true });
 
@@ -17,7 +18,7 @@ const App: React.FC<Props> = () => {
     
     return (
         <CacheProvider value={Cache}>
-            <ThemeProvider theme={Theme}>
+            <ThemeProvider theme={APP_THEME === 'dark' ? DarkTheme : LightTheme}>
                 <CssBaseline />
                 
                 <div className={classes.root}>

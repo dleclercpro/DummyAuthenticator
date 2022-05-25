@@ -1,10 +1,12 @@
-import { Button, CircularProgress, Paper, TextField, Typography } from '@mui/material';
-import { useState } from 'react';
-import { CallSignIn } from '../calls/auth/CallSignIn';
+import { Button, Paper, TextField, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { classnames } from 'tss-react/tools/classnames';
+import useSignIn from '../hooks/useSignIn';
 import { Severity } from '../types/CommonTypes';
-import ShowPasswordButton from './buttons/ShowPasswordButton';
+import ViewButton from './buttons/ViewButton';
 import useLoginStyles from './LoginStyles';
 import Snackbar from './Snackbar';
+import Spinner from './Spinner';
 
 interface Props {
 
@@ -13,30 +15,30 @@ interface Props {
 const Login: React.FC<Props> = () => {
     const { classes } = useLoginStyles();
 
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+    const { loading, error, resetError, signIn } = useSignIn();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const Spinner = (
-        <CircularProgress
-            className={classes.spinner}
-            size='1rem'
-            thickness={6}
-            color='inherit'
-        />
-    );
+    const [snackbarOpen, setSnackbarOpen] = useState(!!error);
+    const [showPassword, setShowPassword] = useState(false);
+
+    // New error: open snackbar
+    useEffect(() => {
+        if (!!error) {
+            setSnackbarOpen(true);
+        }
+        
+    }, [error]);
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
+        resetError();
     }
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
+        resetError();
     }
 
     const togglePasswordVisibility = () => {
@@ -47,18 +49,8 @@ const Login: React.FC<Props> = () => {
         e.preventDefault();
 
         setSnackbarOpen(false);
-        setLoading(true);
 
-        try {
-            await new CallSignIn().execute({ email, password });
-            
-        } catch (err: any) {
-            setError('Invalid credentials.');
-
-            setSnackbarOpen(true);
-        }
-
-        setLoading(false);
+        await signIn(email, password);
     }
 
     return (
@@ -70,8 +62,15 @@ const Login: React.FC<Props> = () => {
                 onSubmit={handleSubmit}
             >
                 <Typography variant='h1' className={classes.title}>
-                    Welcome
+                    Welcome back
                 </Typography>
+
+                <Button
+                    className={classnames([classes.field, classes.switchButton])}
+                    onClick={() => {}}
+                >
+                    Not registered yet? Click here.
+                </Button>
 
                 <TextField
                     id='email'
@@ -89,7 +88,7 @@ const Login: React.FC<Props> = () => {
                     id='password'
                     className={classes.field}
                     inputProps={{ className: classes.input }}
-                    InputProps={{ endAdornment: <ShowPasswordButton visible={showPassword} onClick={togglePasswordVisibility} />}}
+                    InputProps={{ endAdornment: <ViewButton visible={showPassword} onClick={togglePasswordVisibility} />}}
                     type={showPassword ? 'text' : 'password'}
                     label='Password'
                     value={password}
@@ -99,10 +98,11 @@ const Login: React.FC<Props> = () => {
                 />
 
                 <Button
-                    className={classes.button}
+                    className={classnames([classes.field, classes.submitButton])}
                     type='submit'
                     variant='contained'
-                    endIcon={loading && Spinner}
+                    endIcon={loading && <Spinner />}
+                    disabled={!!error}
                     fullWidth
                 >
                     Log in

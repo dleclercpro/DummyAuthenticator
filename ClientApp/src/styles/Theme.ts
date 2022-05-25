@@ -1,8 +1,7 @@
-import { Theme as MuiTheme, createTheme } from '@mui/material';
+import { Theme as MuiTheme, createTheme as createMuiTheme } from '@mui/material';
 import { orange, purple } from '@mui/material/colors';
-import { APP_THEME } from '../config/Config';
 
-const getResponsiveFonts = (theme: MuiTheme): MuiTheme => {
+const createResponsiveFonts = (theme: MuiTheme): MuiTheme => {
     const { breakpoints } = theme;
 
     return {
@@ -119,9 +118,9 @@ const getResponsiveFonts = (theme: MuiTheme): MuiTheme => {
     };
 }
 
-const Theme = createTheme({
+const createTheme = (mode: 'dark' | 'light') => createResponsiveFonts(createMuiTheme({
     palette: {
-        mode: APP_THEME,
+        mode,
         primary: {
             main: purple[500],
         },
@@ -129,6 +128,7 @@ const Theme = createTheme({
             main: orange[500],
         },
     },
-});
+}));
 
-export default getResponsiveFonts(Theme);
+export const DarkTheme = createTheme('dark');
+export const LightTheme = createTheme('light');

@@ -14,7 +14,7 @@ const useLoginStyles = makeStyles()(({ palette, spacing }: Theme) => ({
     },
 
     title: {
-        marginBottom: spacing(3),
+        marginBottom: spacing(1.5),
     },
 
     field: {
@@ -35,12 +35,12 @@ const useLoginStyles = makeStyles()(({ palette, spacing }: Theme) => ({
         },
     },
 
-    button: {
-        height: spacing(7),
+    switchButton: {
+        textAlign: 'left',
     },
-
-    spinner: {
-
+    
+    submitButton: {
+        height: spacing(7),
     },
 }));
 
