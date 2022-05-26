@@ -1,5 +1,5 @@
 {
-  "name": "server-side-authenticator-client",
+  "name": "dummy-authenticator-client",
   "version": "0.1.0",
   "author": "David Leclerc",
   "license": "MIT",
