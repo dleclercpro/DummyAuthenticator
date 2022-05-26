@@ -18,11 +18,3 @@ export class ErrorInvalidEmail extends ServerError {
         super(ErrorInvalidEmail.code, `Invalid e-mail provided: ${email}`);
     }
 }
-
-export class ErrorInvalidSessionId extends ServerError {
-    public static code = -101;
-    
-    constructor(id: string) {
-        super(ErrorInvalidSessionId.code, `Invalid session ID: ${id}`);
-    }
-}

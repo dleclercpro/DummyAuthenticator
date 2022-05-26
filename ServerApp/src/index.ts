@@ -54,16 +54,6 @@ const main = async () => {
         console.log(`Removed user: ${user.stringify()}`);
     });
 
-    // Listen to new user sessions
-    sessions.onSet(({ value: session }) => {
-        console.log(`Created new session for user: ${session.getEmail()}`);
-    });
-
-    // Listen to end of user sessions
-    sessions.onDelete(({ prevValue: session }) => {
-        console.log(`Deleted session for user: ${session.getEmail()}`);
-    });
-
     // Then start listening on given port
     server.listen(PORT, () => {
         console.info(`Server listening in ${ENV} mode at: ${ROOT}`);

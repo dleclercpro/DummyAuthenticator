@@ -22,7 +22,7 @@ class SignInCommand extends Command<Argument, Response> {
     }
 
     protected async doExecute() {
-        const { email, password } = this.argument;
+        const { email, password, staySignedIn } = this.argument;
 
         // Try and find user in database
         const user = await new GetUserCommand({ email }).execute();
@@ -31,7 +31,7 @@ class SignInCommand extends Command<Argument, Response> {
         await user.isPasswordValid(password);
 
         // Create session for user
-        const session = await Session.create(user.getEmail());
+        const session = await Session.create(user.getEmail(), staySignedIn);
 
         return { user, session };
     }

@@ -8,6 +8,8 @@ import LoadingButton from '../../buttons/LoadingButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import useUser from '../../../hooks/useUser';
+import { useNavigate } from 'react-router-dom';
+import { getURL, Page } from '../../../routes/Router';
 
 interface Props {
 
@@ -15,6 +17,8 @@ interface Props {
 
 const Home: React.FC<Props> = () => {
     const { classes } = useHomeStyles();
+
+    const navigate = useNavigate();
 
     const { loading: loadingUser, error: errorUser, user, getUser } = useUser();
     const { loading: loadingSignOut, error: errorSignOut, signOut } = useSignOut();
@@ -29,13 +33,18 @@ const Home: React.FC<Props> = () => {
         
     }, [errorSignOut, errorUser, user]);
 
-    const onRefresh = async () => {
+    const handleRefresh = async () => {
         setSnackbarOpen(false);
 
-        await getUser();
+        try {
+            await getUser();
+        
+        } catch (err: any) {
+            navigate(getURL(Page.SignIn));
+        }
     }
 
-    const onSignOut = async () => {
+    const handleSignOut = async () => {
         setSnackbarOpen(false);
 
         await signOut();
@@ -58,7 +67,7 @@ const Home: React.FC<Props> = () => {
                     color='secondary'
                     icon={<RefreshIcon />}
                     loading={loadingUser}
-                    onClick={onRefresh}
+                    onClick={handleRefresh}
                 >
                     Refresh
                 </LoadingButton>
@@ -68,7 +77,7 @@ const Home: React.FC<Props> = () => {
                     type='submit'
                     icon={<LogoutIcon />}
                     loading={loadingSignOut}
-                    onClick={onSignOut}
+                    onClick={handleSignOut}
                 >
                     Sign out
                 </LoadingButton>

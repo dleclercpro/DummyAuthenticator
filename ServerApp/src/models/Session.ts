@@ -1,13 +1,20 @@
 import crypto from 'crypto';
+import { SESSION_DURATION } from '../config/AuthConfig';
 import SessionDatabase from '../databases/SessionDatabase';
+import { toMs } from '../libs/time';
+import { TimeUnit } from '../types/TimeTypes';
 
 class Session {
     protected id: string;
     protected email: string;
+    protected expirationDate: Date;
+    public staySignedIn: boolean;
 
-    public constructor(id: string, email: string) {
+    public constructor(id: string, email: string, expirationDate: Date, staySignedIn: boolean) {
         this.id = id;
         this.email = email;
+        this.expirationDate = expirationDate;
+        this.staySignedIn = staySignedIn;
     }
 
     public stringify() {
@@ -22,6 +29,18 @@ class Session {
         return this.email;
     }
 
+    public getExpirationDate() {
+        return this.expirationDate;
+    }
+
+    public async extend(time: number, unit: TimeUnit) {
+        this.expirationDate = new Date(this.expirationDate.getTime() + toMs(time, unit));
+
+        await this.save();
+
+        console.log(`Extended session of user: ${this.email}`);
+    }
+
     public async save() {
         const db = SessionDatabase.get();
 
@@ -32,6 +51,8 @@ class Session {
         const db = SessionDatabase.get();
 
         db.remove(this.id);
+
+        console.log(`Deleted session of user: ${this.email}`);
     }
 
     // STATIC METHODS
@@ -45,7 +66,7 @@ class Session {
         return db.get(id);
     }
 
-    public static async create(email: string) {
+    public static async create(email: string, staySignedIn: boolean = false) {
         let id = '';
 
         // Find a unique, non-existent ID for the new session 
@@ -53,11 +74,16 @@ class Session {
             id = Session.generateId();
         }
 
+        // Generate default expiration date for session
+        const expirationDate = new Date(new Date().getTime() + toMs(SESSION_DURATION.time, SESSION_DURATION.unit));
+
         // Create session
-        const session = new Session(id, email);
+        const session = new Session(id, email, expirationDate, staySignedIn);
 
         // Store session in database
         await session.save();
+
+        console.log(`Created new session for user: ${email}`);
 
         return session;
     }

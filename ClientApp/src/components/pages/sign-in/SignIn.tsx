@@ -22,7 +22,7 @@ const SignIn: React.FC<Props> = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [staySignedIn, setStaySignedIn] = useState(false);
+    const [staySignedIn, setStaySignedIn] = useState(true);
 
     const [snackbarOpen, setSnackbarOpen] = useState(!!error);
 
