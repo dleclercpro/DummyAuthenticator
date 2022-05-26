@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import NoMatch from '../components/pages/no-match/NoMatch';
 import Home from '../components/pages/home/Home';
@@ -6,8 +6,6 @@ import SignIn from '../components/pages/sign-in/SignIn';
 import SignUp from '../components/pages/sign-up/SignUp';
 import AuthenticatedRoute from './AuthenticatedRoute';
 import UnauthenticatedRoute from './UnauthenticatedRoute';
-import useAuth from '../hooks/useAuth';
-import Spinner from '../components/Spinner';
 
 export enum Page {
     Home = '',
@@ -38,21 +36,6 @@ interface Props {
 }
 
 const Router: React.FC<Props> = () => {
-    const { isPinged, ping } = useAuth();
-
-    // Try to connect to server on application start
-    useEffect(() => {
-        ping();
-
-    // eslint-disable-next-line
-    }, []);
-
-    if (!isPinged) {
-        return (
-            <Spinner size='large' />
-        );
-    }
-    
     return (
         <Routes>
             <Route index element={

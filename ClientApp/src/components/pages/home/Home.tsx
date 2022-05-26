@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
 import useSecret from '../../../hooks/useSecret';
 import Spinner from '../../Spinner';
+import { TimeUnit } from '../../../types/TimeTypes';
+import { sleep } from '../../../libs/time';
 
 interface Props {
 
@@ -22,21 +24,24 @@ const Home: React.FC<Props> = () => {
     const { logout } = useAuth();
     const navigate = useNavigate();
 
-    const { loading: loadingSecret, secret, fetchSecret } = useSecret();
+    const { loading, error, secret, fetchSecret } = useSecret();
 
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-
+    const [isSigningOut, setIsSigningOut] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
 
     // Fetch secret on load
     useEffect(() => {
-        fetchSecret(false);
+
+        // Fake some loading time
+        sleep(1, TimeUnit.Second)
+            .then(() => {
+                fetchSecret(false);                
+            });
 
     // eslint-disable-next-line
     }, []);
 
-    // New sign out error: open snackbar
+    // New secret error: open snackbar
     useEffect(() => {
         if (!!error) {
             setSnackbarOpen(true);
@@ -52,11 +57,14 @@ const Home: React.FC<Props> = () => {
 
     const handleSignOut = async () => {
         setSnackbarOpen(false);
-        setLoading(true);
+        setIsSigningOut(true);
 
         return logout()
+            .then(() => {
+            })
+            .catch(() => { })
             .finally(() => {
-                setLoading(false);
+                setIsSigningOut(false);
                 navigate(getURL(Page.SignIn));
             });
     }
@@ -75,7 +83,7 @@ const Home: React.FC<Props> = () => {
             </Typography>
             
             <Typography className={classes.text}>
-                Here is your secret: <b>{loadingSecret ? '...' : secret}</b>
+                Here is your secret: <b>{loading ? '...' : secret}</b>
             </Typography>
 
             <div className={classes.buttons}>
@@ -84,7 +92,7 @@ const Home: React.FC<Props> = () => {
                     variant='outlined'
                     color='secondary'
                     icon={<RefreshIcon />}
-                    loading={loadingSecret}
+                    loading={loading}
                     onClick={handleRenewSecret}
                 >
                     Renew secret
@@ -93,7 +101,7 @@ const Home: React.FC<Props> = () => {
                 <LoadingButton
                     className={classes.button}
                     icon={<LogoutIcon />}
-                    loading={loading}
+                    loading={isSigningOut}
                     onClick={handleSignOut}
                 >
                     Sign out
