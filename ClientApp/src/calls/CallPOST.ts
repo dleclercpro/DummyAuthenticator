@@ -3,7 +3,7 @@ import { HttpMethod } from '../types/HTTPTypes';
 
 abstract class CallPOST<Data, ResponseData, ErrorResponseData = void> extends Call<Data, ResponseData, ErrorResponseData> {
 
-    constructor(url: string) {
+    constructor(url: string = '') {
         super(url, HttpMethod.POST);
     }
 

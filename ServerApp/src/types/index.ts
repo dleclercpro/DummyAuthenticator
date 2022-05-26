@@ -1,3 +1,5 @@
+import './RequestTypes'; // Do not remove!
+
 export enum Environment {
     Development = 'development',
     Production = 'production',

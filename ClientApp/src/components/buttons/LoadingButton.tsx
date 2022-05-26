@@ -1,28 +1,36 @@
 import { Button } from '@mui/material';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { classnames } from 'tss-react/tools/classnames';
 import Spinner from '../Spinner';
 import useLoadingButtonStyles from './LoadingButtonStyles';
 
 interface Props {
-    children: ReactNode,
+    children: React.ReactNode,
     className?: string,
+    type?: 'button' | 'submit',
+    variant?: 'contained' | 'outlined' | 'text',
+    color?: 'primary' | 'secondary',
+    icon?: ReactNode,
     loading: boolean,
     error?: boolean,
+    onClick?: (e: React.FormEvent) => any | Promise<any>,
 }
 
 const LoadingButton: React.FC<Props> = (props) => {
-    const { children, className, loading, error } = props;
+    const { children, className, type, variant, color, icon, loading, error, onClick } = props;
     
     const { classes } = useLoadingButtonStyles();
 
     return (
         <Button
             className={classnames([classes.root, className])}
-            type='submit'
-            variant='contained'
+            type={type ? type : 'button'}
+            variant={variant ? variant : 'contained'}
+            color={color ? color : 'primary'}
             endIcon={loading && <Spinner />}
-            disabled={!!error}
+            disabled={loading || !!error}
+            onClick={onClick}
+            startIcon={icon}
         >
             {children}
         </Button>

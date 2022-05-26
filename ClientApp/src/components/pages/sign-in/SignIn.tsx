@@ -1,14 +1,15 @@
 import { Button, Switch, FormControlLabel, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import useSignIn from '../../hooks/useSignIn';
-import { Severity } from '../../types/CommonTypes';
-import useAuthStyles from './AuthStyles';
-import Snackbar from '../Snackbar';
-import { Link, useNavigate } from 'react-router-dom';
-import { getURL, Page } from '../../routes/Router';
-import EmailField from '../fields/EmailField';
-import PasswordField from '../fields/PasswordField';
-import LoadingButton from '../buttons/LoadingButton';
+import useSignIn from '../../../hooks/useSignIn';
+import { Severity } from '../../../types/CommonTypes';
+import useAuthStyles from '../AuthStyles';
+import Snackbar from '../../Snackbar';
+import { Link } from 'react-router-dom';
+import { getURL, Page } from '../../../routes/Router';
+import EmailField from '../../fields/EmailField';
+import PasswordField from '../../fields/PasswordField';
+import LoadingButton from '../../buttons/LoadingButton';
+import LoginIcon from '@mui/icons-material/Login';
 
 interface Props {
 
@@ -16,8 +17,6 @@ interface Props {
 
 const SignIn: React.FC<Props> = () => {
     const { classes } = useAuthStyles();
-
-    const navigate = useNavigate();
 
     const { loading, error, resetError, signIn } = useSignIn();
 
@@ -52,16 +51,9 @@ const SignIn: React.FC<Props> = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        try {
-            setSnackbarOpen(false);
+        setSnackbarOpen(false);
 
-            await signIn(email, password, staySignedIn);
-        
-            navigate(getURL(Page.Home));
-        
-        } catch (err: any) {
-
-        }
+        await signIn(email, password, staySignedIn);
     }
 
     return (
@@ -79,6 +71,7 @@ const SignIn: React.FC<Props> = () => {
                     className={classes.switchButton}
                     component={Link}
                     to={getURL(Page.SignUp)}
+                    color='secondary'
                 >
                     Not registered yet? Click here.
                 </Button>
@@ -105,11 +98,13 @@ const SignIn: React.FC<Props> = () => {
                     <FormControlLabel
                         className={classes.staySignedInSwitch}
                         control={<Switch checked={staySignedIn} onChange={handleStaySignedInChange} name='stay-signed-in' />}
-                        label={<Typography>Stay signed in?</Typography>}
+                        label='Stay signed in?'
                     />
 
                     <LoadingButton
                         className={classes.submitButton}
+                        type='submit'
+                        icon={<LoginIcon />}
                         loading={loading}
                         error={!!error}
                     >

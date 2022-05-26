@@ -1,14 +1,15 @@
 import { Button, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Severity } from '../../types/CommonTypes';
-import useAuthStyles from './AuthStyles';
-import Snackbar from '../Snackbar';
-import { Link, useNavigate } from 'react-router-dom';
-import { getURL, Page } from '../../routes/Router';
-import useSignUp from '../../hooks/useSignUp';
-import EmailField from '../fields/EmailField';
-import PasswordField from '../fields/PasswordField';
-import LoadingButton from '../buttons/LoadingButton';
+import { Severity } from '../../../types/CommonTypes';
+import useAuthStyles from '../AuthStyles';
+import Snackbar from '../../Snackbar';
+import { Link } from 'react-router-dom';
+import { getURL, Page } from '../../../routes/Router';
+import useSignUp from '../../../hooks/useSignUp';
+import EmailField from '../../fields/EmailField';
+import PasswordField from '../../fields/PasswordField';
+import LoadingButton from '../../buttons/LoadingButton';
+import CreateIcon from '@mui/icons-material/Create';
 
 interface Props {
 
@@ -16,8 +17,6 @@ interface Props {
 
 const SignUp: React.FC<Props> = () => {
     const { classes } = useAuthStyles();
-
-    const navigate = useNavigate();
 
     const { loading, error, resetError, signUp } = useSignUp();
 
@@ -47,16 +46,9 @@ const SignUp: React.FC<Props> = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        try {
-            setSnackbarOpen(false);
+        setSnackbarOpen(false);
 
-            await signUp(email, password);
-
-            navigate(getURL(Page.SignIn));
-
-        } catch (err: any) {
-        
-        }
+        await signUp(email, password);
     }
 
     return (
@@ -74,6 +66,7 @@ const SignUp: React.FC<Props> = () => {
                     className={classes.switchButton}
                     component={Link}
                     to={getURL(Page.SignIn)}
+                    color='secondary'
                 >
                     Already have an account? Click here.
                 </Button>
@@ -99,6 +92,8 @@ const SignUp: React.FC<Props> = () => {
                 <div className={classes.buttons}>
                     <LoadingButton
                         className={classes.submitButton}
+                        type='submit'
+                        icon={<CreateIcon />}
                         loading={loading}
                         error={!!error}
                     >

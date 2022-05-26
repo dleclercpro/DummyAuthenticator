@@ -1,17 +1,12 @@
 import { Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
+import { SPACING } from '../../styles';
 
-const SPACING = 1.5;
-
-const useAuthStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme) => ({
+const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     root: {
         width: '100%',
         maxWidth: 600,
         padding: spacing(3),
-
-        '&.sign-out': {
-            maxWidth: 320,
-        },
 
         [breakpoints.down('sm')]: {
             padding: spacing(2),
@@ -38,6 +33,7 @@ const useAuthStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme) =>
     fields: {
         border: 0,
         padding: 0,
+        margin: 0,
         display: 'flex',
 
         [breakpoints.down('sm')]: {
@@ -75,7 +71,7 @@ const useAuthStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme) =>
 
         [breakpoints.down('sm')]: {
             marginLeft: 0,
-            marginTop: spacing(SPACING),
+            marginTop: spacing(1),
         },
     },
 

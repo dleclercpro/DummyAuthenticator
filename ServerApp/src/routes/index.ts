@@ -1,8 +1,10 @@
 import { Router } from 'express';
+import GetUserController from '../controllers/GetUserController';
 import SignInController from '../controllers/SignInController';
 import SignOutController from '../controllers/SignOutController';
 import SignUpController from '../controllers/SignUpController';
 import { RequestMiddleware } from '../middleware/RequestMiddleware';
+import { SessionMiddleware } from '../middleware/SessionMiddleware';
 
 
 
@@ -16,9 +18,13 @@ router.use(RequestMiddleware);
 
 
 // ROUTES
-router.post(`/sign-up`, SignUpController);
-router.put(`/sign-in`, SignInController);
-router.get(`/sign-out`, SignOutController);
+// Authentication
+router.post(`/sign-up`, [], SignUpController);
+router.put(`/sign-in`, [], SignInController);
+router.get(`/sign-out`, [SessionMiddleware], SignOutController);
+
+// User
+router.get('/user', [SessionMiddleware], GetUserController);
 
 
 

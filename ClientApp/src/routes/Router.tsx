@@ -1,8 +1,11 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import SignOut from '../components/auth/SignOut';
-import SignIn from '../components/auth/SignIn';
-import SignUp from '../components/auth/SignUp';
+import { Routes, Route } from 'react-router-dom';
+import NoMatch from '../components/pages/no-match/NoMatch';
+import Home from '../components/pages/home/Home';
+import SignIn from '../components/pages/sign-in/SignIn';
+import SignUp from '../components/pages/sign-up/SignUp';
+import AuthenticatedRoute from './AuthenticatedRoute';
+import usePing from '../hooks/usePing';
 
 export enum Page {
     Home = '',
@@ -33,14 +36,23 @@ interface Props {
 }
 
 const Router: React.FC<Props> = () => {
+    
+    // Try to connect to server on application start
+    usePing();
+    
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route index element={<SignOut />} />
-                <Route path='sign-in' element={<SignIn />} />
-                <Route path='sign-up' element={<SignUp />} />
-            </Routes>
-        </BrowserRouter>
+        <Routes>
+            <Route index element={
+                <AuthenticatedRoute>
+                    <Home />
+                </AuthenticatedRoute>
+            } />
+
+            <Route path='sign-in' element={<SignIn />} />
+            <Route path='sign-up' element={<SignUp />} />
+
+            <Route path='*' element={<NoMatch />} />
+        </Routes>
     );
 }
 
