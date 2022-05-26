@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import GetUserController from '../controllers/GetUserController';
+import GetSecretController from '../controllers/GetSecretController';
+import PingController from '../controllers/PingController';
 import SignInController from '../controllers/SignInController';
 import SignOutController from '../controllers/SignOutController';
 import SignUpController from '../controllers/SignUpController';
@@ -18,13 +19,15 @@ router.use(RequestMiddleware);
 
 
 // ROUTES
+
 // Authentication
 router.post(`/sign-up`, [], SignUpController);
 router.put(`/sign-in`, [], SignInController);
 router.get(`/sign-out`, [SessionMiddleware], SignOutController);
+router.get('/ping', [SessionMiddleware], PingController);
 
-// User
-router.get('/user', [SessionMiddleware], GetUserController);
+// Secret
+router.put('/secret', [SessionMiddleware], GetSecretController);
 
 
 

@@ -1,4 +1,4 @@
-import CallPUT from '../CallPUT';
+import CallPUT from '../base/CallPUT';
 
 interface Data {
     email: string,

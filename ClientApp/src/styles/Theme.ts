@@ -1,5 +1,6 @@
 import { Theme as MuiTheme, createTheme as createMuiTheme } from '@mui/material';
 import { orange, purple } from '@mui/material/colors';
+import { APP_THEME } from '../config/Config';
 
 const createResponsiveFonts = (theme: MuiTheme): MuiTheme => {
     const { breakpoints } = theme;
@@ -132,3 +133,7 @@ const createTheme = (mode: 'dark' | 'light') => createResponsiveFonts(createMuiT
 
 export const DarkTheme = createTheme('dark');
 export const LightTheme = createTheme('light');
+
+export const getAppTheme = () => {
+    return APP_THEME === 'dark' ? DarkTheme : LightTheme;
+}

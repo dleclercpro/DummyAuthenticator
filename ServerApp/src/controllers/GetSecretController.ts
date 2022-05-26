@@ -4,8 +4,12 @@ import { errorResponse, successResponse } from '../libs/calls';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { ClientError } from '../errors/ClientErrors';
 import GetUserCommand from '../commands/user/GetUserCommand';
+import { sleep } from '../libs/time';
+import { TimeUnit } from '../types/TimeTypes';
 
-const GetUserController: RequestHandler = async (req, res) => {
+const GetSecretController: RequestHandler = async (req, res) => {
+    const { renew } = req.body;
+    
     const { session } = req;
 
     try {
@@ -13,8 +17,16 @@ const GetUserController: RequestHandler = async (req, res) => {
         // Try and find user in database
         const user = await new GetUserCommand({ email: session.getEmail() }).execute();
 
+        // Re-new user secret
+        if (renew) {
+            await user.renewSecret();
+        
+            // Fake some processing time for the generation of a new secret
+            await sleep(1, TimeUnit.Second);
+        }
+
         // Success
-        return res.json(successResponse({ email: user.getEmail() }));
+        return res.json(successResponse(user.getSecret()));
 
     } catch (err: any) {
         console.warn(err.message);
@@ -32,4 +44,4 @@ const GetUserController: RequestHandler = async (req, res) => {
     }
 }
 
-export default GetUserController;
+export default GetSecretController;

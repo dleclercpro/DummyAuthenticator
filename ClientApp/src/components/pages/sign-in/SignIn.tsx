@@ -1,15 +1,16 @@
 import { Button, Switch, FormControlLabel, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import useSignIn from '../../../hooks/useSignIn';
 import { Severity } from '../../../types/CommonTypes';
 import useAuthStyles from '../AuthStyles';
 import Snackbar from '../../Snackbar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
 import EmailField from '../../fields/EmailField';
 import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import LoginIcon from '@mui/icons-material/Login';
+import useAuth from '../../../hooks/useAuth';
+import { translateServerError } from '../../../errors/ServerErrors';
 
 interface Props {
 
@@ -18,7 +19,11 @@ interface Props {
 const SignIn: React.FC<Props> = () => {
     const { classes } = useAuthStyles();
 
-    const { loading, error, resetError, signIn } = useSignIn();
+    const { login } = useAuth();
+    const navigate = useNavigate();
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -36,24 +41,35 @@ const SignIn: React.FC<Props> = () => {
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
-        resetError();
+        setError('');
     }
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
-        resetError();
+        setError('');
     }
 
     const handleStaySignedInChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setStaySignedIn(e.target.checked);
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         setSnackbarOpen(false);
+        setLoading(true);
 
-        await signIn(email, password, staySignedIn);
+        return login(email, password, staySignedIn)
+            .then(() => {
+                navigate(getURL(Page.Home));
+            })
+            .catch((err: any) => {
+                setError(translateServerError(err.message));
+                setSnackbarOpen(true);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }
 
     return (

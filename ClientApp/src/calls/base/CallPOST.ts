@@ -1,10 +1,10 @@
 import { Call } from './Call';
-import { HttpMethod } from '../types/HTTPTypes';
+import { HttpMethod } from '../../types/HTTPTypes';
 
-abstract class CallPUT<Data, ResponseData, ErrorResponseData = void> extends Call<Data, ResponseData, ErrorResponseData> {
+abstract class CallPOST<Data, ResponseData, ErrorResponseData = void> extends Call<Data, ResponseData, ErrorResponseData> {
 
     constructor(url: string = '') {
-        super(url, HttpMethod.PUT);
+        super(url, HttpMethod.POST);
     }
 
     sanitize(data: Data): Data {
@@ -16,4 +16,4 @@ abstract class CallPUT<Data, ResponseData, ErrorResponseData = void> extends Cal
     }
 }
 
-export default CallPUT;
+export default CallPOST;

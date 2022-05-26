@@ -1,4 +1,4 @@
-import CallPOST from '../CallPOST';
+import CallPOST from '../base/CallPOST';
 
 interface Data {
     email: string,

@@ -29,7 +29,7 @@ export const SessionMiddleware: RequestHandler = async (req, res, next) => {
         // Extend session duration if desired on every
         // further request
         if (session.staySignedIn) {
-            await session.extend(1, TimeUnit.Hours);
+            await session.extend(1, TimeUnit.Hour);
         }
 
         // Set session in request for further processing

@@ -1,14 +1,17 @@
 import * as bcrypt from 'bcrypt';
+import randomWords from 'random-words';
 import { N_PASSWORD_SALT_ROUNDS } from '../config/AuthConfig';
 import UserDatabase from '../databases/UserDatabase';
 
 class User {
     protected email: string;
     protected password: string;
+    protected secret: string;
 
-    public constructor(email: string, password: string) {
+    public constructor(email: string, password: string, secret: string) {
         this.email = email;
         this.password = password;
+        this.secret = secret;
     }
 
     public stringify() {
@@ -25,6 +28,16 @@ class User {
 
     public getPassword() {
         return this.password;
+    }
+
+    public getSecret() {
+        return this.secret;
+    }
+
+    public async renewSecret() {
+        this.secret = randomWords();
+
+        await this.save();
     }
 
     public async isPasswordValid(password: string) {
@@ -52,8 +65,14 @@ class User {
 
     public static async create(email: string, password: string) {
 
-        // Create new user with encrypted password
-        const user = new User(email, await bcrypt.hash(password, N_PASSWORD_SALT_ROUNDS));
+        // Generate random secret for user
+        const secret = randomWords();
+
+        // Encrypt password
+        const hashedPassword = await bcrypt.hash(password, N_PASSWORD_SALT_ROUNDS);
+
+        // Create new user
+        const user = new User(email, hashedPassword, secret);
 
         // Store user in database
         const db = UserDatabase.get();

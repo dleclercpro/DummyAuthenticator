@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import NoMatch from '../components/pages/no-match/NoMatch';
 import Home from '../components/pages/home/Home';
 import SignIn from '../components/pages/sign-in/SignIn';
 import SignUp from '../components/pages/sign-up/SignUp';
 import AuthenticatedRoute from './AuthenticatedRoute';
-import usePing from '../hooks/usePing';
+import UnauthenticatedRoute from './UnauthenticatedRoute';
+import useAuth from '../hooks/useAuth';
+import Spinner from '../components/Spinner';
 
 export enum Page {
     Home = '',
@@ -36,9 +38,20 @@ interface Props {
 }
 
 const Router: React.FC<Props> = () => {
-    
+    const { isPinged, ping } = useAuth();
+
     // Try to connect to server on application start
-    usePing();
+    useEffect(() => {
+        ping();
+
+    // eslint-disable-next-line
+    }, []);
+
+    if (!isPinged) {
+        return (
+            <Spinner size='large' />
+        );
+    }
     
     return (
         <Routes>
@@ -48,8 +61,17 @@ const Router: React.FC<Props> = () => {
                 </AuthenticatedRoute>
             } />
 
-            <Route path='sign-in' element={<SignIn />} />
-            <Route path='sign-up' element={<SignUp />} />
+            <Route path='sign-in' element={
+                <UnauthenticatedRoute>
+                    <SignIn />
+                </UnauthenticatedRoute>
+            } />
+            
+            <Route path='sign-up' element={
+                <UnauthenticatedRoute>
+                    <SignUp />
+                </UnauthenticatedRoute>
+            } />
 
             <Route path='*' element={<NoMatch />} />
         </Routes>

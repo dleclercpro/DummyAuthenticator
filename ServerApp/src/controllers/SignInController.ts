@@ -13,7 +13,7 @@ const SignInController: RequestHandler = async (req, res) => {
 
     try {
 
-        // Sanitize e-mail
+        // Sanitize input
         email = email.trim().toLowerCase();
 
         // Validate e-mail

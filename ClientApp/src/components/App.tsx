@@ -1,22 +1,13 @@
-import React, { createContext, useState } from 'react';
+import React from 'react';
 import { CacheProvider } from '@emotion/react';
 import { CssBaseline, ThemeProvider } from '@mui/material';
-import createCache from '@emotion/cache';
 import useAppStyles from './AppStyles';
-import { APP_THEME } from '../config/Config';
-import { DarkTheme, LightTheme } from '../styles/Theme';
+import { getAppTheme } from '../styles/Theme';
 import Router from '../routes/Router';
 import { Container } from '@mui/system';
+import { AuthContextProvider } from '../hooks/useAuth';
+import { StylesCache } from '../styles';
 import { BrowserRouter } from 'react-router-dom';
-
-export const AuthContext = createContext({
-    isLogged: false,
-    setIsLogged: (isLogged: boolean) => {},
-});
-
-export const StylesCache = createCache({ key: 'mui', prepend: true });
-
-
 
 interface Props {
 
@@ -25,14 +16,11 @@ interface Props {
 const App: React.FC<Props> = () => {
     const { classes } = useAppStyles();
 
-    // Store authentication state here
-    const [isLogged, setIsLogged] = useState(false);
-    
     return (
         <BrowserRouter>
-            <AuthContext.Provider value={{ isLogged, setIsLogged }}>
+            <AuthContextProvider>
                 <CacheProvider value={StylesCache}>
-                    <ThemeProvider theme={APP_THEME === 'dark' ? DarkTheme : LightTheme}>
+                    <ThemeProvider theme={getAppTheme()}>
                         <CssBaseline />
                         
                         <Container className={classes.root} maxWidth='lg'>
@@ -40,7 +28,7 @@ const App: React.FC<Props> = () => {
                         </Container>
                     </ThemeProvider>
                 </CacheProvider>
-            </AuthContext.Provider>
+            </AuthContextProvider>
         </BrowserRouter>
     );
 }

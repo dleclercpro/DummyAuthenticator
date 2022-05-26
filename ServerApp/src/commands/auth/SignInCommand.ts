@@ -28,7 +28,11 @@ class SignInCommand extends Command<Argument, Response> {
         const user = await new GetUserCommand({ email }).execute();
 
         // Authenticate user
-        await user.isPasswordValid(password);
+        const isPasswordValid = await user.isPasswordValid(password);
+        
+        if (!isPasswordValid) {
+            throw new ErrorUserWrongPassword(user);
+        }
 
         // Create session for user
         const session = await Session.create(user.getEmail(), staySignedIn);

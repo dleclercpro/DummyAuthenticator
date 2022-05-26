@@ -7,18 +7,18 @@ interface Props {
     children: ReactElement,
 }
 
-const AuthenticatedRoute: React.FC<Props> = (props) => {
+const UnauthenticatedRoute: React.FC<Props> = (props) => {
     const { children } = props;
 
     const { isLogged } = useAuth();
     const location = useLocation();
 
-    if (!isLogged) {
-        console.log('Re-routing to sign in...');
-
+    if (isLogged) {
+        console.log('Re-routing home...');
+        
         return (
             <Navigate
-                to={getURL(Page.SignIn)}
+                to={getURL(Page.Home)}
                 state={{ from: location }}
                 replace
             />
@@ -28,4 +28,4 @@ const AuthenticatedRoute: React.FC<Props> = (props) => {
     return children;
 }
 
-export default AuthenticatedRoute;
+export default UnauthenticatedRoute;

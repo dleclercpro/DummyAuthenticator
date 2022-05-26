@@ -44,16 +44,6 @@ server.use('/', router);
 /* -------------------------------------------------- MAIN -------------------------------------------------- */
 const main = async () => {
 
-    // Listen to new users added to database
-    users.onSet(({ value: user }) => {
-        console.log(`Added new user: ${user.stringify()}`);
-    });
-
-    // Listen to users removed from database
-    users.onDelete(({ prevValue: user }) => {
-        console.log(`Removed user: ${user.stringify()}`);
-    });
-
     // Then start listening on given port
     server.listen(PORT, () => {
         console.info(`Server listening in ${ENV} mode at: ${ROOT}`);

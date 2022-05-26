@@ -10,8 +10,6 @@ const SignOutController: RequestHandler = async (req, res) => {
     const { session } = req;
 
     try {
-
-        // Let's sign them out
         await new SignOutCommand({ session }).execute();
 
         // Remove session cookie in client

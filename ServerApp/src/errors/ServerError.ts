@@ -18,3 +18,11 @@ export class ErrorInvalidEmail extends ServerError {
         super(ErrorInvalidEmail.code, `Invalid e-mail provided: ${email}`);
     }
 }
+
+export class ErrorInvalidPassword extends ServerError {
+    public static code = -101;
+    
+    constructor() {
+        super(ErrorInvalidPassword.code, `Invalid password provided.`);
+    }
+}

@@ -1,15 +1,16 @@
 import { Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import useSignOut from '../../../hooks/useSignOut';
 import { Severity } from '../../../types/CommonTypes';
 import useHomeStyles from './HomeStyles';
 import Snackbar from '../../Snackbar';
 import LoadingButton from '../../buttons/LoadingButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import useUser from '../../../hooks/useUser';
+import useAuth from '../../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
+import useSecret from '../../../hooks/useSecret';
+import Spinner from '../../Spinner';
 
 interface Props {
 
@@ -18,36 +19,53 @@ interface Props {
 const Home: React.FC<Props> = () => {
     const { classes } = useHomeStyles();
 
+    const { logout } = useAuth();
     const navigate = useNavigate();
 
-    const { loading: loadingUser, error: errorUser, user, getUser } = useUser();
-    const { loading: loadingSignOut, error: errorSignOut, signOut } = useSignOut();
+    const { loading: loadingSecret, secret, fetchSecret } = useSecret();
 
-    const [snackbarOpen, setSnackbarOpen] = useState(!!errorSignOut);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    // New error: open snackbar
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+    // Fetch secret on load
     useEffect(() => {
-        if (!!errorSignOut || !!errorUser || !!user) {
+        fetchSecret(false);
+
+    // eslint-disable-next-line
+    }, []);
+
+    // New sign out error: open snackbar
+    useEffect(() => {
+        if (!!error) {
             setSnackbarOpen(true);
         }
         
-    }, [errorSignOut, errorUser, user]);
+    }, [error]);
 
-    const handleRefresh = async () => {
+    const handleRenewSecret = async () => {
         setSnackbarOpen(false);
 
-        try {
-            await getUser();
-        
-        } catch (err: any) {
-            navigate(getURL(Page.SignIn));
-        }
+        await fetchSecret(true);
     }
 
     const handleSignOut = async () => {
         setSnackbarOpen(false);
+        setLoading(true);
 
-        await signOut();
+        return logout()
+            .finally(() => {
+                setLoading(false);
+                navigate(getURL(Page.SignIn));
+            });
+    }
+
+    // No secret yet: wait
+    if (!secret) {
+        return (
+            <Spinner size='large' />
+        );
     }
 
     return (
@@ -57,7 +75,7 @@ const Home: React.FC<Props> = () => {
             </Typography>
             
             <Typography className={classes.text}>
-                You have successfully logged in.
+                Here is your secret: <b>{loadingSecret ? '...' : secret}</b>
             </Typography>
 
             <div className={classes.buttons}>
@@ -66,17 +84,16 @@ const Home: React.FC<Props> = () => {
                     variant='outlined'
                     color='secondary'
                     icon={<RefreshIcon />}
-                    loading={loadingUser}
-                    onClick={handleRefresh}
+                    loading={loadingSecret}
+                    onClick={handleRenewSecret}
                 >
-                    Refresh
+                    Renew secret
                 </LoadingButton>
                 
                 <LoadingButton
                     className={classes.button}
-                    type='submit'
                     icon={<LogoutIcon />}
-                    loading={loadingSignOut}
+                    loading={loading}
                     onClick={handleSignOut}
                 >
                     Sign out
@@ -85,8 +102,8 @@ const Home: React.FC<Props> = () => {
 
             <Snackbar
                 open={snackbarOpen}
-                message={errorSignOut || errorUser || user}
-                severity={!!errorSignOut || !!errorUser ? Severity.Error : Severity.Info}
+                message={error}
+                severity={Severity.Error}
                 onClose={() => setSnackbarOpen(false)}
             />
         </Paper>

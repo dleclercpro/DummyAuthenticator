@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse } from 'axios';
-import { HttpMethod, HttpStatusCode } from '../types/HTTPTypes';
-import { MIMEApplicationType } from '../types/MIMETypes';
-import { ServerError } from '../errors/ServerErrors';
+import { HttpMethod, HttpStatusCode } from '../../types/HTTPTypes';
+import { MIMEApplicationType } from '../../types/MIMETypes';
+import { ServerError } from '../../errors/ServerErrors';
 import CallError from './CallError';
 
 const UNKNOWN_ERROR = new CallError(ServerError.Unknown);
@@ -49,7 +49,7 @@ export abstract class Call<Data, ResponseData, ErrorResponseData> {
     }
 
     public execute(data?: Data) {
-        console.debug(`Executing call: [${this.method}] ${this.url}`);
+        console.log(`Executing call: [${this.method}] ${this.url}`);
 
         // Store data for eventual further processing
         if (data) {
@@ -101,6 +101,6 @@ export abstract class Call<Data, ResponseData, ErrorResponseData> {
         // Throw server error
         const { code, error, data } = response.data;
         
-        throw new CallError(`SERVER.${error}`, data, code);
+        throw new CallError(error, data, code);
     }
 }
