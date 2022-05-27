@@ -18,7 +18,7 @@ const NoMatch: React.FC<Props> = () => {
             <WarningIcon className={classes.icon} color={Severity.Error} fontSize='large' />
 
             <Typography variant='h1' className={classes.title}>
-                Oops.
+                Oops!
             </Typography>
 
             <Typography className={classes.text}>
@@ -32,7 +32,7 @@ const NoMatch: React.FC<Props> = () => {
                 variant='contained'
                 startIcon={<ArrowBackIcon />}
             >
-                Back to home page.
+                Back
             </Button>
         </Paper>
     );

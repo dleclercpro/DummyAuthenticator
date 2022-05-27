@@ -14,8 +14,6 @@ const UnauthenticatedRoute: React.FC<Props> = (props) => {
     const location = useLocation();
 
     if (isLogged) {
-        console.log('Re-routing home...');
-        
         return (
             <Navigate
                 to={getURL(Page.Home)}

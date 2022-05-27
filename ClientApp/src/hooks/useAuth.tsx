@@ -1,9 +1,7 @@
 import { createContext, ReactElement, useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { CallSignIn } from '../calls/auth/CallSignIn';
 import { CallSignOut } from '../calls/auth/CallSignOut';
 import { CallPing } from '../calls/user/CallPing';
-import { getURL, Page } from '../routes/Router';
 
 interface IAuthContext {
     isPinged: boolean, // Determine whether user still has active session on server
@@ -43,17 +41,13 @@ const useAuth = () => {
     const [isPinged, setIsPinged] = useState(false);
     const [isLogged, setIsLogged] = useState(false);
 
-    const navigate = useNavigate();
-
     const ping = async () => {
         try {
             await new CallPing().execute();
             setIsLogged(true)
-            navigate(getURL(Page.Home));
         
         } catch (err: any) {
             setIsLogged(false);
-            navigate(getURL(Page.SignIn));
         
         } finally {
             setIsPinged(true);

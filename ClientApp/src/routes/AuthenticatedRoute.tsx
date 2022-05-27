@@ -14,8 +14,6 @@ const AuthenticatedRoute: React.FC<Props> = (props) => {
     const location = useLocation();
 
     if (!isLogged) {
-        console.log('Re-routing to sign in...');
-
         return (
             <Navigate
                 to={getURL(Page.SignIn)}

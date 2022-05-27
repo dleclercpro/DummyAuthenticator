@@ -38,19 +38,19 @@ interface Props {
 const Router: React.FC<Props> = () => {
     return (
         <Routes>
-            <Route index element={
+            <Route path='/' element={
                 <AuthenticatedRoute>
                     <Home />
                 </AuthenticatedRoute>
             } />
 
-            <Route path='sign-in' element={
+            <Route path='/sign-in' element={
                 <UnauthenticatedRoute>
                     <SignIn />
                 </UnauthenticatedRoute>
             } />
             
-            <Route path='sign-up' element={
+            <Route path='/sign-up' element={
                 <UnauthenticatedRoute>
                     <SignUp />
                 </UnauthenticatedRoute>
