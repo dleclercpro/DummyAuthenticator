@@ -36,10 +36,11 @@ const SignUpController: RequestHandler = async (req, res) => {
     } catch (err: any) {
         console.warn(err.message);
 
-        // Do not tell client why user can't sign up: just pretend
-        // everything was fine
+        // User already exists
         if (err.code === ErrorUserAlreadyExists.code) {
-            return res.json(successResponse());
+            return res
+                .status(HttpStatusCode.FORBIDDEN)
+                .json(errorResponse(ClientError.UserAlreadyExists));
         }
 
         // Invalid email
