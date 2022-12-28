@@ -1,7 +1,6 @@
 import { validate } from 'email-validator';
 import { RequestHandler } from 'express';
 import CreateUserCommand from '../commands/user/CreateUserCommand';
-import { PASSWORD_OPTIONS } from '../config/AuthConfig';
 import { ClientError } from '../errors/ClientErrors';
 import { ErrorInvalidEmail, ErrorInvalidPassword } from '../errors/ServerError';
 import { ErrorUserAlreadyExists } from '../errors/UserErrors';
