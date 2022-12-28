@@ -1,6 +1,6 @@
 {
-  "short_name": "Server-Side Authenticator",
-  "name": "Server-Side Authenticator",
+  "short_name": "Dummy Authenticator",
+  "name": "Dummy Authenticator",
   "icons": [
     {
       "src": "favicon.ico",
