@@ -1,6 +1,7 @@
 import { ErrorUserDoesNotExist } from '../../errors/UserErrors';
 import Session from '../../models/Session';
 import User from '../../models/User';
+import { logger } from '../../utils/Logging';
 import Command from '../Command';
 
 interface Argument {
@@ -30,7 +31,7 @@ class SignOutCommand extends Command<Argument> {
 
     protected handleError(err: any) {
         if (err.code === ErrorUserDoesNotExist.code) {
-            console.warn(err.message);
+            logger.warn(err.message);
         }
 
         return err;

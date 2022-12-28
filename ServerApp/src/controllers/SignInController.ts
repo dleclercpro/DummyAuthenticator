@@ -7,6 +7,7 @@ import { ClientError } from '../errors/ClientErrors';
 import { validate } from 'email-validator';
 import { ErrorInvalidEmail } from '../errors/ServerError';
 import { SESSION_COOKIE } from '../config/AuthConfig';
+import { logger } from '../utils/Logging';
 
 const SignInController: RequestHandler = async (req, res) => {
     let { email, password, staySignedIn } = req.body;
@@ -31,7 +32,7 @@ const SignInController: RequestHandler = async (req, res) => {
         return res.json(successResponse());
 
     } catch (err: any) {
-        console.warn(err.message);
+        logger.warn(err.message);
 
         // Do not tell client why user can't sign in: just say that
         // their credentials are invalid

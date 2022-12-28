@@ -6,6 +6,7 @@ import { ErrorInvalidEmail, ErrorInvalidPassword } from '../errors/ServerError';
 import { ErrorUserAlreadyExists } from '../errors/UserErrors';
 import { errorResponse, successResponse } from '../libs/calls';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
+import { logger } from '../utils/Logging';
 import { validatePassword } from '../utils/Validation';
 
 const SignUpController: RequestHandler = async (req, res) => {
@@ -33,7 +34,7 @@ const SignUpController: RequestHandler = async (req, res) => {
         return res.json(successResponse());
 
     } catch (err: any) {
-        console.warn(err.message);
+        logger.warn(err.message);
 
         // User already exists
         if (err.code === ErrorUserAlreadyExists.code) {

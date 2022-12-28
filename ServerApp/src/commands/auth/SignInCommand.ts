@@ -1,6 +1,7 @@
 import { ErrorUserDoesNotExist, ErrorUserWrongPassword } from '../../errors/UserErrors';
 import Session from '../../models/Session';
 import User from '../../models/User';
+import { logger } from '../../utils/Logging';
 import Command from '../Command';
 import GetUserCommand from '../user/GetUserCommand';
 
@@ -43,7 +44,7 @@ class SignInCommand extends Command<Argument, Response> {
     protected handleError(err: any) {
         if (err.code === ErrorUserDoesNotExist.code ||
             err.code === ErrorUserWrongPassword.code) {
-            console.warn(err.message);
+            logger.warn(err.message);
         }
 
         return err;

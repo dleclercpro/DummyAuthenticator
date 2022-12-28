@@ -6,6 +6,7 @@ import { errorResponse } from '../libs/calls';
 import Session from '../models/Session';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
 import { TimeUnit } from '../types/TimeTypes';
+import { logger } from '../utils/Logging';
 
 export const SessionMiddleware: RequestHandler = async (req, res, next) => {
     const { [SESSION_COOKIE]: sessionId } = req.cookies;
@@ -42,7 +43,7 @@ export const SessionMiddleware: RequestHandler = async (req, res, next) => {
         return next();
 
     } catch (err: any) {
-        console.warn(err.message);
+        logger.warn(err.message);
 
         // Remove session cookie in user's browser
         res.clearCookie(SESSION_COOKIE);

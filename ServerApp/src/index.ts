@@ -5,6 +5,7 @@ import router from './routes';
 import { ENV, PORT, ROOT } from './config/AppConfig';
 import UserDatabase from './databases/UserDatabase';
 import SessionDatabase from './databases/SessionDatabase';
+import { logger } from './utils/Logging';
 
 
 
@@ -46,7 +47,7 @@ const main = async () => {
 
     // Then start listening on given port
     server.listen(PORT, () => {
-        console.info(`Server listening in ${ENV} mode at: ${ROOT}`);
+        logger.info(`Server listening in ${ENV} mode at: ${ROOT}`);
     });
 }
 
@@ -54,5 +55,5 @@ const main = async () => {
 
 // Run
 main().catch((err) => {
-    console.error(err);
+    logger.error(err);
 });

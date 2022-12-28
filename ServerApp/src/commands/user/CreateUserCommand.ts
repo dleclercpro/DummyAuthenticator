@@ -1,6 +1,7 @@
 import User from '../../models/User';
 import Command from '../Command';
 import { ErrorUserAlreadyExists } from '../../errors/UserErrors';
+import { logger } from '../../utils/Logging';
 
 interface Argument {
     email: string,
@@ -19,7 +20,7 @@ class CreateUserCommand extends Command<Argument, Response> {
         const { email, password } = this.argument;
 
         // Try and find user in database
-        const user = await User.findByEmail(email);
+        let user = await User.findByEmail(email);
 
         // User should not already exist in database
         if (user) {
@@ -27,7 +28,12 @@ class CreateUserCommand extends Command<Argument, Response> {
         }
         
         // Create new user instance
-        return User.create(email, password);
+        user = await User.create(email, password);
+
+        // Report its creation
+        logger.info(`New user created: ${user.getEmail()}`);
+
+        return user;
     }
 }
 

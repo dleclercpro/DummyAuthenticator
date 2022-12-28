@@ -3,6 +3,7 @@ import { SESSION_DURATION } from '../config/AuthConfig';
 import SessionDatabase from '../databases/SessionDatabase';
 import { toMs } from '../libs/time';
 import { TimeUnit } from '../types/TimeTypes';
+import { logger } from '../utils/Logging';
 
 class Session {
     protected id: string;
@@ -38,7 +39,7 @@ class Session {
 
         await this.save();
 
-        console.log(`Extended session of user: ${this.email}`);
+        logger.debug(`Extended session of user: ${this.email}`);
     }
 
     public async save() {
@@ -52,7 +53,7 @@ class Session {
 
         db.remove(this.id);
 
-        console.log(`Deleted session of user: ${this.email}`);
+        logger.debug(`Deleted session of user: ${this.email}`);
     }
 
     // STATIC METHODS
@@ -83,7 +84,7 @@ class Session {
         // Store session in database
         await session.save();
 
-        console.log(`Created new session for user: ${email}`);
+        logger.debug(`Created new session for user: ${email}`);
 
         return session;
     }

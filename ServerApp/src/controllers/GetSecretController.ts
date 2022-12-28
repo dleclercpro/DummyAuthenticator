@@ -6,6 +6,7 @@ import { ClientError } from '../errors/ClientErrors';
 import GetUserCommand from '../commands/user/GetUserCommand';
 import { sleep } from '../libs/time';
 import { TimeUnit } from '../types/TimeTypes';
+import { logger } from '../utils/Logging';
 
 const GetSecretController: RequestHandler = async (req, res) => {
     const { renew } = req.body;
@@ -29,7 +30,7 @@ const GetSecretController: RequestHandler = async (req, res) => {
         return res.json(successResponse(user.getSecret()));
 
     } catch (err: any) {
-        console.warn(err.message);
+        logger.warn(err.message);
 
         if (err.code === ErrorUserDoesNotExist.code) {
             return res
