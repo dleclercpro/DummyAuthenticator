@@ -18,6 +18,7 @@
     "dotenv": "^16.0.1",
     "email-validator": "^2.0.4",
     "express": "^4.18.1",
+    "pino": "^8.8.0",
     "random-words": "^1.1.2"
   },
   "devDependencies": {
