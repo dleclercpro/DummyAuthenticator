@@ -44,7 +44,7 @@ const useAuth = () => {
     const ping = async () => {
         try {
             await new CallPing().execute();
-            setIsLogged(true)
+            setIsLogged(true);
         
         } catch (err: any) {
             setIsLogged(false);
