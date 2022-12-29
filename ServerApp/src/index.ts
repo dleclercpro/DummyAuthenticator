@@ -3,8 +3,6 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import router from './routes';
 import { ENV, PORT, ROOT } from './config/AppConfig';
-import UserDatabase from './databases/UserDatabase';
-import SessionDatabase from './databases/SessionDatabase';
 import { logger } from './utils/Logging';
 
 
@@ -12,10 +10,6 @@ import { logger } from './utils/Logging';
 /* -------------------------------------------------- INSTANCES -------------------------------------------------- */
 // Server
 const server = express();
-
-// Databases
-const users = UserDatabase.get();
-const sessions = SessionDatabase.get();
 
 
 

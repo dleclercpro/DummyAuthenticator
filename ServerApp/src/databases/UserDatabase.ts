@@ -10,7 +10,7 @@ class UserDatabase extends MemoryDatabase<User> {
         super();
     }
 
-    public static get() {
+    public static getInstance() {
         if (!this.instance) {
             this.instance = new UserDatabase();
         }
@@ -19,4 +19,4 @@ class UserDatabase extends MemoryDatabase<User> {
     }
 }
 
-export default UserDatabase;
+export default UserDatabase.getInstance();

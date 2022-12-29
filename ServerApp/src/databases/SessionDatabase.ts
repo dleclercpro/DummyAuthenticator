@@ -10,7 +10,7 @@ class SessionDatabase extends MemoryDatabase<Session> {
         super();
     }
 
-    public static get() {
+    public static getInstance() {
         if (!this.instance) {
             this.instance = new SessionDatabase();
         }
@@ -19,4 +19,4 @@ class SessionDatabase extends MemoryDatabase<Session> {
     }
 }
 
-export default SessionDatabase;
+export default SessionDatabase.getInstance();

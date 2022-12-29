@@ -21,10 +21,10 @@ const GetSecretController: RequestHandler = async (req, res) => {
         // Re-new user secret
         if (renew) {
             await user.renewSecret();
-        
-            // Fake some processing time for the generation of a new secret
-            await sleep(1, TimeUnit.Second);
         }
+
+        // Fake some processing time for fetching of the secret
+        await sleep(1, TimeUnit.Second);
 
         // Success
         return res.json(successResponse(user.getSecret()));

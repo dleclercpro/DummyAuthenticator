@@ -43,15 +43,11 @@ class Session {
     }
 
     public async save() {
-        const db = SessionDatabase.get();
-
-        db.set(this);
+        SessionDatabase.set(this);
     }
 
     public async delete() {
-        const db = SessionDatabase.get();
-
-        db.remove(this.id);
+        SessionDatabase.remove(this.id);
 
         logger.debug(`Deleted session of user: ${this.email}`);
     }
@@ -62,9 +58,7 @@ class Session {
     }
 
     public static async findById(id: string) {
-        const db = SessionDatabase.get();
-
-        return db.get(id);
+        return SessionDatabase.get(id);
     }
 
     public static async create(email: string, staySignedIn: boolean = false) {

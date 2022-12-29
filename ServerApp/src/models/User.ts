@@ -45,22 +45,16 @@ class User {
     }
 
     public async save() {
-        const db = UserDatabase.get();
-
-        db.set(this);
+        UserDatabase.set(this);
     }
 
     public async delete() {
-        const db = UserDatabase.get();
-
-        db.remove(this.email);
+        UserDatabase.remove(this.email);
     }
 
     // STATIC METHODS
     public static async findByEmail(email: string) {
-        const db = UserDatabase.get();
-
-        return db.get(email);
+        return UserDatabase.get(email);
     }
 
     public static async create(email: string, password: string) {
@@ -75,9 +69,7 @@ class User {
         const user = new User(email, hashedPassword, secret);
 
         // Store user in database
-        const db = UserDatabase.get();
-
-        db.set(user);
+        UserDatabase.set(user);
 
         return user;
     }

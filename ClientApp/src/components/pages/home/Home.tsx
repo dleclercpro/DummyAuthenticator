@@ -11,8 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
 import useSecret from '../../../hooks/useSecret';
 import Spinner from '../../Spinner';
-import { TimeUnit } from '../../../types/TimeTypes';
-import { sleep } from '../../../libs/time';
 
 interface Props {
 
@@ -31,12 +29,7 @@ const Home: React.FC<Props> = () => {
 
     // Fetch secret on load
     useEffect(() => {
-
-        // Fake some loading time
-        sleep(1, TimeUnit.Second)
-            .then(() => {
-                fetchSecret(false);                
-            });
+        fetchSecret();
 
     // eslint-disable-next-line
     }, []);
