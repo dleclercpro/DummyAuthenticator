@@ -14,8 +14,8 @@ interface DeleteEvent<V> {
 export interface IKeyValueDatabase<R> {
     has(id: string): Promise<boolean>;
     get(id: string): Promise<R | null>;
-    set(id: string, record: R): Promise<void>;
-    delete(id: string): Promise<void>;
+    add(id: string, record: R): Promise<void>;
+    remove(id: string): Promise<void>;
 
     onSet: (listener: Listener<SetEvent<R>>) => void;
     onDelete: (listener: Listener<DeleteEvent<R>>) => void;
@@ -45,7 +45,7 @@ export class MemoryDatabase<R> implements IKeyValueDatabase<R> {
         return this.db.get(id) ?? null;
     }
 
-    public async set(id: string, value: R) {
+    public async add(id: string, value: R) {
         const prevValue = this.db.get(id) ?? null;
 
         this.db.set(id, value);
@@ -53,7 +53,7 @@ export class MemoryDatabase<R> implements IKeyValueDatabase<R> {
         this.onSetObserver.publish({ prevValue, value });
     }
 
-    public async delete(id: string) {
+    public async remove(id: string) {
         const prevValue = this.db.get(id) ?? null;
 
         if (prevValue) {

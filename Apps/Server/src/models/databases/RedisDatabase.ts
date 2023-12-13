@@ -87,11 +87,11 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
         });
 
         this.client.on('warning', (warning: any) => {
-            this.logger.warn(warning.message);
+            this.logger.warn(`[Redis] ${warning.message}`);
         });
 
         this.client.on('error', (error: any) => {
-            this.logger.error(error.message);
+            this.logger.error(`[Redis] ${error.message}`);
         });
     }
 
@@ -134,14 +134,14 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
         return this.client.keys(this.getPrefixedKey('*'));
     }
 
-    public async getAll() {
+    public async getAllValues() {
         const keys = await this.getAllKeys();
         const values = await Promise.all(keys.map((key) => this.client.get(key)));
 
         return values;
     }
 
-    public async set(key: string, value: string) {
+    public async add(key: string, value: string) {
         const prefixedKey = this.getPrefixedKey(key);
         const prevValue = await this.client.get(prefixedKey);
 
@@ -150,7 +150,7 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
         this.onSetObserver.publish({ prevValue, value });
     }
 
-    public async delete(key: string) {
+    public async remove(key: string) {
         const prefixedKey = this.getPrefixedKey(key);
         const prevValue = await this.client.get(prefixedKey);
         

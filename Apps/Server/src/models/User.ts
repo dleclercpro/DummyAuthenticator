@@ -3,6 +3,8 @@ import randomWords from 'random-words';
 import { N_PASSWORD_SALT_ROUNDS } from '../config/AuthConfig';
 import { USER_DB } from '..';
 
+const getRandomWord = () => randomWords({ exactly: 1, join: `` });
+
 interface UserArgs {
     email: string, password: string, secret: string,
 }
@@ -51,7 +53,7 @@ class User {
     }
 
     public async renewSecret() {
-        this.secret = randomWords();
+        this.secret = getRandomWord();
 
         await this.save();
     }
@@ -61,11 +63,11 @@ class User {
     }
 
     public async save() {
-        USER_DB.set(`user:${this.email}`, this.serialize());
+        USER_DB.add(`user:${this.email}`, this.serialize());
     }
 
     public async delete() {
-        USER_DB.delete(this.email);
+        USER_DB.remove(this.email);
     }
 
     // STATIC METHODS
@@ -86,11 +88,11 @@ class User {
         const user = new User({
             email,
             password: hashedPassword,
-            secret: randomWords(),
+            secret: getRandomWord(),
         });
 
         // Store user in database
-        USER_DB.set(user.getId(), user.serialize());
+        USER_DB.add(user.getId(), user.serialize());
 
         return user;
     }

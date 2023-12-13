@@ -63,13 +63,13 @@ class Session {
     }
 
     public async save() {
-        SESSION_DB.set(this.id, this.serialize());
+        SESSION_DB.add(this.id, this.serialize());
 
         logger.debug(`Stored session of user: ${this.email}`);
     }
 
     public async delete() {
-        SESSION_DB.delete(this.id);
+        SESSION_DB.remove(this.id);
 
         logger.debug(`Deleted session of user: ${this.email}`);
     }
