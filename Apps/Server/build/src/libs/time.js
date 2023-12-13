@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTimeFromNow = exports.toMs = exports.sleep = void 0;
 const TimeTypes_1 = require("../types/TimeTypes");
-const sleep = async (time, unit) => {
-    await new Promise(resolve => setTimeout(resolve, (0, exports.toMs)(time, unit)));
+const sleep = async (duration) => {
+    const ms = duration.toMs().getAmount();
+    await new Promise(resolve => setTimeout(resolve, ms));
 };
 exports.sleep = sleep;
 const toMs = (time, unit) => {

@@ -1,4 +1,4 @@
-import { TimeUnit } from "../types/TimeTypes";
+import { TimeUnit } from '../types/TimeTypes';
 
 export const sleep = async (time: number, unit: TimeUnit) => {
     await new Promise(resolve => setTimeout(resolve, toMs(time, unit)));

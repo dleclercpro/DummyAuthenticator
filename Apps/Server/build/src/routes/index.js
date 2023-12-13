@@ -35,7 +35,7 @@ const router = (0, express_1.Router)();
 router.use(RequestMiddleware_1.RequestMiddleware);
 // ROUTES
 // API
-router.use(`/api`, [], api_1.default);
+router.use(`/api`, api_1.default);
 // Client app
 if (AppConfig_1.PROD) {
     router.use('/', express_1.default.static(AppConfig_1.CLIENT_DIRECTORY));

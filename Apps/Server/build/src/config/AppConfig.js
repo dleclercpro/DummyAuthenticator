@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CLIENT_DIRECTORY = exports.CLIENT_ROOT = exports.CLIENT_PORT = exports.CLIENT_HOST = exports.CLIENT_PROTOCOL = exports.ROOT = exports.PORT = exports.HOST = exports.PROTOCOL = exports.PROD = exports.ENV = void 0;
-const libs_1 = require("../libs");
+const env_1 = require("../libs/env");
 const url_1 = require("../libs/url");
 const types_1 = require("../types");
 // Environment
-exports.ENV = (0, libs_1.getEnvironment)();
+exports.ENV = (0, env_1.loadEnvironment)();
 exports.PROD = exports.ENV === types_1.Environment.Production;
 // Server
 exports.PROTOCOL = process.env.PROTOCOL;
@@ -17,4 +17,4 @@ exports.CLIENT_PROTOCOL = process.env.CLIENT_PROTOCOL;
 exports.CLIENT_HOST = process.env.CLIENT_HOST;
 exports.CLIENT_PORT = parseInt(process.env.CLIENT_PORT);
 exports.CLIENT_ROOT = (0, url_1.createURL)(exports.CLIENT_PROTOCOL, exports.CLIENT_HOST, exports.CLIENT_PORT);
-exports.CLIENT_DIRECTORY = '/client';
+exports.CLIENT_DIRECTORY = 'client';

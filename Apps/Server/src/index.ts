@@ -1,47 +1,51 @@
-import express from 'express';
-import cookieParser from 'cookie-parser';
-import compression from 'compression';
+import { ENV } from './config/AppConfig'; // Do NOT remove!
+import process from 'process';
 import router from './routes';
-import { ENV, PORT, ROOT } from './config/AppConfig';
+import AppServer from './models/AppServer';
+import { killAfterTimeout } from './libs/process';
+import TimeDuration from './models/units/TimeDuration';
 import { logger } from './utils/Logging';
+import { TimeUnit } from './types/TimeTypes';
 
 
 
-/* -------------------------------------------------- INSTANCES -------------------------------------------------- */
-// Server
-const server = express();
+export const APP_SERVER = new AppServer();
 
 
 
-/* -------------------------------------------------- MIDDLEWARE -------------------------------------------------- */
+const execute = async () => {
+    logger.debug(`Environment: ${ENV}`);
 
-// Cookies
-server.use(cookieParser());
-
-// JSON
-server.use(express.urlencoded({ extended: true }));
-server.use(express.json());
-
-// GZIP
-server.use(compression());
-
-// API
-server.use('/', router);
-
-
-
-/* -------------------------------------------------- MAIN -------------------------------------------------- */
-const main = async () => {
-
-    // Then start listening on given port
-    server.listen(PORT, () => {
-        logger.info(`Server listening in ${ENV} mode at: ${ROOT}`);
-    });
+    await APP_SERVER.setup(router);
+    await APP_SERVER.start();
 }
 
 
 
-// Run
-main().catch((err) => {
-    logger.error(err);
-});
+// Shut down gracefully
+const TIMEOUT = new TimeDuration(2, TimeUnit.Second);
+
+const stopAppServer = async () => {
+    await APP_SERVER.stop();
+    process.exit(0);
+};
+
+const handleStopSignal = async (signal: string) => {
+    logger.warn(`Received stop signal: ${signal}`);
+    await Promise.race([stopAppServer(), killAfterTimeout(TIMEOUT)]);
+}
+
+process.on('SIGTERM', handleStopSignal);
+process.on('SIGINT', handleStopSignal);
+
+
+
+// Run server
+execute()
+    .catch((err) => {
+        logger.fatal(err, `Uncaught error:`);
+    });
+
+
+
+export default execute;

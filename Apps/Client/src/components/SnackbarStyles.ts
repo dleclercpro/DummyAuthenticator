@@ -1,5 +1,5 @@
-import { Theme } from "@mui/material";
-import { makeStyles } from "tss-react/mui";
+import { Theme } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 
 const useSnackbarStyles = makeStyles()(({ palette, spacing }: Theme) => ({
     root: {

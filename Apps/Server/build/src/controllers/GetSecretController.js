@@ -11,6 +11,7 @@ const GetUserCommand_1 = __importDefault(require("../commands/user/GetUserComman
 const time_1 = require("../libs/time");
 const TimeTypes_1 = require("../types/TimeTypes");
 const Logging_1 = require("../utils/Logging");
+const TimeDuration_1 = __importDefault(require("../models/units/TimeDuration"));
 const GetSecretController = async (req, res) => {
     const { renew } = req.body;
     const { session } = req;
@@ -22,7 +23,7 @@ const GetSecretController = async (req, res) => {
             await user.renewSecret();
         }
         // Fake some processing time for fetching of the secret
-        await (0, time_1.sleep)(1, TimeTypes_1.TimeUnit.Second);
+        await (0, time_1.sleep)(new TimeDuration_1.default(1, TimeTypes_1.TimeUnit.Second));
         // Success
         return res.json((0, calls_1.successResponse)(user.getSecret()));
     }

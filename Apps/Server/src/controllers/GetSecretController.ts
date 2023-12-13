@@ -7,6 +7,7 @@ import GetUserCommand from '../commands/user/GetUserCommand';
 import { sleep } from '../libs/time';
 import { TimeUnit } from '../types/TimeTypes';
 import { logger } from '../utils/Logging';
+import TimeDuration from '../models/units/TimeDuration';
 
 const GetSecretController: RequestHandler = async (req, res) => {
     const { renew } = req.body;
@@ -24,7 +25,7 @@ const GetSecretController: RequestHandler = async (req, res) => {
         }
 
         // Fake some processing time for fetching of the secret
-        await sleep(1, TimeUnit.Second);
+        await sleep(new TimeDuration(1, TimeUnit.Second));
 
         // Success
         return res.json(successResponse(user.getSecret()));

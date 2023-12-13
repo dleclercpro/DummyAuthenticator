@@ -1,7 +1,10 @@
-import { TimeUnit } from "../types/TimeTypes";
+import TimeDuration from '../models/units/TimeDuration';
+import { TimeUnit } from '../types/TimeTypes';
 
-export const sleep = async (time: number, unit: TimeUnit) => {
-    await new Promise(resolve => setTimeout(resolve, toMs(time, unit)));
+export const sleep = async (duration: TimeDuration) => {
+    const ms = duration.toMs().getAmount();
+
+    await new Promise(resolve => setTimeout(resolve, ms));
 };
 
 export const toMs = (time: number, unit: TimeUnit) => {
