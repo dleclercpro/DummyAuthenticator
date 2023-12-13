@@ -44,7 +44,6 @@ export const SessionMiddleware: RequestHandler = async (req, res, next) => {
         return next();
 
     } catch (err: any) {
-        logger.warn(err.message);
 
         // Remove session cookie in user's browser
         res.clearCookie(SESSION_COOKIE);
@@ -59,6 +58,8 @@ export const SessionMiddleware: RequestHandler = async (req, res, next) => {
         }
 
         // Unknown error
+        logger.warn(err, `Unknown error:`);
+
         return res
             .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
             .send(HttpStatusMessage.INTERNAL_SERVER_ERROR);

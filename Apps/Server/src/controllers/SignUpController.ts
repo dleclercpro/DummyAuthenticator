@@ -34,7 +34,6 @@ const SignUpController: RequestHandler = async (req, res) => {
         return res.json(successResponse());
 
     } catch (err: any) {
-        logger.warn(err.message);
 
         // User already exists
         if (err.code === ErrorUserAlreadyExists.code) {
@@ -58,6 +57,8 @@ const SignUpController: RequestHandler = async (req, res) => {
         }
 
         // Unknown error
+        logger.warn(err, `Unknown error:`);
+
         return res
             .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
             .send(HttpStatusMessage.INTERNAL_SERVER_ERROR);

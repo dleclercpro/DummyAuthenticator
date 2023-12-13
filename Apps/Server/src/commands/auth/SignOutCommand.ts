@@ -31,7 +31,7 @@ class SignOutCommand extends Command<Argument> {
 
     protected handleError(err: any) {
         if (err.code === ErrorUserDoesNotExist.code) {
-            logger.warn(err.message);
+            logger.warn(err, `Handled error:`);
         }
 
         return err;

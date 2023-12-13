@@ -44,7 +44,7 @@ class SignInCommand extends Command<Argument, Response> {
     protected handleError(err: any) {
         if (err.code === ErrorUserDoesNotExist.code ||
             err.code === ErrorUserWrongPassword.code) {
-            logger.warn(err.message);
+            logger.warn(err, `Handled error:`);
         }
 
         return err;

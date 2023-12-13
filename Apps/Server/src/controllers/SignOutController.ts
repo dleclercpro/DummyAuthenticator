@@ -20,7 +20,6 @@ const SignOutController: RequestHandler = async (req, res) => {
         return res.json(successResponse());
 
     } catch (err: any) {
-        logger.warn(err.message);
 
         // Do not tell client why user can't sign out: just say they
         // are unauthorized!
@@ -31,6 +30,8 @@ const SignOutController: RequestHandler = async (req, res) => {
         }
 
         // Unknown error
+        logger.warn(err, `Unknown error:`);
+
         return res
             .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
             .send(HttpStatusMessage.INTERNAL_SERVER_ERROR);

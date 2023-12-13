@@ -31,8 +31,6 @@ const GetSecretController: RequestHandler = async (req, res) => {
         return res.json(successResponse(user.getSecret()));
 
     } catch (err: any) {
-        logger.warn(err.message);
-
         if (err.code === ErrorUserDoesNotExist.code) {
             return res
                 .status(HttpStatusCode.FORBIDDEN)
@@ -40,6 +38,8 @@ const GetSecretController: RequestHandler = async (req, res) => {
         }
 
         // Unknown error
+        logger.warn(err, `Unknown error:`);
+
         return res
             .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
             .send(HttpStatusMessage.INTERNAL_SERVER_ERROR);
