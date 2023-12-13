@@ -17,6 +17,16 @@ http://localhost
 
 This should load the said app. Enjoy!
 
+## User Interface (UI)
+You'll find a screenshot of what the user interface looks like below. In this app, you can:
+- Register as a new user
+- Log in as an existing user
+- Log out once you've logged in
+
+<p align="center" width="100%">
+  <img alt="Dummy Authenticator - User Interface (UI)" src="./Resources/Images/UI.png" width="90%" />
+</p>
+
 ## Architecture
 Here is a list of short descriptions for all involved components in the system's architecture:
 
@@ -28,5 +38,5 @@ Here is a list of short descriptions for all involved components in the system's
 Below is a diagram of the architecture of this app. For now, the broker is responsible of the communication with the browser. There is no frontend, per se, that's part of this prototype.
 
 <p align="center" width="100%">
-  <img alt="Dummy Authenticator" src="./Diagrams/DummyAuthenticatorArchitecture.drawio.svg" width="90%" />
+  <img alt="Dummy Authenticator - Architecture" src="./Resources/Diagrams/DummyAuthenticatorArchitecture.drawio.svg" width="90%" />
 </p>
