@@ -12,7 +12,7 @@ const DEV_OPTIONS = {
 };
 
 const PROD_OPTIONS = {
-    level: 'trace',
+    level: 'debug',
 };
 
 export const logger = pino(PROD ? PROD_OPTIONS : DEV_OPTIONS);

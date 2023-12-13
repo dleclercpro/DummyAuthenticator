@@ -17,4 +17,3 @@ export const CLIENT_PROTOCOL = process.env.CLIENT_PROTOCOL!;
 export const CLIENT_HOST = process.env.CLIENT_HOST!;
 export const CLIENT_PORT = parseInt(process.env.CLIENT_PORT!);
 export const CLIENT_ROOT = createURL(CLIENT_PROTOCOL, CLIENT_HOST, CLIENT_PORT);
-export const CLIENT_DIRECTORY = 'client';
