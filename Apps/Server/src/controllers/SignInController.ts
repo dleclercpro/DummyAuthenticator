@@ -1,13 +1,13 @@
 import { RequestHandler } from 'express';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
-import { errorResponse, successResponse } from '../libs/calls';
+import { errorResponse, successResponse } from '../utils/calls';
 import SignInCommand from '../commands/auth/SignInCommand';
 import { ErrorUserDoesNotExist, ErrorUserWrongPassword } from '../errors/UserErrors';
 import { ClientError } from '../errors/ClientErrors';
 import { validate } from 'email-validator';
 import { ErrorInvalidEmail } from '../errors/ServerError';
 import { SESSION_COOKIE } from '../config/AuthConfig';
-import { logger } from '../utils/Logging';
+import { logger } from '../utils/logger';
 
 const SignInController: RequestHandler = async (req, res) => {
     let { email, password, staySignedIn } = req.body;

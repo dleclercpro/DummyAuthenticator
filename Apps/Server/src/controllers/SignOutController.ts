@@ -3,9 +3,9 @@ import SignOutCommand from '../commands/auth/SignOutCommand';
 import { SESSION_COOKIE } from '../config/AuthConfig';
 import { ClientError } from '../errors/ClientErrors';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
-import { errorResponse, successResponse } from '../libs/calls';
+import { errorResponse, successResponse } from '../utils/calls';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
-import { logger } from '../utils/Logging';
+import { logger } from '../utils/logger';
 
 const SignOutController: RequestHandler = async (req, res) => {
     const { session } = req;

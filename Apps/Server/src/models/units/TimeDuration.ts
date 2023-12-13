@@ -1,5 +1,5 @@
 import { Comparable } from '../../types';
-import { round } from '../../libs/math';
+import { round } from '../../utils/math';
 import { TimeUnit } from '../../types/TimeTypes';
 
 class TimeDurationComparator {

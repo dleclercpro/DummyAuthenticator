@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { successResponse } from '../libs/calls';
+import { successResponse } from '../utils/calls';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
 
 const PingController: RequestHandler = async (req, res) => {

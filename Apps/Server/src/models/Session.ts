@@ -1,9 +1,9 @@
 import crypto from 'crypto';
 import { SESSION_DURATION } from '../config/AuthConfig';
 import SessionDatabase from '../databases/SessionDatabase';
-import { toMs } from '../libs/time';
+import { toMs } from '../utils/time';
 import { TimeUnit } from '../types/TimeTypes';
-import { logger } from '../utils/Logging';
+import { logger } from '../utils/logger';
 
 class Session {
     protected id: string;

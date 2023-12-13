@@ -2,7 +2,7 @@ import http from 'http';
 import express, { Router } from 'express';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
-import { logger } from '../utils/Logging';
+import { logger } from '../utils/logger';
 import { PORT, ROOT } from '../config/AppConfig';
 
 class AppServer {

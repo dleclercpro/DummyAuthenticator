@@ -1,4 +1,4 @@
-import { createObserver, Listener } from '../utils/Observer';
+import { createObserver, Listener } from '../models/Observer';
 
 interface Record {
     getId: () => string,

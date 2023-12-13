@@ -1,7 +1,7 @@
 import { ErrorUserDoesNotExist, ErrorUserWrongPassword } from '../../errors/UserErrors';
 import Session from '../../models/Session';
 import User from '../../models/User';
-import { logger } from '../../utils/Logging';
+import { logger } from '../../utils/logger';
 import Command from '../Command';
 import GetUserCommand from '../user/GetUserCommand';
 

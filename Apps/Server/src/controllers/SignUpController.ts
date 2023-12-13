@@ -4,10 +4,10 @@ import CreateUserCommand from '../commands/user/CreateUserCommand';
 import { ClientError } from '../errors/ClientErrors';
 import { ErrorInvalidEmail, ErrorInvalidPassword } from '../errors/ServerError';
 import { ErrorUserAlreadyExists } from '../errors/UserErrors';
-import { errorResponse, successResponse } from '../libs/calls';
+import { errorResponse, successResponse } from '../utils/calls';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
-import { logger } from '../utils/Logging';
-import { validatePassword } from '../utils/Validation';
+import { logger } from '../utils/logger';
+import { validatePassword } from '../models/Validation';
 
 const SignUpController: RequestHandler = async (req, res) => {
     let { email, password } = req.body;

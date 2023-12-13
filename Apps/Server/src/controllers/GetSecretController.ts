@@ -1,12 +1,12 @@
 import { RequestHandler } from 'express';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
-import { errorResponse, successResponse } from '../libs/calls';
+import { errorResponse, successResponse } from '../utils/calls';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { ClientError } from '../errors/ClientErrors';
 import GetUserCommand from '../commands/user/GetUserCommand';
-import { sleep } from '../libs/time';
+import { sleep } from '../utils/time';
 import { TimeUnit } from '../types/TimeTypes';
-import { logger } from '../utils/Logging';
+import { logger } from '../utils/logger';
 import TimeDuration from '../models/units/TimeDuration';
 
 const GetSecretController: RequestHandler = async (req, res) => {

@@ -1,5 +1,5 @@
-import { loadEnvironment } from '../libs/env';
-import { createURL } from '../libs/url';
+import { loadEnvironment } from '../utils/env';
+import { createURL } from '../utils/url';
 import { Environment } from '../types';
 
 // Environment
