@@ -19,6 +19,8 @@ abstract class Database {
 
     protected abstract getURI(): string;
     protected abstract getAnonymousURI(): string;
+    protected abstract start(): Promise<void>;
+    protected abstract stop(): Promise<void>;
 
     public constructor(options: DatabaseOptions, customLogger?: Logger) {
         const { host, port, name, auth } = options;

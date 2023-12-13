@@ -17,9 +17,3 @@ export const CLIENT_PROTOCOL = process.env.CLIENT_PROTOCOL!;
 export const CLIENT_HOST = process.env.CLIENT_HOST!;
 export const CLIENT_PORT = parseInt(process.env.CLIENT_PORT!);
 export const CLIENT_ROOT = createURL(CLIENT_PROTOCOL, CLIENT_HOST, CLIENT_PORT);
-
-// Redis
-export const REDIS_PROTOCOL = process.env.REDIS_PROTOCOL!;
-export const REDIS_HOST = process.env.REDIS_HOST!;
-export const REDIS_PORT = parseInt(process.env.REDIS_PORT!);
-export const REDIS_ROOT = createURL(REDIS_PROTOCOL, REDIS_HOST, REDIS_PORT);

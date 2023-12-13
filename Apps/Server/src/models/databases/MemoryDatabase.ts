@@ -29,6 +29,14 @@ export class MemoryDatabase<R> implements IKeyValueDatabase<R> {
     protected onSetObserver = createObserver<SetEvent<R>>();
     protected onDeleteObserver = createObserver<DeleteEvent<R>>();
 
+    public async start() {
+
+    }
+
+    public async stop() {
+        
+    }
+
     public async has(id: string) {
         return this.db.has(id);
     }

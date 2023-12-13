@@ -3,7 +3,7 @@ import Database, { DatabaseOptions } from './Database';
 import { IKeyValueDatabase } from './MemoryDatabase';
 import { TimeUnit } from '../../types/TimeTypes';
 import { Logger } from 'pino';
-import { DB_RETRY_CONNECT_MAX, DB_RETRY_CONNECT_MAX_DELAY } from '../../config/DatabasesConfig';
+import { REDIS_DB_RETRY_CONNECT_MAX, REDIS_DB_RETRY_CONNECT_MAX_DELAY } from '../../config/DatabasesConfig';
 import TimeDuration from '../units/TimeDuration';
 import { Listener, createObserver } from '../Observer';
 
@@ -47,7 +47,13 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
     }
 
     protected getAnonymousURI = () => {
-        return `${this.host}:${this.port}`;
+        let uri = `${this.host}:${this.port}`;
+
+        if (this.name) {
+            uri = `${uri}/${this.name}`;
+        }
+
+        return uri;
     }
 
     public async start() {
@@ -98,14 +104,14 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
         }
         
         // End reconnecting with built in error
-        if (retries > DB_RETRY_CONNECT_MAX) {
+        if (retries > REDIS_DB_RETRY_CONNECT_MAX) {
             return new Error('[Redis] Number of connection retries exhausted. Stopping connection attempts.');
         }
 
         // Reconnect after ... ms
         const wait = Math.min(
             new TimeDuration(retries + 0.5, TimeUnit.Second).toMs().getAmount(),
-            DB_RETRY_CONNECT_MAX_DELAY.toMs().getAmount(),
+            REDIS_DB_RETRY_CONNECT_MAX_DELAY.toMs().getAmount(),
         );
         this.logger.debug(`Waiting ${wait} ms...`);
 

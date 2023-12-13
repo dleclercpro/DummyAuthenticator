@@ -9,10 +9,10 @@ In order to bring the system up, ensure you have Docker installed, as well as it
 docker compose up
 ```
 
-This should create containers for all services within the app. In order to test the latter, go to your localhost in a browser:
+In order to test the app, go to your localhost in a browser:
 
 ```
 http://localhost
 ```
 
-This should load the authenticator app.
+This should load the said app. Enjoy. :)
