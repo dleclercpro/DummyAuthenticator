@@ -15,4 +15,18 @@ In order to test the app, go to your localhost in a browser:
 http://localhost
 ```
 
-This should load the said app. Enjoy. :)
+This should load the said app. Enjoy!
+
+## Architecture
+Here is a list of short descriptions for all involved components in the system's architecture:
+
+- <strong>Server:</strong> Backend: authentication server based on Express.
+- <strong>Client:</strong> Frontend: bundled React app.
+- <strong>API:</strong> Set of controllers allowing authentication processes: user registration, login, and logout.
+- <strong>Redis:</strong> Container which serves of persisting store for users and their sessions.
+
+Below is a diagram of the architecture of this app. For now, the broker is responsible of the communication with the browser. There is no frontend, per se, that's part of this prototype.
+
+<p align="center" width="100%">
+  <img alt="Dummy Authenticator" src="./Diagrams/DummyAuthenticatorArchitecture.drawio.svg" width="90%" />
+</p>
