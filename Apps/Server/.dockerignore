@@ -1,0 +1,13 @@
+# NPM packages
+node_modules
+
+# Git files
+.git
+.gitignore
+
+# Environment variables file that aren't meant for production
+.env
+.env.example
+.env.development
+.env.local
+.env.test

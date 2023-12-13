@@ -1,0 +1,42 @@
+{
+    "name": "dummy-authenticator-server",
+    "version": "1.0.0",
+    "author": "David Leclerc",
+    "license": "MIT",
+    "private": true,
+    "main": "./src/index.ts",
+    "scripts": {
+        "start": "cross-env ENV=development nodemon ./src/index.ts",
+        "build": "npm run delete && npm run compile",
+        "compile": "tsc -p ./tsconfig.json",
+        "delete": "rimraf ./build",
+        "lint": "eslint ./src",
+        "package:main": "echo \"Main: $npm_package_main\"",
+        "package:name": "echo \"Name: $npm_package_name\"",
+        "package:version": "echo \"Version: $npm_package_version\""
+    },
+    "dependencies": {
+        "bcrypt": "^5.0.1",
+        "compression": "^1.7.4",
+        "cookie-parser": "^1.4.6",
+        "cross-env": "^7.0.3",
+        "dotenv": "^16.0.1",
+        "email-validator": "^2.0.4",
+        "express": "^4.18.1",
+        "pino": "^8.8.0",
+        "pino-pretty": "^9.1.1",
+        "random-words": "^1.1.2"
+    },
+    "devDependencies": {
+        "@types/bcrypt": "^5.0.0",
+        "@types/compression": "^1.7.2",
+        "@types/cookie-parser": "^1.4.3",
+        "@types/email-validator": "^1.0.6",
+        "@types/express": "^4.17.13",
+        "@types/node": "^17.0.35",
+        "@types/random-words": "^1.1.2",
+        "nodemon": "^3.0.2",
+        "ts-node": "^9.1.1",
+        "typescript": "^4.3.2"
+    }
+}

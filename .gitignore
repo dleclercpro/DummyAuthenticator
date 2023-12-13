@@ -11,6 +11,3 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
-
-# OSX files
-.DS_Store
