@@ -1,4 +1,4 @@
-import { ENV } from './config/AppConfig'; // Do NOT remove!
+import { ENV, PROD, REDIS_HOST, REDIS_PORT } from './config/AppConfig'; // Do NOT remove!
 import process from 'process';
 import router from './routes';
 import AppServer from './models/AppServer';
@@ -6,10 +6,21 @@ import { killAfterTimeout } from './utils/process';
 import TimeDuration from './models/units/TimeDuration';
 import { logger } from './utils/logger';
 import { TimeUnit } from './types/TimeTypes';
+import RedisDatabase from './models/databases/RedisDatabase';
+import { MemoryDatabase } from './models/databases/MemoryDatabase';
 
 
 
 export const SERVER = new AppServer();
+export const USER_DB = new MemoryDatabase<string>();
+export const SESSION_DB = (!PROD ?
+    new MemoryDatabase<string>() :
+    new RedisDatabase({
+        host: REDIS_HOST,
+        port: REDIS_PORT,
+        name: `sessions`,
+    })
+);
 
 
 

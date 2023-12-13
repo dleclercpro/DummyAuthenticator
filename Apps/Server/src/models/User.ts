@@ -1,17 +1,33 @@
 import * as bcrypt from 'bcrypt';
 import randomWords from 'random-words';
 import { N_PASSWORD_SALT_ROUNDS } from '../config/AuthConfig';
-import UserDatabase from '../databases/UserDatabase';
+import { USER_DB } from '..';
+
+interface UserArgs {
+    email: string, password: string, secret: string,
+}
 
 class User {
     protected email: string;
     protected password: string;
     protected secret: string;
 
-    public constructor(email: string, password: string, secret: string) {
-        this.email = email;
-        this.password = password;
-        this.secret = secret;
+    public constructor(args: UserArgs) {
+        this.email = args.email;
+        this.password = args.password;
+        this.secret = args.secret;
+    }
+
+    public serialize() {
+        return JSON.stringify({
+            email: this.email,
+            password: this.password,
+            secret: this.secret,
+        });
+    }
+
+    public static deserialize(str: string) {
+        return new User(JSON.parse(str));
     }
 
     public stringify() {
@@ -45,31 +61,36 @@ class User {
     }
 
     public async save() {
-        UserDatabase.set(this);
+        USER_DB.set(`user:${this.email}`, this.serialize());
     }
 
     public async delete() {
-        UserDatabase.remove(this.email);
+        USER_DB.delete(this.email);
     }
 
     // STATIC METHODS
     public static async findByEmail(email: string) {
-        return UserDatabase.get(email);
+        const userAsString = await USER_DB.get(email);
+
+        if (userAsString) {
+            return User.deserialize(userAsString);
+        }
     }
 
     public static async create(email: string, password: string) {
-
-        // Generate random secret for user
-        const secret = randomWords();
 
         // Encrypt password
         const hashedPassword = await bcrypt.hash(password, N_PASSWORD_SALT_ROUNDS);
 
         // Create new user
-        const user = new User(email, hashedPassword, secret);
+        const user = new User({
+            email,
+            password: hashedPassword,
+            secret: randomWords(),
+        });
 
         // Store user in database
-        UserDatabase.set(user);
+        USER_DB.set(user.getId(), user.serialize());
 
         return user;
     }

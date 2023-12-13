@@ -1,21 +1,41 @@
 import crypto from 'crypto';
 import { SESSION_DURATION } from '../config/AuthConfig';
-import SessionDatabase from '../databases/SessionDatabase';
-import { toMs } from '../utils/time';
-import { TimeUnit } from '../types/TimeTypes';
 import { logger } from '../utils/logger';
+import TimeDuration from './units/TimeDuration';
+import { SESSION_DB } from '..';
+
+interface SessionArgs {
+    id: string, email: string, expiresAt: Date, staySignedIn: boolean,
+}
 
 class Session {
     protected id: string;
     protected email: string;
-    protected expirationDate: Date;
+    protected expiresAt: Date;
     public staySignedIn: boolean;
 
-    public constructor(id: string, email: string, expirationDate: Date, staySignedIn: boolean) {
-        this.id = id;
-        this.email = email;
-        this.expirationDate = expirationDate;
-        this.staySignedIn = staySignedIn;
+    public constructor(args: SessionArgs) {
+        this.id = args.id;
+        this.email = args.email;
+        this.expiresAt = args.expiresAt;
+        this.staySignedIn = args.staySignedIn;
+    }
+
+    public serialize() {
+        return JSON.stringify({
+            id: this.id,
+            email: this.email,
+            expiresAt: this.expiresAt,
+            staySignedIn: this.staySignedIn,
+        });
+    }
+
+    public static deserialize(str: string) {
+        const session = JSON.parse(str);
+        return new Session({
+            ...session,
+            expiresAt: new Date(session.expiresAt),
+        });
     }
 
     public stringify() {
@@ -30,12 +50,12 @@ class Session {
         return this.email;
     }
 
-    public getExpirationDate() {
-        return this.expirationDate;
+    public getExpiresAt() {
+        return this.expiresAt;
     }
 
-    public async extend(time: number, unit: TimeUnit) {
-        this.expirationDate = new Date(this.expirationDate.getTime() + toMs(time, unit));
+    public async extend(extensionTime: TimeDuration) {
+        this.expiresAt = new Date(this.expiresAt.getTime() + extensionTime.toMs().getAmount());
 
         await this.save();
 
@@ -43,11 +63,13 @@ class Session {
     }
 
     public async save() {
-        SessionDatabase.set(this);
+        SESSION_DB.set(this.id, this.serialize());
+
+        logger.debug(`Stored session of user: ${this.email}`);
     }
 
     public async delete() {
-        SessionDatabase.remove(this.id);
+        SESSION_DB.delete(this.id);
 
         logger.debug(`Deleted session of user: ${this.email}`);
     }
@@ -58,7 +80,11 @@ class Session {
     }
 
     public static async findById(id: string) {
-        return SessionDatabase.get(id);
+        const sessionAsString = await SESSION_DB.get(id);
+
+        if (sessionAsString) {
+            return Session.deserialize(sessionAsString);
+        }
     }
 
     public static async create(email: string, staySignedIn: boolean = false) {
@@ -70,15 +96,13 @@ class Session {
         }
 
         // Generate default expiration date for session
-        const expirationDate = new Date(new Date().getTime() + toMs(SESSION_DURATION.time, SESSION_DURATION.unit));
+        const expiresAt = new Date(new Date().getTime() + SESSION_DURATION.toMs().getAmount());
 
-        // Create session
-        const session = new Session(id, email, expirationDate, staySignedIn);
+        // Create new session
+        const session = new Session({ id, email, expiresAt, staySignedIn });
 
         // Store session in database
         await session.save();
-
-        logger.debug(`Created new session for user: ${email}`);
 
         return session;
     }

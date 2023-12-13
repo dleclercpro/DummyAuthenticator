@@ -7,6 +7,7 @@ import Session from '../models/Session';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
 import { TimeUnit } from '../types/TimeTypes';
 import { logger } from '../utils/logger';
+import TimeDuration from '../models/units/TimeDuration';
 
 export const SessionMiddleware: RequestHandler = async (req, res, next) => {
     const { [SESSION_COOKIE]: sessionId } = req.cookies;
@@ -27,14 +28,14 @@ export const SessionMiddleware: RequestHandler = async (req, res, next) => {
         }
 
         // Is session expired?
-        if (session.getExpirationDate() <= new Date()) {
+        if (session.getExpiresAt() <= new Date()) {
             throw new ErrorExpiredSession(sessionId);
         }
 
         // Extend session duration if desired on every
         // further request
         if (session.staySignedIn) {
-            await session.extend(1, TimeUnit.Hour);
+            await session.extend(new TimeDuration(1, TimeUnit.Hour));
         }
 
         // Set session in request for further processing

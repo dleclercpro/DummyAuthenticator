@@ -25,7 +25,8 @@
     "express": "^4.18.1",
     "pino": "^8.8.0",
     "pino-pretty": "^9.1.1",
-    "random-words": "^1.1.2"
+    "random-words": "^1.1.2",
+    "redis": "^4.6.11"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

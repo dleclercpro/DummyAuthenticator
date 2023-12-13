@@ -5,9 +5,9 @@ export enum Environment {
     Production = 'production',
 }
 
-export interface Session {
-    email: string,
-    expireAt: Date,
+export interface Auth {
+    user: string,
+    pass: string,
 }
 
 export interface Comparable {
