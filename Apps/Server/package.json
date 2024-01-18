@@ -1,6 +1,6 @@
 {
   "name": "dummy-authenticator-server",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "author": "David Leclerc",
   "license": "MIT",
   "private": true,
