@@ -9,7 +9,7 @@ app="dummy-authenticator"
 release="latest"
 
 # Build app image
-docker build -t $user/$app:$release -f Dockerfile .
+docker buildx -t $user/$app:$release -f Dockerfile .
 
 # Push app image to Dockerhub
-docker push $user/$app:$release
+docker buildx build --platform linux/amd64,linux/arm64 -t $user/$app:$release -f ./Dockerfile . --push
