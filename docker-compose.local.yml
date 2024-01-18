@@ -3,7 +3,7 @@ version: '3.8'
 
 services:
   auth-app:
-    image: dleclercpro/dummy-authenticator:v2.2.0
+    image: dleclercpro/dummy-authenticator:latest
     container_name: auth-app
     ports:
       - 80:8000
