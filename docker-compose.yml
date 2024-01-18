@@ -2,36 +2,50 @@ version: '3.8'
 
 
 services:
-  app:
+  auth-app:
     image: dleclercpro/dummy-authenticator:latest
-    container_name: dummy-authenticator--app
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - 80:8000
+    container_name: auth-app
     networks:
-      - app
+      - custom
     depends_on:
-      - db
+      - auth-redis
+    networks:
+      - custom
     environment:
       NODE_ENV: production
 
-  db:
-    image: redis:latest
-    container_name: dummy-authenticator--db
+  auth-nginx:
+    container_name: auth-nginx
+    image: dleclercpro/ssl-reverse-proxy:latest
+    restart: always
     ports:
-      - 6379:6379
+      - 443:443 # HTTPS
+      - 80:80   # HTTP
     networks:
-      - app
+      - custom
     volumes:
-      - db:/data
+      - letsencrypt:/etc/letsencrypt # Keep SSL certificates
+    depends_on:
+      - auth-app
+    env_file:
+      - .env
 
-
-networks:
-  app:
-    driver: bridge
+  auth-redis:
+    image: redis:latest
+    container_name: auth-redis
+    restart: always
+    networks:
+      - custom
+    volumes:
+      - redis:/data
 
 
 volumes:
-  db:
+  redis:
+  letsencrypt:
+
+
+networks:
+  # Custom network to communicate with external services/containers
+  custom:
+    external: true
