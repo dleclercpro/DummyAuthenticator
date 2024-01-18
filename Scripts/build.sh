@@ -8,8 +8,5 @@ user="dleclercpro"
 app="dummy-authenticator"
 release="latest"
 
-# Build app image
-docker buildx -t $user/$app:$release -f Dockerfile .
-
-# Push app image to Dockerhub
+# Build app image and push it to DockerHub
 docker buildx build --platform linux/amd64,linux/arm64 -t $user/$app:$release -f ./Dockerfile . --push
