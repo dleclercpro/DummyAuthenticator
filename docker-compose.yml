@@ -9,8 +9,6 @@ services:
       - custom
     depends_on:
       - auth-redis
-    networks:
-      - custom
     environment:
       NODE_ENV: production
 
