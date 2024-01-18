@@ -6,7 +6,7 @@ services:
     image: dleclercpro/dummy-authenticator:latest
     container_name: auth-app
     ports:
-      - 80:8000
+      - 8000:8000
     depends_on:
       - auth-redis
     environment:
@@ -15,8 +15,8 @@ services:
   auth-redis:
     image: redis:latest
     container_name: auth-redis
-    ports:
-      - 6379:6379
+    # ports:
+    #   - 6379:6379
     volumes:
       - redis:/data
 
