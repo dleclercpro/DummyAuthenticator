@@ -6,7 +6,7 @@ dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Define constant image details
 user="dleclercpro"
 app="dummy-authenticator"
-release="latest"
+release="2.3.0"
 
 # Build app image
 docker buildx -t $user/$app:$release -f Dockerfile .
