@@ -10,3 +10,5 @@ export const PASSWORD_OPTIONS = {
     minNumbers: 1,
     minSymbols: 1,
 };
+
+export const FORGOT_PASSWORD_SECRET = process.env.FORGOT_PASSWORD_SECRET as string;

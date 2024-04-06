@@ -5,19 +5,23 @@ import { USER_DB } from '..';
 
 const getRandomWord = () => randomWords({ exactly: 1, join: `` });
 
+type UserTokens = Record<string, string>;
+
 interface UserArgs {
-    email: string, password: string, secret: string,
+    email: string, password: string, secret: string, tokens: UserTokens,
 }
 
 class User {
     protected email: string;
     protected password: string;
     protected secret: string;
+    protected tokens: UserTokens;
 
     public constructor(args: UserArgs) {
         this.email = args.email;
         this.password = args.password;
         this.secret = args.secret;
+        this.tokens = {};
     }
 
     public serialize() {
@@ -25,6 +29,7 @@ class User {
             email: this.email,
             password: this.password,
             secret: this.secret,
+            tokens: this.tokens,
         });
     }
 
@@ -52,6 +57,16 @@ class User {
         return this.secret;
     }
 
+    public getTokens() {
+        return this.tokens;
+    }
+
+    public async setToken(name: string, value: string) {
+        this.tokens[name] = value;
+
+        await this.save();
+    }
+
     public async renewSecret() {
         this.secret = getRandomWord();
 
@@ -60,6 +75,18 @@ class User {
 
     public async isPasswordValid(password: string) {
         return bcrypt.compare(password, this.password);
+    }
+
+    public static async hashPassword(password: string) {
+        const hashedPassword = await bcrypt.hash(password, N_PASSWORD_SALT_ROUNDS);
+
+        return hashedPassword;
+    }
+
+    public async resetPassword(newPassword: string) {
+        this.password = await User.hashPassword(newPassword);
+
+        await this.save();
     }
 
     public async save() {
@@ -81,14 +108,12 @@ class User {
 
     public static async create(email: string, password: string) {
 
-        // Encrypt password
-        const hashedPassword = await bcrypt.hash(password, N_PASSWORD_SALT_ROUNDS);
-
         // Create new user
         const user = new User({
             email,
-            password: hashedPassword,
+            password: await User.hashPassword(password),
             secret: getRandomWord(),
+            tokens: {},
         });
 
         // Store user in database

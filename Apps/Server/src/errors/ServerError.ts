@@ -26,3 +26,11 @@ export class ErrorInvalidPassword extends ServerError {
         super(ErrorInvalidPassword.code, `Invalid password provided.`);
     }
 }
+
+export class ErrorInvalidToken extends ServerError {
+    public static code = -102;
+
+    constructor() {
+        super(ErrorInvalidToken.code, `Invalid token provided.`);
+    }
+}

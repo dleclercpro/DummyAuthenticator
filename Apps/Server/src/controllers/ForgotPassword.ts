@@ -1,13 +1,49 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { ClientError } from '../errors/ClientErrors';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { errorResponse, successResponse } from '../utils/calls';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
+import { validate } from 'email-validator';
+import { ErrorInvalidEmail } from '../errors/ServerError';
+import User from '../models/User';
+import SecretManager from '../models/SecretManager';
+
+const validateBody = (req: Request) => {
+    let { email }: { email: string } = req.body;
+
+    // Sanitize input
+    email = email.trim().toLowerCase();
+
+    // Validate e-mail
+    if (!validate(email)) {
+        throw new ErrorInvalidEmail(email);
+    }
+
+    return { email };
+}
+
+
 
 const ForgotPassword: RequestHandler = async (req, res) => {
     try {
         logger.info(`Forgot password...`);
+
+        const { email } = validateBody(req);
+
+        // Try and find user in database
+        let user = await User.findByEmail(email);
+
+        // User should exist in database
+        if (!user) {
+            throw new ErrorUserDoesNotExist(email);
+        }
+
+        // Generate reset password token
+        const token = await SecretManager.generateForgotPasswordToken(user);
+
+        // Send user e-mail to reset their password
+
 
         // Success
         return res.json(successResponse());
