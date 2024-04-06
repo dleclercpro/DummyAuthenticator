@@ -8,6 +8,6 @@ interface Data {
 export class CallSignUp extends CallPOST<Data, void> {
 
     constructor() {
-        super(`/api/sign-up`);
+        super(`/sign-up`);
     }
 }

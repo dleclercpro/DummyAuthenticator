@@ -1,18 +1,10 @@
-import { Call } from './Call';
-import { HttpMethod } from '../../types/HTTPTypes';
+import { CallType } from '../../types/CallTypes';
+import Call from './Call';
 
-abstract class CallPOST<Data, ResponseData, ErrorResponseData = void> extends Call<Data, ResponseData, ErrorResponseData> {
+class CallPOST<RequestData = void, ResponseData = void> extends Call<RequestData, ResponseData> {
 
-    constructor(url: string = '') {
-        super(url, HttpMethod.POST);
-    }
-
-    sanitize(data: Data): Data {
-        return data;
-    }
-
-    execute(data?: Data) {
-        return super.execute(data ? this.sanitize(data) : undefined);
+    constructor(url: string) {
+        super(url, CallType.POST);
     }
 }
 

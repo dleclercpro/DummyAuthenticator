@@ -1,106 +1,126 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse } from 'axios';
-import { HttpMethod, HttpStatusCode } from '../../types/HTTPTypes';
-import { MIMEApplicationType } from '../../types/MIMETypes';
-import { ServerError } from '../../errors/ServerErrors';
-import CallError from './CallError';
+import { API_ROOT } from '../../config/Config';
+import { ServerResponse } from '../../types/CallTypes';
 
-const UNKNOWN_ERROR = new CallError(ServerError.Unknown);
-
-
-
-interface Response<ResponseData> {
-    code: number,
-    data: ResponseData,
-}
-
-interface ErrorResponse<ErrorResponseData> {
-    code: number,
-    error: string,
-    data?: ErrorResponseData,
-}
-
-
-
-export abstract class Call<Data, ResponseData, ErrorResponseData> {
+/**
+ * This is a class that models API calls.
+ */
+class Call<RequestData = void, ResponseData = void> {
+    private name: string;
     private url: string;
-    private method: HttpMethod;
-    private headers: AxiosRequestHeaders;
-    private data?: Data;
+    private method: string;
+    private payload: RequestData | undefined;
+    private headers: HeadersInit;
+    private params: RequestInit;
 
-    public constructor(url: string, method: HttpMethod) {
-        this.url = url;
+    constructor(url: string, method: string) {
+        this.name = this.constructor.name;
+        this.url = `${API_ROOT}${url}`;
         this.method = method;
-        this.headers = {
-            'Content-Type': MIMEApplicationType.JSON,
-            'Accept': MIMEApplicationType.JSON,
-        };
+        this.headers = {}
+        this.params = {};
     }
 
-    public getUrl() {
+    getUrl(): string {
         return this.url;
     }
 
-    public getMethod() {
+    getMethod(): string {
         return this.method;
     }
 
-    public getData() {
-        return this.data;
+    getPayload(): RequestData | undefined {
+        return this.payload;
     }
 
-    public execute(data?: Data) {
-        console.log(`Executing call: [${this.method}] ${this.url}`);
+    getHeaders() {
+        return this.headers;
+    }
 
-        // Store data for eventual further processing
-        if (data) {
-            this.data = data;
-        }
+    setUrl(url: string) {
+        this.url = url;
+    }
 
-        const request: AxiosRequestConfig = {
-            method: this.method,
-            url: this.url,
-            headers: this.headers,
-            data: this.data ? this.data : undefined,
+    setMethod(method: string) {
+        this.method = method;
+    }
+
+    setPayload(payload: RequestData) {
+        this.payload = payload;
+    }
+
+    setHeaders(headers: HeadersInit) {
+        this.headers = headers;
+    }
+
+    prepareHeaders() {
+        this.headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
         };
-
-        return axios(request)
-            .then(this.handleSuccess)
-            .catch(this.handleError);
     }
 
-    protected handleSuccess(response: AxiosResponse<Response<ResponseData>>): ResponseData {
-        const { code, data } = response.data;
+    prepare() {
+        this.prepareHeaders();
 
-        if (code >= 0) {
-            return data;
-        }
-
-        throw UNKNOWN_ERROR;
+        this.params = {
+            method: this.method,
+            headers: this.headers,
+            body: JSON.stringify(this.payload),
+            credentials: 'include',
+        };
     }
 
-    protected handleError(err: AxiosError<ErrorResponse<ErrorResponseData>>): never {
-        const { response } = err;
+    async execute(payload?: RequestData) {
+        let err = '';
 
-        // Verify if error can be processed at all
-        if (!response) {
-            throw UNKNOWN_ERROR;
+        console.trace(`Executing API call '${this.name}': ${this.url}`);
+
+        // Store call's payload
+        this.payload = payload;
+
+        // Set API call parameters
+        this.prepare();
+
+        // Execute call
+        const response = await fetch(this.url, this.params)
+            .then(async (r) => {
+                const res = { status: r.status, statusText: r.statusText };
+
+                // Try to parse JSON and return it with rest of response
+                try {
+                    return { ...res, json: await r.json() as ServerResponse<ResponseData> };
+                } catch {
+                    return { ...res, json: null };
+                }
+            })
+            .catch(() => {
+
+                // There was some issue contacting the server: is it running?
+                err = 'FETCH_ERROR';
+            });
+
+        // There was valid JSON data in the response
+        if (response && response.json) {
+            const { code, error, data } = response.json;
+
+            // There was an error
+            if (response.status >= 400 && error) {
+                return Promise.reject(new Error(error));
+            }
+
+            // Everything went fine
+            if (response.status < 400 && Number.isInteger(code) && code >= 0) {
+                return { code, data };
+            }
         }
 
-        // Verify if call was authorized
-        const { status } = response;
+        // There were other issues
+        err = err ?? `UNEXPECTED_ERROR`;
+        console.error(`Error in call '${this.name}': ${err} [${response ? response.status : '?'}]`);
 
-        if (status === HttpStatusCode.UNAUTHORIZED){
-            throw new CallError(ServerError.Unauthorized);
-        }
-
-        // Verify if error was correctly sent by server
-        if (!response.data.code) {
-            throw UNKNOWN_ERROR;
-        }
-
-        // Throw server error
-        const { code, error, data } = response.data;
-        
-        throw new CallError(error, data, code);
+        // Something went wrong, but we let the processing happen further down the line
+        return Promise.reject(new Error(err));
     }
 }
+
+export default Call;

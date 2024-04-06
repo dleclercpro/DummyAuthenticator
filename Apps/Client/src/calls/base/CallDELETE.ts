@@ -1,10 +1,10 @@
-import { Call } from './Call';
-import { HttpMethod } from '../../types/HTTPTypes';
+import { CallType } from '../../types/CallTypes';
+import Call from './Call';
 
-abstract class CallDELETE<Data, ResponseData, ErrorResponseData = void> extends Call<Data, ResponseData, ErrorResponseData> {
+class CallDELETE<RequestData = void, ResponseData = void> extends Call<RequestData, ResponseData> {
 
     constructor(url: string) {
-        super(url, HttpMethod.DELETE);
+        super(url, CallType.DELETE);
     }
 }
 

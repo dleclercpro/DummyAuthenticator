@@ -2,6 +2,7 @@ import * as bcrypt from 'bcrypt';
 import randomWords from 'random-words';
 import { N_PASSWORD_SALT_ROUNDS } from '../config/AuthConfig';
 import { USER_DB } from '..';
+import { logger } from '../utils/logger';
 
 const getRandomWord = () => randomWords({ exactly: 1, join: `` });
 
@@ -90,11 +91,11 @@ class User {
     }
 
     public async save() {
-        USER_DB.add(`user:${this.email}`, this.serialize());
+        await USER_DB.add(`user:${this.email}`, this.serialize());
     }
 
     public async delete() {
-        USER_DB.remove(this.email);
+        await USER_DB.remove(this.email);
     }
 
     // STATIC METHODS
@@ -117,7 +118,7 @@ class User {
         });
 
         // Store user in database
-        USER_DB.add(user.getId(), user.serialize());
+        await USER_DB.add(user.getId(), user.serialize());
 
         return user;
     }

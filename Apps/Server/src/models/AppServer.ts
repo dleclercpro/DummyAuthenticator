@@ -1,9 +1,10 @@
 import http from 'http';
 import express, { Router } from 'express';
+import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import { logger } from '../utils/logger';
-import { PORT, ROOT } from '../config/AppConfig';
+import { CLIENT_ROOT, DEV, PORT, ROOT } from '../config/AppConfig';
 
 class AppServer {
     protected app?: express.Express;
@@ -22,6 +23,16 @@ class AppServer {
     
         // Enable HTTP response compression
         this.app.use(compression());
+
+        // Allow all origins in dev mode
+        if (DEV) {
+            logger.debug(`Enabling CORS in development environment...`);
+
+            this.app.use(cors({
+                origin: CLIENT_ROOT,
+                credentials: true,
+            }));
+        }
 
         // Define server's API endpoints
         this.app.use('/', router);

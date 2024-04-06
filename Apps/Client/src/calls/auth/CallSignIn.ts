@@ -9,6 +9,6 @@ interface Data {
 export class CallSignIn extends CallPUT<Data, void> {
 
     constructor() {
-        super(`/api/sign-in`);
+        super(`/sign-in`);
     }
 }

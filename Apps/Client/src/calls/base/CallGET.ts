@@ -1,10 +1,10 @@
-import { HttpMethod } from '../../types/HTTPTypes';
-import { Call } from './Call';
+import { CallType } from '../../types/CallTypes';
+import Call from './Call';
 
-abstract class CallGET<ResponseData, ErrorResponseData = void> extends Call<void, ResponseData, ErrorResponseData> {
+class CallGET<RequestData = void, ResponseData = void> extends Call<RequestData, ResponseData> {
 
-    constructor(url: string = '') {
-        super(url, HttpMethod.GET);
+    constructor(url: string) {
+        super(url, CallType.GET);
     }
 }
 

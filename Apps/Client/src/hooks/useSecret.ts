@@ -12,7 +12,13 @@ const useSecret = () => {
         setLoading(true);
 
         try {
-            setSecret(await new CallGetSecret().execute({ renew }));
+            const { data } = await new CallGetSecret().execute({ renew });
+            
+            if (!data) {
+                throw new Error('MISSING_SECRET');
+            }
+
+            setSecret(data);
 
         } catch (err: any) {
             setError('Impossible to fetch user secret.');

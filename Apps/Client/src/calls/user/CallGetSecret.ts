@@ -9,6 +9,6 @@ type Response = string;
 export class CallGetSecret extends CallPUT<Data, Response> {
 
     constructor() {
-        super(`/api/secret`);
+        super(`/secret`);
     }
 }
