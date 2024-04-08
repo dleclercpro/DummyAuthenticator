@@ -1,4 +1,4 @@
-import CallPUT from '../base/CallPUT';
+import CallGET from '../base/CallGET';
 
 interface Data {
     renew: boolean,
@@ -6,7 +6,7 @@ interface Data {
 
 type Response = string;
 
-export class CallGetSecret extends CallPUT<Data, Response> {
+export class CallGetSecret extends CallGET<Data, Response> {
 
     constructor() {
         super(`/secret`);

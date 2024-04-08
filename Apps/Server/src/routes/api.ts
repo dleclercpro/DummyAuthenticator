@@ -25,7 +25,7 @@ ApiRouter.post(`/reset-password`, [], ResetPassword);
 ApiRouter.get('/ping', [SessionMiddleware], PingController);
 
 // Secret
-ApiRouter.put('/secret', [SessionMiddleware], GetSecretController);
+ApiRouter.get('/secret', [SessionMiddleware], GetSecretController);
 
 
 
