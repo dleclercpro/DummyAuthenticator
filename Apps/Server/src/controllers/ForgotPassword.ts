@@ -8,6 +8,8 @@ import { validate } from 'email-validator';
 import { ErrorInvalidEmail } from '../errors/ServerError';
 import User from '../models/User';
 import SecretManager from '../models/SecretManager';
+import { CLIENT_ROOT } from '../config/AppConfig';
+import Gmailer from '../models/emails/Gmailer';
 
 const validateBody = (req: Request) => {
     let { email }: { email: string } = req.body;
@@ -42,8 +44,17 @@ const ForgotPassword: RequestHandler = async (req, res) => {
         // Generate reset password token
         const token = await SecretManager.generateForgotPasswordToken(user);
 
-        // Send user e-mail to reset their password
+        // Create reset e-mail password e-mail, in which the user is brought
+        // to a reset password page in the client app
+        const html = `
+            <p>To reset your password, please click on the following link:</p>
+            <a href='${CLIENT_ROOT}/reset-password/${token}'>
+                Reset password
+            </a>
+        `;
 
+        // Send user e-mail to reset their password
+        await Gmailer.send(html, 'Reset your password', email);
 
         // Success
         return res.json(successResponse());

@@ -11,4 +11,7 @@ export const PASSWORD_OPTIONS = {
     minSymbols: 1,
 };
 
+export const GMAIL_USER = process.env.GMAIL_USER as string;
+export const GMAIL_PASS = process.env.GMAIL_PASS as string;
+
 export const FORGOT_PASSWORD_SECRET = process.env.FORGOT_PASSWORD_SECRET as string;

@@ -30,10 +30,10 @@ class SecretManager {
 
   public async decodeForgotPasswordToken(token: string) {
     try {
-      const { email } = jwt.verify(token, FORGOT_PASSWORD_SECRET) as { email: string };
-      logger.debug(`Decoded e-mail contained in reset password token: ${email}`);
+      const content = jwt.verify(token, FORGOT_PASSWORD_SECRET) as { email: string };
+      logger.debug(`Decoded e-mail contained in reset password token: ${content.email}`);
 
-      return email;
+      return content;
     } catch (err: unknown) {
       throw new ErrorInvalidToken();
     }

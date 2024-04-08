@@ -17,7 +17,7 @@ const ResetPassword: RequestHandler = async (req, res) => {
 
         const { password, token } = req.body as Body;
 
-        const email = await SecretManager.decodeForgotPasswordToken(token);
+        const { email } = await SecretManager.decodeForgotPasswordToken(token);
 
         logger.info(`User '${email}' wants to reset their password.`);
 
