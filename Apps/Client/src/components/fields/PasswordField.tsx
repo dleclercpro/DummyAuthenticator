@@ -7,13 +7,14 @@ import usePasswordFieldStyles from './PasswordFieldStyles';
 interface Props {
     className?: string,
     id: string,
+    label?: string,
     value: string,
     error?: boolean,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
 }
 
 const PasswordField: React.FC<Props> = (props) => {
-    const { className, id, value, error, onChange } = props;
+    const { className, id, label, value, error, onChange } = props;
 
     const { classes } = usePasswordFieldStyles();
 
@@ -30,7 +31,7 @@ const PasswordField: React.FC<Props> = (props) => {
             inputProps={{ className: classes.input }}
             InputProps={{ endAdornment: <ViewButton visible={showPassword} onClick={togglePasswordVisibility} />}}
             type={showPassword ? 'text' : 'password'}
-            label='Password'
+            label={label ?? 'Password'}
             value={value}
             error={!!error}
             onChange={onChange}

@@ -6,11 +6,15 @@ import SignIn from '../components/pages/sign-in/SignIn';
 import SignUp from '../components/pages/sign-up/SignUp';
 import AuthenticatedRoute from './AuthenticatedRoute';
 import UnauthenticatedRoute from './UnauthenticatedRoute';
+import ForgotPassword from '../components/pages/forgot-password/ForgotPassword';
+import ResetPassword from '../components/pages/reset-password/ResetPassword';
 
 export enum Page {
     Home = '',
     SignIn = 'sign-in',
     SignUp = 'sign-up',
+    ForgotPassword = 'forgot-password',
+    ResetPassword = 'reset-password',
 }
 
 export const getURL = (page: Page) => {
@@ -24,6 +28,8 @@ export const getURL = (page: Page) => {
         // Authentication pages
         case Page.SignIn:
         case Page.SignUp:
+        case Page.ForgotPassword:
+        case Page.ResetPassword:
             url = `/${page}`;
             break;
     }
@@ -53,6 +59,18 @@ const Router: React.FC<Props> = () => {
             <Route path='/sign-up' element={
                 <UnauthenticatedRoute>
                     <SignUp />
+                </UnauthenticatedRoute>
+            } />
+
+            <Route path='/forgot-password' element={
+                <UnauthenticatedRoute>
+                    <ForgotPassword />
+                </UnauthenticatedRoute>
+            } />
+
+            <Route path='/reset-password' element={
+                <UnauthenticatedRoute>
+                    <ResetPassword />
                 </UnauthenticatedRoute>
             } />
 

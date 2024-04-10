@@ -36,6 +36,10 @@ const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
         margin: 0,
         display: 'flex',
 
+        '.reset-password &': {
+            flexDirection: 'column',
+        },
+
         [breakpoints.down('sm')]: {
             flexDirection: 'column',
         },
@@ -49,8 +53,13 @@ const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
 
             [breakpoints.down('sm')]: {
                 marginRight: 0,
-                marginBottom: spacing(SPACING),
+                marginBottom: spacing(SPACING / 2),
             },
+        },
+
+        '.reset-password &': {
+            marginRight: 0,
+            marginBottom: spacing(SPACING / 2),
         },
     },
 

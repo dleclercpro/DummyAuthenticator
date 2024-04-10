@@ -7,11 +7,12 @@ interface Props {
     id: string,
     value: string,
     error?: boolean,
+    disabled?: boolean,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
 }
 
 const EmailField: React.FC<Props> = (props) => {
-    const { className, id, value, error, onChange } = props;
+    const { className, id, value, error, disabled, onChange } = props;
     
     const { classes } = useEmailFieldStyles();
 
@@ -24,6 +25,7 @@ const EmailField: React.FC<Props> = (props) => {
             label='E-mail'
             value={value}
             error={!!error}
+            disabled={disabled}
             onChange={onChange}
         />
     );

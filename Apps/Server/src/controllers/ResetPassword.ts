@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express';
+import { ParamsDictionary } from 'express-serve-static-core';
 import { successResponse } from '../utils/calls';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
@@ -11,13 +12,21 @@ type Body = {
     token: string,
  };
 
+const validateParams = async (params: ParamsDictionary) => {
+    const { token } = params;
+
+    const { email } = await SecretManager.decodeForgotPasswordToken(token);
+
+    return { email };
+}
+
 const ResetPassword: RequestHandler = async (req, res) => {
+    const { password } = req.body as Body;
+
     try {
         logger.info(`Resetting password...`);
 
-        const { password, token } = req.body as Body;
-
-        const { email } = await SecretManager.decodeForgotPasswordToken(token);
+        const { email } = await validateParams(req.params);
 
         logger.info(`User '${email}' wants to reset their password.`);
 

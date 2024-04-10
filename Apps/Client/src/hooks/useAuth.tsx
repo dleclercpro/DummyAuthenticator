@@ -2,6 +2,8 @@ import { createContext, ReactElement, useContext, useState } from 'react';
 import { CallSignIn } from '../calls/auth/CallSignIn';
 import { CallSignOut } from '../calls/auth/CallSignOut';
 import { CallPing } from '../calls/user/CallPing';
+import { CallResetPassword } from '../calls/auth/CallResetPassword';
+import { CallForgotPassword } from '../calls/auth/CallForgotPassword';
 
 interface IAuthContext {
     isPinged: boolean, // Determine whether user still has active session on server
@@ -9,6 +11,8 @@ interface IAuthContext {
     ping: () => Promise<void>,
     login: (email: string, password: string, staySignedIn: boolean) => Promise<void>,
     logout: () => Promise<void>,
+    forgotPassword: (email: string) => Promise<void>,
+    resetPassword: (token: string, password: string) => Promise<void>,
 }
 
 export const AuthContext = createContext<IAuthContext>({} as IAuthContext);
@@ -66,11 +70,21 @@ const useAuth = () => {
         setIsLogged(false);
     }
 
+    const forgotPassword = async (email: string) => {
+        await new CallForgotPassword().execute({ email });
+    }
+
+    const resetPassword = async (token: string, password: string) => {
+        await new CallResetPassword(token).execute({ password });
+    }
+
     return {
         isPinged,
         isLogged,
         ping,
         login,
         logout,
+        forgotPassword,
+        resetPassword,
     };
 }
