@@ -9,7 +9,7 @@ import SendIcon from '@mui/icons-material/Send';
 import useAuth from '../../../hooks/useAuth';
 import { Page, getURL } from '../../../routes/Router';
 import { translateServerError } from '../../../errors/ServerErrors';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface Props {
 
@@ -18,14 +18,13 @@ interface Props {
 const ForgotPassword: React.FC<Props> = () => {
     const { classes } = useAuthStyles();
 
-    const navigate = useNavigate();
-
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const [email, setEmail] = useState('');
 
     const [snackbarOpen, setSnackbarOpen] = useState(!!error);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const { forgotPassword } = useAuth();
 
@@ -50,10 +49,15 @@ const ForgotPassword: React.FC<Props> = () => {
 
         return forgotPassword(email)
             .then(() => {
-                navigate(getURL(Page.Home));
+                setError('');
+                setSnackbarMessage('Please check your e-mail to recover your password!');
+                setSnackbarOpen(true);
             })
             .catch((err: any) => {
-                setError(translateServerError(err.message));
+                const error = translateServerError(err.message);
+                
+                setError(error);
+                setSnackbarMessage(error);
                 setSnackbarOpen(true);
             })
             .finally(() => {
@@ -73,7 +77,7 @@ const ForgotPassword: React.FC<Props> = () => {
                 </Typography>
 
                 <Typography className={classes.text}>
-                    Please enter your e-mail address, and we'll send you an e-mail to recover your password:
+                    Please enter your e-mail address, and we'll send you an e-mail with a link to recover your password:
                 </Typography>
 
                 <fieldset className={classes.fields}>
@@ -113,8 +117,8 @@ const ForgotPassword: React.FC<Props> = () => {
 
             <Snackbar
                 open={snackbarOpen}
-                message={error}
-                severity={Severity.Error}
+                message={snackbarMessage}
+                severity={!!error ? Severity.Error : Severity.Info}
                 onClose={() => setSnackbarOpen(false)}
             />
         </Paper>

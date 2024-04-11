@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { successResponse } from '../utils/calls';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
@@ -7,28 +7,31 @@ import SecretManager from '../models/SecretManager';
 import User from '../models/User';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 
+const validateQuery = async (req: Request) => {
+    const { token } = req.query;
+
+    if (!token) {
+        throw new Error('MISSING_TOKEN');
+    }
+
+    const { email } = await SecretManager.decodeForgotPasswordToken(token as string);
+
+    return { email };
+}
+
 type Body = {
     password: string,
     token: string,
  };
 
-const validateParams = async (params: ParamsDictionary) => {
-    const { token } = params;
 
-    const { email } = await SecretManager.decodeForgotPasswordToken(token);
-
-    return { email };
-}
 
 const ResetPassword: RequestHandler = async (req, res) => {
-    const { password } = req.body as Body;
-
     try {
-        logger.info(`Resetting password...`);
+        const { email } = await validateQuery(req);
+        const { password } = req.body as Body;
 
-        const { email } = await validateParams(req.params);
-
-        logger.info(`User '${email}' wants to reset their password.`);
+        logger.info(`Trying to reset password for user '${email}'...`);
 
         const user = await User.findByEmail(email);
 
@@ -38,6 +41,8 @@ const ResetPassword: RequestHandler = async (req, res) => {
         }
 
         await user.resetPassword(password);
+        
+        logger.debug(`User '${user.getEmail()}' has successfully reset their password.`);
 
         // Success
         return res.json(successResponse());

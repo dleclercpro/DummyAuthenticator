@@ -21,7 +21,7 @@ class SecretManager {
 
   public async generateForgotPasswordToken(user: User) {
     const token = await jwt.sign({ email: user.getEmail() }, FORGOT_PASSWORD_SECRET);
-    logger.debug(`Generated reset password token: ${token}`);
+    logger.debug(`Generated reset password token for user '${user.getEmail()}'.`);
 
     await user.setToken('forgotPassword', token);
 

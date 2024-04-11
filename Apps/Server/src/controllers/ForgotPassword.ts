@@ -1,15 +1,14 @@
 import { Request, RequestHandler } from 'express';
-import { ClientError } from '../errors/ClientErrors';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
-import { errorResponse, successResponse } from '../utils/calls';
+import { successResponse } from '../utils/calls';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
 import { validate } from 'email-validator';
 import { ErrorInvalidEmail } from '../errors/ServerError';
 import User from '../models/User';
 import SecretManager from '../models/SecretManager';
-import { CLIENT_ROOT } from '../config/AppConfig';
 import Gmailer from '../models/emails/Gmailer';
+import PasswordRecoveryEmail from '../models/emails/PasswordRecoveryEmail';
 
 const validateBody = (req: Request) => {
     let { email }: { email: string } = req.body;
@@ -44,19 +43,9 @@ const ForgotPassword: RequestHandler = async (req, res) => {
 
         // Generate reset password token
         const token = await SecretManager.generateForgotPasswordToken(user);
-        logger.debug(`Token: ${token}`);
-
-        // Create reset e-mail password e-mail, in which the user is brought
-        // to a reset password page in the client app
-        const html = `
-            <p>To reset your password, please click on the following link:</p>
-            <a href='${CLIENT_ROOT}/reset-password/${token}'>
-                Reset password
-            </a>
-        `;
 
         // Send user e-mail to reset their password
-        await Gmailer.send(html, 'Reset your password', email);
+        await Gmailer.send(new PasswordRecoveryEmail(email, token));
 
         // Success
         return res.json(successResponse());

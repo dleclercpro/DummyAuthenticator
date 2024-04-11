@@ -6,10 +6,10 @@ import Snackbar from '../../Snackbar';
 import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import ResetIcon from '@mui/icons-material/LockReset';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import { translateServerError } from '../../../errors/ServerErrors';
-import { Page, getURL } from '../../../routes/Router';
+import { Page } from '../../../routes/Router';
 
 interface Props {
 
@@ -19,7 +19,6 @@ const ResetPassword: React.FC<Props> = () => {
     const { classes } = useAuthStyles();
     
     const location = useLocation();
-    const navigate = useNavigate();
 
     const queryParams = new URLSearchParams(location.search);
 
@@ -34,6 +33,7 @@ const ResetPassword: React.FC<Props> = () => {
     const [passwordRepeat, setPasswordRepeat] = useState('');
 
     const [snackbarOpen, setSnackbarOpen] = useState(!!error);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     // New error: open snackbar
     useEffect(() => {
@@ -45,23 +45,11 @@ const ResetPassword: React.FC<Props> = () => {
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
-
-        if (e.target.value !== passwordRepeat) {
-            setError('Passwords must match!');
-            return;
-        }
-
         setError('');
     }
 
     const handlePasswordRepeatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPasswordRepeat(e.target.value);
-
-        if (password !== e.target.value) {
-            setError('Passwords must match!');
-            return;
-        }
-
         setError('');
     }
 
@@ -72,15 +60,25 @@ const ResetPassword: React.FC<Props> = () => {
             return;
         }
 
+        if (password !== passwordRepeat) {
+            setError('Passwords must match!');
+            return;
+        }
+
         setSnackbarOpen(false);
         setLoading(true);
 
         return resetPassword(token, password)
             .then(() => {
-                navigate(getURL(Page.Home));
+                setError('');
+                setSnackbarMessage('Please check your e-mail to recover your password!');
+                setSnackbarOpen(true);
             })
             .catch((err: any) => {
-                setError(translateServerError(err.message));
+                const error = translateServerError(err.message);
+
+                setError(error);
+                setSnackbarMessage(error);
                 setSnackbarOpen(true);
             })
             .finally(() => {
@@ -146,8 +144,8 @@ const ResetPassword: React.FC<Props> = () => {
 
             <Snackbar
                 open={snackbarOpen}
-                message={error}
-                severity={Severity.Error}
+                message={snackbarMessage}
+                severity={!!error ? Severity.Error : Severity.Info}
                 onClose={() => setSnackbarOpen(false)}
             />
         </Paper>
