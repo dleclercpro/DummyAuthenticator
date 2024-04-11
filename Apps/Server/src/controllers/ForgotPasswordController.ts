@@ -6,7 +6,7 @@ import { logger } from '../utils/logger';
 import { validate } from 'email-validator';
 import { ErrorInvalidEmail } from '../errors/ServerError';
 import User from '../models/User';
-import SecretManager from '../models/SecretManager';
+import SecretManager from '../models/TokenManager';
 import Gmailer from '../models/emails/Gmailer';
 import PasswordRecoveryEmail from '../models/emails/PasswordRecoveryEmail';
 

@@ -2,7 +2,7 @@ import { Request, RequestHandler } from 'express';
 import { errorResponse, successResponse } from '../utils/calls';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
-import SecretManager from '../models/SecretManager';
+import SecretManager, { PasswordRecoveryToken } from '../models/TokenManager';
 import User from '../models/User';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { ErrorExpiredToken, ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
@@ -15,7 +15,7 @@ const validateQuery = async (req: Request) => {
         throw new ErrorMissingToken();
     }
 
-    return await SecretManager.decodeForgotPasswordToken(token as string);
+    return await SecretManager.decodeToken(token as string) as PasswordRecoveryToken;
 }
 
 type Body = {

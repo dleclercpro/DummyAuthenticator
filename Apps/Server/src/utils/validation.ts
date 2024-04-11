@@ -1,5 +1,5 @@
 import { PASSWORD_OPTIONS } from '../config/AuthConfig';
-import { isAlphanumerical, isNumerical } from '../utils/string';
+import { isAlphanumerical, isNumerical } from './string';
 
 interface PasswordOptions {
     minLength?: number,

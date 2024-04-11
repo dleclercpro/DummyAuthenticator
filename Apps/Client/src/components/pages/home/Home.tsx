@@ -34,14 +34,6 @@ const Home: React.FC<Props> = () => {
     // eslint-disable-next-line
     }, []);
 
-    // New secret error: open snackbar
-    useEffect(() => {
-        if (!!error) {
-            setSnackbarOpen(true);
-        }
-        
-    }, [error]);
-
     const handleRenewSecret = async () => {
         setSnackbarOpen(false);
 

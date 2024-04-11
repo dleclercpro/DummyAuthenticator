@@ -34,14 +34,6 @@ const ForgotPassword: React.FC<Props> = () => {
 
     const { forgotPassword } = useAuth();
 
-    // New error: open snackbar
-    useEffect(() => {
-        if (!!error) {
-            setSnackbarOpen(true);
-        }
-        
-    }, [error]);
-
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
         setError(false);

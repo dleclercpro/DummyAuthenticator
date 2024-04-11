@@ -14,5 +14,5 @@ export const PASSWORD_OPTIONS = {
 export const GMAIL_USER = process.env.GMAIL_USER as string;
 export const GMAIL_PASS = process.env.GMAIL_PASS as string;
 
-export const FORGOT_PASSWORD_SECRET = process.env.FORGOT_PASSWORD_SECRET as string;
-export const RESET_PASSWORD_TOKEN_VALIDITY = new TimeDuration(15, TimeUnit.Minute);
+export const JWT_TOKEN_SECRET = process.env.JWT_TOKEN_SECRET as string;
+export const JWT_TOKEN_LONGEVITY = new TimeDuration(15, TimeUnit.Minute);

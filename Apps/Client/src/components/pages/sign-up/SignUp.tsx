@@ -29,14 +29,6 @@ const SignUp: React.FC<Props> = () => {
 
     const [snackbarOpen, setSnackbarOpen] = useState(!!error);
 
-    // New error: open snackbar
-    useEffect(() => {
-        if (!!error) {
-            setSnackbarOpen(true);
-        }
-        
-    }, [error]);
-
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
         setError('');

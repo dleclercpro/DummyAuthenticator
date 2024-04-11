@@ -14,6 +14,14 @@ import EmailField from '../../fields/EmailField';
 import { sleep } from '../../../utils/time';
 import TimeDuration from '../../../models/TimeDuration';
 import { TimeUnit } from '../../../types/TimeTypes';
+import { CallValidateToken } from '../../../models/calls/auth/CallValidateToken';
+
+// FIXME
+export type PasswordRecoveryToken = {
+    email: string,
+    creationDate: Date,
+    expirationDate: Date,
+};
 
 interface Props {
 
@@ -29,7 +37,6 @@ const ResetPassword: React.FC<Props> = () => {
 
     const { resetPassword } = useAuth();
 
-    const email = queryParams.get('email') ?? '';
     const token = queryParams.get('token') ?? '';
 
     const [loading, setLoading] = useState(false);
@@ -41,13 +48,25 @@ const ResetPassword: React.FC<Props> = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(!!error);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    // New error: open snackbar
+    const [validatedToken, setValidatedToken] = useState<PasswordRecoveryToken | null>(null);
+
+    // Validate token
     useEffect(() => {
-        if (!!error) {
-            setSnackbarOpen(true);
+        if (!token) {
+            return;
         }
-        
-    }, [error]);
+
+        new CallValidateToken().execute({ token })
+            .then(({ data }) => {
+                setValidatedToken(data!.content as PasswordRecoveryToken);
+
+                setError(false);
+            })
+            .catch(() => {
+                navigate(getURL(Page.Home));
+            });
+
+    }, [token]);
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
@@ -69,6 +88,7 @@ const ResetPassword: React.FC<Props> = () => {
         if (password !== repeatPassword) {
             setError(true);
             setSnackbarMessage('Passwords must match!');
+            setSnackbarOpen(true);
             return;
         }
 
@@ -81,10 +101,10 @@ const ResetPassword: React.FC<Props> = () => {
                 setSnackbarMessage('Your password has been successfully reset!');
                 setSnackbarOpen(true);
 
-                return sleep(new TimeDuration(5, TimeUnit.Second));
-            })
-            .then(() => {
-                navigate(getURL(Page.Home));
+                return sleep(new TimeDuration(5, TimeUnit.Second))
+                    .then(() => {
+                        navigate(getURL(Page.Home));
+                    });
             })
             .catch((err: any) => {
                 const error = translateServerError(err.message);
@@ -96,6 +116,11 @@ const ResetPassword: React.FC<Props> = () => {
             .finally(() => {
                 setLoading(false);
             });
+    }
+
+    /* Token not yet validated by server */
+    if (validatedToken === null) {
+        return null;
     }
 
     /* No token provided: go back home */
@@ -124,7 +149,7 @@ const ResetPassword: React.FC<Props> = () => {
                     <EmailField
                         id='email'
                         className={classes.field}
-                        value={email}
+                        value={validatedToken.email}
                         error={!!error}
                         disabled
                         onChange={() => {}}

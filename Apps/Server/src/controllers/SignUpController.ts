@@ -7,7 +7,7 @@ import { ErrorUserAlreadyExists } from '../errors/UserErrors';
 import { errorResponse, successResponse } from '../utils/calls';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
-import { validatePassword } from '../models/Validation';
+import { validatePassword } from '../utils/validation';
 
 const SignUpController: RequestHandler = async (req, res) => {
     let { email, password } = req.body;
