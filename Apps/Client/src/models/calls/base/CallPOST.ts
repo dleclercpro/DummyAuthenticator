@@ -1,4 +1,4 @@
-import { CallType } from '../../types/CallTypes';
+import { CallType } from '../../../types/CallTypes';
 import Call from './Call';
 
 class CallPOST<RequestData = void, ResponseData = void> extends Call<RequestData, ResponseData> {

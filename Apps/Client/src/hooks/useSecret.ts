@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CallGetSecret } from '../calls/user/CallGetSecret';
+import { CallGetSecret } from '../models/calls/user/CallGetSecret';
 
 const useSecret = () => {    
     const [secret, setSecret] = useState('');

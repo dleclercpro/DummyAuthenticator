@@ -1,5 +1,5 @@
-import { API_ROOT } from '../../config/Config';
-import { ServerResponse } from '../../types/CallTypes';
+import { API_ROOT } from '../../../config/Config';
+import { ServerResponse } from '../../../types/CallTypes';
 
 /**
  * This is a class that models API calls.

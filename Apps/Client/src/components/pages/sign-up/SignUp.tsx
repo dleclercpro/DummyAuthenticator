@@ -9,7 +9,7 @@ import EmailField from '../../fields/EmailField';
 import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import CreateIcon from '@mui/icons-material/Create';
-import { CallSignUp } from '../../../calls/auth/CallSignUp';
+import { CallSignUp } from '../../../models/calls/auth/CallSignUp';
 import { translateServerError } from '../../../errors/ServerErrors';
 
 interface Props {

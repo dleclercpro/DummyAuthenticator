@@ -1,9 +1,9 @@
 import { createContext, ReactElement, useContext, useState } from 'react';
-import { CallSignIn } from '../calls/auth/CallSignIn';
-import { CallSignOut } from '../calls/auth/CallSignOut';
-import { CallPing } from '../calls/user/CallPing';
-import { CallResetPassword } from '../calls/auth/CallResetPassword';
-import { CallForgotPassword } from '../calls/auth/CallForgotPassword';
+import { CallSignIn } from '../models/calls/auth/CallSignIn';
+import { CallSignOut } from '../models/calls/auth/CallSignOut';
+import { CallPing } from '../models/calls/user/CallPing';
+import { CallResetPassword } from '../models/calls/auth/CallResetPassword';
+import { CallForgotPassword } from '../models/calls/auth/CallForgotPassword';
 
 interface IAuthContext {
     isPinged: boolean, // Determine whether user still has active session on server
