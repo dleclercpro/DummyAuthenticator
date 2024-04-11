@@ -26,7 +26,7 @@ const validateBody = (req: Request) => {
 
 
 
-const ForgotPassword: RequestHandler = async (req, res) => {
+const ForgotPasswordController: RequestHandler = async (req, res) => {
     try {
         logger.info(`Forgot password...`);
 
@@ -61,4 +61,4 @@ const ForgotPassword: RequestHandler = async (req, res) => {
     }
 }
 
-export default ForgotPassword;
+export default ForgotPasswordController;

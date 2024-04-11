@@ -24,7 +24,7 @@ type Body = {
 
 
 
-const ResetPassword: RequestHandler = async (req, res) => {
+const ResetPasswordController: RequestHandler = async (req, res) => {
     try {
         const now = new Date();
 
@@ -85,4 +85,4 @@ const ResetPassword: RequestHandler = async (req, res) => {
     }
 }
 
-export default ResetPassword;
+export default ResetPasswordController;
