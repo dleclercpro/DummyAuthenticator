@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import { logger } from '../utils/logger';
 import { CLIENT_ROOT, DEV, PORT, ROOT } from '../config/AppConfig';
+import ErrorMiddleware from '../middleware/ErrorMiddleware';
 
 class AppServer {
     protected app?: express.Express;
@@ -36,6 +37,9 @@ class AppServer {
 
         // Define server's API endpoints
         this.app.use('/', router);
+
+        // Final error middleware
+        this.app.use(ErrorMiddleware);
     }
 
     public getApp() {

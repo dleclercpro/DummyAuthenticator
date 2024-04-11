@@ -1,14 +1,14 @@
 import { Request, RequestHandler } from 'express';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
-import { successResponse } from '../utils/calls';
-import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
+import { errorResponse, successResponse } from '../utils/calls';
+import { HttpStatusCode } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
 import { validate } from 'email-validator';
-import { ErrorInvalidEmail } from '../errors/ServerError';
+import { ErrorInvalidEmail, ErrorInvalidPassword } from '../errors/ServerError';
 import User from '../models/auth/User';
-import SecretManager from '../models/auth/TokenManager';
+import EmailFactory from '../models/emails/EmailFactory';
 import Gmailer from '../models/emails/Gmailer';
-import PasswordRecoveryEmail from '../models/emails/PasswordRecoveryEmail';
+import { ClientError } from '../constants';
 
 const validateBody = (req: Request) => {
     let { email }: { email: string } = req.body;
@@ -26,10 +26,8 @@ const validateBody = (req: Request) => {
 
 
 
-const ForgotPasswordController: RequestHandler = async (req, res) => {
+const ForgotPasswordController: RequestHandler = async (req, res, next) => {
     try {
-        logger.info(`Forgot password...`);
-
         const { email } = validateBody(req);
 
         // Try and find user in database
@@ -39,25 +37,35 @@ const ForgotPasswordController: RequestHandler = async (req, res) => {
         if (!user) {
             throw new ErrorUserDoesNotExist(email);
         }
+
         logger.debug(`User '${user.getEmail()}' wants to reset their password...`);
 
-        // Generate reset password token
-        const token = await SecretManager.generateForgotPasswordToken(user);
-
         // Send user e-mail to reset their password
-        await Gmailer.send(new PasswordRecoveryEmail(email, token));
+        await Gmailer.send(await EmailFactory.createPasswordRecoveryEmail(user));
 
         // Success
         return res.json(successResponse());
 
     } catch (err: any) {
+        if (err.code === ErrorInvalidEmail.code) {
+            return res
+                .status(HttpStatusCode.BAD_REQUEST)
+                .json(errorResponse(ClientError.InvalidEmail));
+        }
 
-        // Unknown error
-        logger.warn(err, `Unknown error:`);
+        if (err.code === ErrorInvalidPassword.code) {
+            return res
+                .status(HttpStatusCode.BAD_REQUEST)
+                .json(errorResponse(ClientError.InvalidPassword));
+        }
 
-        return res
-            .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-            .send(HttpStatusMessage.INTERNAL_SERVER_ERROR);
+        if (err.code === ErrorUserDoesNotExist.code) {
+            return res
+                .status(HttpStatusCode.BAD_REQUEST)
+                .json(errorResponse(ClientError.UserDoesNotExist));
+        }
+
+        next(err);
     }
 }
 

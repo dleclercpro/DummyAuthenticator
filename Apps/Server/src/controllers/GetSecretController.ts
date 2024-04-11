@@ -1,15 +1,11 @@
 import { RequestHandler } from 'express';
-import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
-import { errorResponse, successResponse } from '../utils/calls';
-import { ErrorUserDoesNotExist } from '../errors/UserErrors';
-import { ClientError } from '../errors/ClientErrors';
+import { successResponse } from '../utils/calls';
 import GetUserCommand from '../commands/user/GetUserCommand';
 import { sleep } from '../utils/time';
 import { TimeUnit } from '../types/TimeTypes';
-import { logger } from '../utils/logger';
 import TimeDuration from '../models/units/TimeDuration';
 
-const GetSecretController: RequestHandler = async (req, res) => {
+const GetSecretController: RequestHandler = async (req, res, next) => {
     const { session } = req;
 
     try {
@@ -27,20 +23,7 @@ const GetSecretController: RequestHandler = async (req, res) => {
         return res.json(successResponse(user.getSecret()));
 
     } catch (err: any) {
-        logger.warn(err);
-
-        if (err.code === ErrorUserDoesNotExist.code) {
-            return res
-                .status(HttpStatusCode.FORBIDDEN)
-                .json(errorResponse(ClientError.InvalidCredentials));
-        }
-
-        // Unknown error
-        logger.warn(err, `Unknown error:`);
-
-        return res
-            .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-            .send(HttpStatusMessage.INTERNAL_SERVER_ERROR);
+        next(err);
     }
 }
 

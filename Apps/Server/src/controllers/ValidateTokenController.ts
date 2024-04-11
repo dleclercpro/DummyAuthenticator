@@ -1,10 +1,10 @@
 import { Request, RequestHandler } from 'express';
 import { errorResponse, successResponse } from '../utils/calls';
-import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
+import { HttpStatusCode } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
-import SecretManager from '../models/auth/TokenManager';
+import TokenManager from '../models/auth/TokenManager';
 import { ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
-import { ClientError } from '../errors/ClientErrors';
+import { ClientError } from '../constants';
 
 type Body = {
     token: string,
@@ -17,41 +17,28 @@ const validateBody = async (req: Request) => {
         throw new ErrorMissingToken();
     }
 
-    return {
-        token,
-        content: await SecretManager.decodeToken(token as string),
-    };
+    return await TokenManager.decodeToken(token as string);
 }
 
 
 
-const ValidateTokenController: RequestHandler = async (req, res) => {
+const ValidateTokenController: RequestHandler = async (req, res, next) => {
     try {
-        const { token, content } = await validateBody(req);
+        const token = await validateBody(req);
 
         logger.debug(`Received valid token.`);
 
         // Success
-        return res.json(successResponse({
-            token,
-            content,
-        }));
+        return res.json(successResponse(token));
 
     } catch (err: any) {
-        logger.warn(err);
-
         if (err.code === ErrorInvalidToken.code) {
             return res
                 .status(HttpStatusCode.UNAUTHORIZED)
                 .json(errorResponse(ClientError.InvalidToken));
         }
 
-        // Unknown error
-        logger.warn(err, `Unknown error:`);
-        
-        return res
-            .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-            .send(HttpStatusMessage.INTERNAL_SERVER_ERROR);
+        next(err);
     }
 }
 

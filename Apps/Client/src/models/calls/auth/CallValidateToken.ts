@@ -1,3 +1,4 @@
+import { PasswordRecoveryToken } from '../../../components/pages/reset-password/ResetPassword';
 import CallPUT from '../base/CallPUT';
 
 interface Data {
@@ -5,8 +6,8 @@ interface Data {
 }
 
 interface Response {
-    token: string,
-    content: any,
+    string: string,
+    content: PasswordRecoveryToken,
 }
 
 export class CallValidateToken extends CallPUT<Data, Response> {

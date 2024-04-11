@@ -1,20 +1,18 @@
 import { RequestHandler } from 'express';
 import { SESSION_COOKIE } from '../config/AuthConfig';
-import { ClientError } from '../errors/ClientErrors';
 import { ErrorExpiredSession, ErrorInvalidSessionId, ErrorMissingSessionId } from '../errors/SessionErrors';
 import { errorResponse } from '../utils/calls';
 import Session from '../models/auth/Session';
-import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
+import { HttpStatusCode } from '../types/HTTPTypes';
 import { TimeUnit } from '../types/TimeTypes';
-import { logger } from '../utils/logger';
 import TimeDuration from '../models/units/TimeDuration';
+import { ClientError } from '../constants';
 
 export const SessionMiddleware: RequestHandler = async (req, res, next) => {
-    const { [SESSION_COOKIE]: sessionId } = req.cookies;
-
     try {
+        const { [SESSION_COOKIE]: sessionId } = req.cookies;
 
-        // Missing session ID
+        // No session ID cookie?
         if (!sessionId) {
             throw new ErrorMissingSessionId();
         }
@@ -53,15 +51,10 @@ export const SessionMiddleware: RequestHandler = async (req, res, next) => {
             err.code === ErrorExpiredSession.code
         ) {
             return res
-                .status(HttpStatusCode.FORBIDDEN)
+                .status(HttpStatusCode.UNAUTHORIZED)
                 .json(errorResponse(ClientError.InvalidCredentials));
         }
 
-        // Unknown error
-        logger.warn(err, `Unknown error:`);
-
-        return res
-            .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-            .send(HttpStatusMessage.INTERNAL_SERVER_ERROR);
+        next(err);
     }
 }

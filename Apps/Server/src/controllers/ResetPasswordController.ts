@@ -1,12 +1,14 @@
 import { Request, RequestHandler } from 'express';
 import { errorResponse, successResponse } from '../utils/calls';
-import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
+import { HttpStatusCode } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
-import SecretManager, { PasswordRecoveryToken } from '../models/auth/TokenManager';
+import TokenManager from '../models/auth/TokenManager';
 import User from '../models/auth/User';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
-import { ErrorExpiredToken, ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
-import { ClientError } from '../errors/ClientErrors';
+import { ErrorExpiredToken, ErrorInvalidPassword, ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
+import PasswordManager from '../models/auth/PasswordManager';
+import { PasswordRecoveryToken } from '../types/TokenTypes';
+import { ClientError } from '../constants';
 
 const validateQuery = async (req: Request) => {
     const { token } = req.query;
@@ -15,7 +17,7 @@ const validateQuery = async (req: Request) => {
         throw new ErrorMissingToken();
     }
 
-    return await SecretManager.decodeToken(token as string) as PasswordRecoveryToken;
+    return await TokenManager.decodeToken(token as string);
 }
 
 type Body = {
@@ -24,25 +26,32 @@ type Body = {
 
 
 
-const ResetPasswordController: RequestHandler = async (req, res) => {
+const ResetPasswordController: RequestHandler = async (req, res, next) => {
     try {
         const now = new Date();
 
-        const token = await validateQuery(req);
         const { password } = req.body as Body;
 
-        logger.info(`Trying to reset password for user '${token.email}'...`);
+        const token = await validateQuery(req) as { string: string, content: PasswordRecoveryToken };
+        const { email, creationDate, expirationDate } = token.content;
 
-        const user = await User.findByEmail(token.email);
+        logger.info(`Trying to reset password for user '${token.content.email}'...`);
+
+        // Validate password
+        if (!PasswordManager.isPasswordValid(password)) {
+            throw new ErrorInvalidPassword();
+        }
+
+        const user = await User.findByEmail(email);
 
         // User should exist in database
         if (!user) {
-            throw new ErrorUserDoesNotExist(token.email);
+            throw new ErrorUserDoesNotExist(email);
         }
 
         // Verify token validity
         const userHasResetTheirPassword = user.getPasswordResetCount() > 0;
-        const isTokenExpired = token.expirationDate <= now || userHasResetTheirPassword && token.creationDate <= (user.getLastPasswordReset() as Date);
+        const isTokenExpired = new Date(expirationDate) <= now || userHasResetTheirPassword && new Date(creationDate) <= (user.getLastPasswordReset() as Date);
 
         if (isTokenExpired) {
             throw new ErrorExpiredToken();
@@ -56,12 +65,16 @@ const ResetPasswordController: RequestHandler = async (req, res) => {
         return res.json(successResponse());
 
     } catch (err: any) {
-        logger.warn(err);
+        if (err.code === ErrorInvalidPassword.code) {
+            return res
+                .status(HttpStatusCode.BAD_REQUEST)
+                .json(errorResponse(ClientError.InvalidPassword));
+        }
 
         if (err.code === ErrorUserDoesNotExist.code) {
             return res
-                .status(HttpStatusCode.UNAUTHORIZED)
-                .json(errorResponse(ClientError.InvalidCredentials));
+                .status(HttpStatusCode.BAD_REQUEST)
+                .json(errorResponse(ClientError.UserDoesNotExist));
         }
 
         if (err.code === ErrorInvalidToken.code) {
@@ -76,12 +89,7 @@ const ResetPasswordController: RequestHandler = async (req, res) => {
                 .json(errorResponse(ClientError.ExpiredToken));
         }
 
-        // Unknown error
-        logger.warn(err, `Unknown error:`);
-        
-        return res
-            .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-            .send(HttpStatusMessage.INTERNAL_SERVER_ERROR);
+        next(err);
     }
 }
 

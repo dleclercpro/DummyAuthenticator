@@ -1,15 +1,14 @@
 import { validate } from 'email-validator';
 import { RequestHandler } from 'express';
 import CreateUserCommand from '../commands/user/CreateUserCommand';
-import { ClientError } from '../errors/ClientErrors';
 import { ErrorInvalidEmail, ErrorInvalidPassword } from '../errors/ServerError';
 import { ErrorUserAlreadyExists } from '../errors/UserErrors';
 import { errorResponse, successResponse } from '../utils/calls';
-import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
-import { logger } from '../utils/logger';
-import { validatePassword } from '../utils/validation';
+import { HttpStatusCode } from '../types/HTTPTypes';
+import PasswordManager from '../models/auth/PasswordManager';
+import { ClientError } from '../constants';
 
-const SignUpController: RequestHandler = async (req, res) => {
+const SignUpController: RequestHandler = async (req, res, next) => {
     let { email, password } = req.body;
     
     try {
@@ -23,7 +22,7 @@ const SignUpController: RequestHandler = async (req, res) => {
         }
 
         // Validate password
-        if (!validatePassword(password)) {
+        if (!PasswordManager.isPasswordValid(password)) {
             throw new ErrorInvalidPassword();
         }
         
@@ -34,7 +33,6 @@ const SignUpController: RequestHandler = async (req, res) => {
         return res.json(successResponse());
 
     } catch (err: any) {
-        logger.warn(err);
 
         // User already exists
         if (err.code === ErrorUserAlreadyExists.code) {
@@ -57,12 +55,7 @@ const SignUpController: RequestHandler = async (req, res) => {
                 .json(errorResponse(ClientError.InvalidPassword));
         }
 
-        // Unknown error
-        logger.warn(err, `Unknown error:`);
-
-        return res
-            .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-            .send(HttpStatusMessage.INTERNAL_SERVER_ERROR);
+        next(err);
     }
 }
 

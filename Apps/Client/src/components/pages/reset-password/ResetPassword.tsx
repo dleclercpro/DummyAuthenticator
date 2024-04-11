@@ -34,10 +34,9 @@ const ResetPassword: React.FC<Props> = () => {
     const navigate = useNavigate();
 
     const queryParams = new URLSearchParams(location.search);
+    const token = queryParams.get('token') ?? '';
 
     const { resetPassword } = useAuth();
-
-    const token = queryParams.get('token') ?? '';
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
@@ -48,7 +47,7 @@ const ResetPassword: React.FC<Props> = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(!!error);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    const [validatedToken, setValidatedToken] = useState<PasswordRecoveryToken | null>(null);
+    const [validatedToken, setValidatedToken] = useState<{ string: string, content: PasswordRecoveryToken } | null>(null);
 
     // Validate token
     useEffect(() => {
@@ -58,7 +57,7 @@ const ResetPassword: React.FC<Props> = () => {
 
         new CallValidateToken().execute({ token })
             .then(({ data }) => {
-                setValidatedToken(data!.content as PasswordRecoveryToken);
+                setValidatedToken(data! as { string: string, content: PasswordRecoveryToken });
 
                 setError(false);
             })
@@ -149,7 +148,7 @@ const ResetPassword: React.FC<Props> = () => {
                     <EmailField
                         id='email'
                         className={classes.field}
-                        value={validatedToken.email}
+                        value={validatedToken.content.email}
                         error={!!error}
                         disabled
                         onChange={() => {}}

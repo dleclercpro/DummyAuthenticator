@@ -1,14 +1,10 @@
 import { JWT_TOKEN_SECRET, JWT_TOKEN_LONGEVITY } from '../../config/AuthConfig';
+import { Token } from '../../constants';
 import { ErrorInvalidToken } from '../../errors/ServerError';
+import { PasswordRecoveryToken } from '../../types/TokenTypes';
 import { logger } from '../../utils/logger';
 import User from './User';
-import jwt from 'jsonwebtoken';
-
-export type PasswordRecoveryToken = {
-  email: string,
-  creationDate: Date,
-  expirationDate: Date,
-};
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 
 
@@ -30,10 +26,13 @@ class TokenManager {
   }
 
   public async decodeToken(token: string) {
-    try {
-      const content = jwt.verify(token, this.secret);
+    console.log(token);
 
-      return content;
+    try {
+      const content = jwt.verify(token, this.secret) as JwtPayload;
+
+      return { string: token, content };
+      
     } catch (err: unknown) {
       throw new ErrorInvalidToken();
     }
@@ -41,19 +40,21 @@ class TokenManager {
 
   public async generateForgotPasswordToken(user: User) {
     const now = new Date();
+    const validTime = JWT_TOKEN_LONGEVITY.toMs().getAmount();
 
     const content: PasswordRecoveryToken = {
       email: user.getEmail(),
-      creationDate: now,
-      expirationDate: new Date(now.getTime() + JWT_TOKEN_LONGEVITY.toMs().getAmount()),
+      validTime,
+      creationDate: now.getTime(),
+      expirationDate: now.getTime() + validTime,
     };
     
     const token = await jwt.sign(content, JWT_TOKEN_SECRET);
     logger.debug(`Generated reset password token for user '${user.getEmail()}'.`);
 
-    await user.setToken('forgotPassword', token);
+    await user.setToken(Token.PasswordRecovery, token);
 
-    return token;
+    return { string: token, content };
   }
 }
 
