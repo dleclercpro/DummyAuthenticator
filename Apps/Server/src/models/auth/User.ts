@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import randomWords from 'random-words';
-import { N_PASSWORD_SALT_ROUNDS } from '../config/AuthConfig';
-import { DB } from '..';
+import { N_PASSWORD_SALT_ROUNDS } from '../../config/AuthConfig';
+import { DB } from '../..';
 
 const getRandomWord = () => randomWords({ exactly: 1, join: `` });
 

@@ -1,8 +1,8 @@
 import crypto from 'crypto';
-import { SESSION_DURATION } from '../config/AuthConfig';
-import { logger } from '../utils/logger';
-import { DB } from '..';
-import TimeDuration from './units/TimeDuration';
+import { SESSION_DURATION } from '../../config/AuthConfig';
+import { logger } from '../../utils/logger';
+import { DB } from '../..';
+import TimeDuration from '../units/TimeDuration';
 
 interface SessionArgs {
     id: string, email: string, expiresAt: Date, staySignedIn: boolean,

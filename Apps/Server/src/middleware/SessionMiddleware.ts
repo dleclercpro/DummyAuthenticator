@@ -3,7 +3,7 @@ import { SESSION_COOKIE } from '../config/AuthConfig';
 import { ClientError } from '../errors/ClientErrors';
 import { ErrorExpiredSession, ErrorInvalidSessionId, ErrorMissingSessionId } from '../errors/SessionErrors';
 import { errorResponse } from '../utils/calls';
-import Session from '../models/Session';
+import Session from '../models/auth/Session';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
 import { TimeUnit } from '../types/TimeTypes';
 import { logger } from '../utils/logger';

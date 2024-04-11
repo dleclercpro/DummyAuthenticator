@@ -2,7 +2,7 @@ import { Request, RequestHandler } from 'express';
 import { errorResponse, successResponse } from '../utils/calls';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
-import SecretManager from '../models/TokenManager';
+import SecretManager from '../models/auth/TokenManager';
 import { ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
 import { ClientError } from '../errors/ClientErrors';
 

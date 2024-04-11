@@ -1,6 +1,6 @@
 import { ErrorUserDoesNotExist } from '../../errors/UserErrors';
-import Session from '../../models/Session';
-import User from '../../models/User';
+import Session from '../../models/auth/Session';
+import User from '../../models/auth/User';
 import { logger } from '../../utils/logger';
 import Command from '../Command';
 

@@ -5,8 +5,8 @@ import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
 import { validate } from 'email-validator';
 import { ErrorInvalidEmail } from '../errors/ServerError';
-import User from '../models/User';
-import SecretManager from '../models/TokenManager';
+import User from '../models/auth/User';
+import SecretManager from '../models/auth/TokenManager';
 import Gmailer from '../models/emails/Gmailer';
 import PasswordRecoveryEmail from '../models/emails/PasswordRecoveryEmail';
 

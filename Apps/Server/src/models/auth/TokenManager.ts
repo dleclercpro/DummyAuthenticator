@@ -1,6 +1,6 @@
-import { JWT_TOKEN_SECRET, JWT_TOKEN_LONGEVITY } from '../config/AuthConfig';
-import { ErrorInvalidToken } from '../errors/ServerError';
-import { logger } from '../utils/logger';
+import { JWT_TOKEN_SECRET, JWT_TOKEN_LONGEVITY } from '../../config/AuthConfig';
+import { ErrorInvalidToken } from '../../errors/ServerError';
+import { logger } from '../../utils/logger';
 import User from './User';
 import jwt from 'jsonwebtoken';
 
