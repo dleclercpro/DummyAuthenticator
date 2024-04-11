@@ -6,11 +6,14 @@ import Snackbar from '../../Snackbar';
 import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import ResetIcon from '@mui/icons-material/LockReset';
-import { Link, Navigate, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import { translateServerError } from '../../../errors/ServerErrors';
 import { Page, getURL } from '../../../routes/Router';
 import EmailField from '../../fields/EmailField';
+import { sleep } from '../../../utils/time';
+import TimeDuration from '../../../models/TimeDuration';
+import { TimeUnit } from '../../../types/TimeTypes';
 
 interface Props {
 
@@ -20,6 +23,7 @@ const ResetPassword: React.FC<Props> = () => {
     const { classes } = useAuthStyles();
     
     const location = useLocation();
+    const navigate = useNavigate();
 
     const queryParams = new URLSearchParams(location.search);
 
@@ -76,6 +80,11 @@ const ResetPassword: React.FC<Props> = () => {
                 setError(false);
                 setSnackbarMessage('Your password has been successfully reset!');
                 setSnackbarOpen(true);
+
+                return sleep(new TimeDuration(5, TimeUnit.Second));
+            })
+            .then(() => {
+                navigate(getURL(Page.Home));
             })
             .catch((err: any) => {
                 const error = translateServerError(err.message);
@@ -92,7 +101,7 @@ const ResetPassword: React.FC<Props> = () => {
     /* No token provided: go back home */
     if (token === null) {
         return (
-            <Navigate to={`/${Page.Home}`} />
+            <Navigate to={getURL(Page.Home)} />
         );
     }
 

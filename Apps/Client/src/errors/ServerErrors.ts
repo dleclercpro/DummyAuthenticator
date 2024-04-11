@@ -13,7 +13,7 @@ export enum ServerError {
 export const translateServerError = (err: ServerError) => {
     switch (err) {
         case ServerError.Unknown:
-            return 'An unknown error occurred.';
+            return 'An unknown error occurred on the server.';
         case ServerError.Unauthorized:
             return 'You are unauthorized to perform this action.';
         case ServerError.InvalidCredentials:
@@ -25,8 +25,9 @@ export const translateServerError = (err: ServerError) => {
         case ServerError.UserAlreadyExists:
             return 'The e-mail you entered is already taken.';
         case ServerError.InvalidToken:
+            return 'The token you tried to use is invalid.';
         case ServerError.ExpiredToken:
-            return err;
+            return 'The token you tried to use has expired.';
         default:
             return 'UNKNOWN_ERROR';
     }

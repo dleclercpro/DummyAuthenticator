@@ -6,10 +6,14 @@ import Snackbar from '../../Snackbar';
 import EmailField from '../../fields/EmailField';
 import LoadingButton from '../../buttons/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
+import BrainIcon from '@mui/icons-material/Psychology';
 import useAuth from '../../../hooks/useAuth';
 import { Page, getURL } from '../../../routes/Router';
 import { translateServerError } from '../../../errors/ServerErrors';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import TimeDuration from '../../../models/TimeDuration';
+import { TimeUnit } from '../../../types/TimeTypes';
+import { sleep } from '../../../utils/time';
 
 interface Props {
 
@@ -18,8 +22,10 @@ interface Props {
 const ForgotPassword: React.FC<Props> = () => {
     const { classes } = useAuthStyles();
 
+    const navigate = useNavigate();
+
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [error, setError] = useState(false);
 
     const [email, setEmail] = useState('');
 
@@ -38,7 +44,7 @@ const ForgotPassword: React.FC<Props> = () => {
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
-        setError('');
+        setError(false);
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -49,14 +55,19 @@ const ForgotPassword: React.FC<Props> = () => {
 
         return forgotPassword(email)
             .then(() => {
-                setError('');
+                setError(false);
                 setSnackbarMessage('Please check your e-mail to recover your password!');
                 setSnackbarOpen(true);
+
+                return sleep(new TimeDuration(5, TimeUnit.Second));
+            })
+            .then(() => {
+                navigate(getURL(Page.Home));
             })
             .catch((err: any) => {
                 const error = translateServerError(err.message);
-                
-                setError(error);
+
+                setError(true);
                 setSnackbarMessage(error);
                 setSnackbarOpen(true);
             })
@@ -86,31 +97,35 @@ const ForgotPassword: React.FC<Props> = () => {
                         className={classes.field}
                         value={email}
                         error={!!error}
+                        disabled={loading}
                         onChange={handleEmailChange}
                     />
                 </fieldset>
 
                 <div className={classes.buttons}>
                     <div className='top'>
+                        <Button
+                            className={classes.linkButton}
+                            component={Link}
+                            to={getURL(Page.SignIn)}
+                            color='secondary'
+                            startIcon={<BrainIcon />}
+                        >
+                            I remember my password!
+                        </Button>
                         <LoadingButton
                             className={classes.submitButton}
                             type='submit'
                             icon={<SendIcon />}
                             loading={loading}
                             error={!!error}
+                            disabled={loading || email === ''}
                         >
                             Send link
                         </LoadingButton>
                     </div>
                     <div className='bottom'>
-                        <Button
-                            className={classes.linkButton}
-                            component={Link}
-                            to={getURL(Page.SignIn)}
-                            color='secondary'
-                        >
-                            I remember my password!
-                        </Button>
+
                     </div>
                 </div>
             </form>

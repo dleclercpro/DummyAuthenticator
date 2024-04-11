@@ -16,10 +16,6 @@ const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     form: {
         display: 'flex',
         flexDirection: 'column',
-
-        '& > *:not(:last-child)': {
-            marginBottom: spacing(SPACING),
-        },
     },
 
     title: {
@@ -27,7 +23,7 @@ const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     },
 
     text: {
-        marginBottom: spacing(SPACING),
+        marginBottom: spacing(2 * SPACING),
     },
 
     fields: {
@@ -35,6 +31,7 @@ const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
         padding: 0,
         margin: 0,
         display: 'flex',
+        marginBottom: spacing(1),
 
         '.reset-password &': {
             flexDirection: 'column',
@@ -55,11 +52,11 @@ const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
                 marginRight: 0,
                 marginBottom: spacing(SPACING / 2),
             },
-        },
 
-        '.reset-password &': {
-            marginRight: 0,
-            marginBottom: spacing(SPACING / 2),
+            '.reset-password &': {
+                marginRight: 0,
+                marginBottom: spacing(SPACING / 2),
+            },
         },
     },
 
@@ -87,7 +84,7 @@ const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     },
 
     switchButton: {
-
+        marginBottom: spacing(0.5),
     },
     
     submitButton: {

@@ -13,11 +13,12 @@ interface Props {
     icon?: ReactNode,
     loading: boolean,
     error?: boolean,
+    disabled?: boolean,
     onClick?: (e: React.FormEvent) => any | Promise<any>,
 }
 
 const LoadingButton: React.FC<Props> = (props) => {
-    const { children, className, type, variant, color, icon, loading, error, onClick } = props;
+    const { children, className, type, variant, color, icon, loading, error, disabled, onClick } = props;
     
     const { classes } = useLoadingButtonStyles();
 
@@ -28,7 +29,7 @@ const LoadingButton: React.FC<Props> = (props) => {
             variant={variant ? variant : 'contained'}
             color={color ? color : 'primary'}
             endIcon={loading && <Spinner />}
-            disabled={loading || !!error}
+            disabled={disabled || loading || !!error}
             onClick={onClick}
             startIcon={icon}
         >

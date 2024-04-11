@@ -9,6 +9,7 @@ import EmailField from '../../fields/EmailField';
 import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import LoginIcon from '@mui/icons-material/Login';
+import KeyIcon from '@mui/icons-material/Key';
 import useAuth from '../../../hooks/useAuth';
 import { translateServerError } from '../../../errors/ServerErrors';
 
@@ -66,8 +67,6 @@ const SignIn: React.FC<Props> = () => {
             .catch((err: any) => {
                 setError(translateServerError(err.message));
                 setSnackbarOpen(true);
-            })
-            .finally(() => {
                 setLoading(false);
             });
     }
@@ -89,7 +88,7 @@ const SignIn: React.FC<Props> = () => {
                     to={getURL(Page.SignUp)}
                     color='secondary'
                 >
-                    Not registered yet? Click here.
+                    Not registered yet?
                 </Button>
 
                 <fieldset className={classes.fields}>
@@ -134,6 +133,7 @@ const SignIn: React.FC<Props> = () => {
                             component={Link}
                             to={getURL(Page.ForgotPassword)}
                             color='secondary'
+                            startIcon={<KeyIcon />}
                         >
                             I forgot my password...
                         </Button>

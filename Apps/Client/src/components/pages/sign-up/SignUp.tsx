@@ -60,8 +60,6 @@ const SignUp: React.FC<Props> = () => {
             .catch((err: any) => {
                 setError(translateServerError(err.message));
                 setSnackbarOpen(true);
-            })
-            .finally(() => {
                 setLoading(false);
             });
     }
@@ -82,7 +80,7 @@ const SignUp: React.FC<Props> = () => {
                     to={getURL(Page.SignIn)}
                     color='secondary'
                 >
-                    Already have an account? Click here.
+                    Already have an account?
                 </Button>
 
                 <fieldset className={classes.fields}>

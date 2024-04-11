@@ -1,4 +1,4 @@
-import TimeDuration from '../models/units/TimeDuration';
+import TimeDuration from '../models/TimeDuration';
 
 export const sleep = async (duration: TimeDuration) => {
     const ms = duration.toMs().getAmount();
