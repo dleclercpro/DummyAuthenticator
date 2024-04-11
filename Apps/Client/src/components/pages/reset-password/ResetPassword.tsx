@@ -1,4 +1,4 @@
-import { Button, Paper, Typography } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
 import useAuthStyles from '../AuthStyles';
@@ -6,7 +6,7 @@ import Snackbar from '../../Snackbar';
 import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import ResetIcon from '@mui/icons-material/LockReset';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import { translateServerError } from '../../../errors/ServerErrors';
 import { Page, getURL } from '../../../routes/Router';
@@ -183,16 +183,6 @@ const ResetPassword: React.FC<Props> = () => {
                         >
                             Reset password
                         </LoadingButton>
-                    </div>
-                    <div className='bottom'>
-                        <Button
-                            className={classes.linkButton}
-                            component={Link}
-                            to={getURL(Page.Home)}
-                            color='secondary'
-                        >
-                            Go back home
-                        </Button>
                     </div>
                 </div>
             </form>

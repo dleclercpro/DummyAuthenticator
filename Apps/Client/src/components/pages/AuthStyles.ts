@@ -23,6 +23,7 @@ const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     },
 
     text: {
+        marginTop: spacing(2 * SPACING),
         marginBottom: spacing(2 * SPACING),
     },
 

@@ -1,5 +1,5 @@
 import { Button, Paper, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
 import useAuthStyles from '../AuthStyles';
 import Snackbar from '../../Snackbar';
@@ -8,6 +8,7 @@ import { getURL, Page } from '../../../routes/Router';
 import EmailField from '../../fields/EmailField';
 import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
+import BackIcon from '@mui/icons-material/ArrowBack';
 import CreateIcon from '@mui/icons-material/Create';
 import { CallSignUp } from '../../../models/calls/auth/CallSignUp';
 import { translateServerError } from '../../../errors/ServerErrors';
@@ -66,14 +67,9 @@ const SignUp: React.FC<Props> = () => {
                     Welcome
                 </Typography>
 
-                <Button
-                    className={classes.switchButton}
-                    component={Link}
-                    to={getURL(Page.SignIn)}
-                    color='secondary'
-                >
-                    Already have an account?
-                </Button>
+                <Typography className={classes.text}>
+                    Please enter your credentials:
+                </Typography>
 
                 <fieldset className={classes.fields}>
                     <EmailField
@@ -95,6 +91,15 @@ const SignUp: React.FC<Props> = () => {
 
                 <div className={classes.buttons}>
                     <div className='top'>
+                        <Button
+                            className={classes.linkButton}
+                            component={Link}
+                            to={getURL(Page.SignIn)}
+                            color='secondary'
+                            startIcon={<BackIcon />}
+                        >
+                            Back
+                        </Button>
                         <LoadingButton
                             className={classes.submitButton}
                             type='submit'

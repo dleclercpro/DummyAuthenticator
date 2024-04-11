@@ -1,5 +1,5 @@
 import { Button, Switch, FormControlLabel, Paper, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
 import useAuthStyles from '../AuthStyles';
 import Snackbar from '../../Snackbar';
@@ -127,7 +127,7 @@ const SignIn: React.FC<Props> = () => {
                             color='secondary'
                             startIcon={<KeyIcon />}
                         >
-                            I forgot my password...
+                            Forgot your password?
                         </Button>
                     </div>
                 </div>

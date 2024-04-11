@@ -1,12 +1,12 @@
 import { Button, Paper, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
 import useAuthStyles from '../AuthStyles';
 import Snackbar from '../../Snackbar';
 import EmailField from '../../fields/EmailField';
 import LoadingButton from '../../buttons/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
-import BrainIcon from '@mui/icons-material/Psychology';
+import BackIcon from '@mui/icons-material/ArrowBack';
 import useAuth from '../../../hooks/useAuth';
 import { Page, getURL } from '../../../routes/Router';
 import { translateServerError } from '../../../errors/ServerErrors';
@@ -101,9 +101,9 @@ const ForgotPassword: React.FC<Props> = () => {
                             component={Link}
                             to={getURL(Page.SignIn)}
                             color='secondary'
-                            startIcon={<BrainIcon />}
+                            startIcon={<BackIcon />}
                         >
-                            I remember my password!
+                            Back
                         </Button>
                         <LoadingButton
                             className={classes.submitButton}
@@ -115,9 +115,6 @@ const ForgotPassword: React.FC<Props> = () => {
                         >
                             Send link
                         </LoadingButton>
-                    </div>
-                    <div className='bottom'>
-
                     </div>
                 </div>
             </form>
