@@ -40,15 +40,6 @@ class SignInCommand extends Command<Argument, Response> {
 
         return { user, session };
     }
-
-    protected handleError(err: any) {
-        if (err.code === ErrorUserDoesNotExist.code ||
-            err.code === ErrorUserWrongPassword.code) {
-            logger.warn(err, `Handled error:`);
-        }
-
-        return err;
-    }
 }
 
 export default SignInCommand;

@@ -26,8 +26,6 @@ class TokenManager {
   }
 
   public async decodeToken(token: string) {
-    console.log(token);
-
     try {
       const content = jwt.verify(token, this.secret) as JwtPayload;
 

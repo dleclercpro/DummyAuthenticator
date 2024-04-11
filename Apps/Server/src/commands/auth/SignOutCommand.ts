@@ -28,14 +28,6 @@ class SignOutCommand extends Command<Argument> {
         // Destroy user session
         await session.delete();
     }
-
-    protected handleError(err: any) {
-        if (err.code === ErrorUserDoesNotExist.code) {
-            logger.warn(err, `Handled error:`);
-        }
-
-        return err;
-    }
 }
 
 export default SignOutCommand;
