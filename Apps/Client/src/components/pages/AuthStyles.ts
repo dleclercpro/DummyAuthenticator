@@ -1,6 +1,6 @@
 import { Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { SPACING } from '../../styles';
+import { BUTTON_HEIGHT, SPACING } from '../../styles';
 
 const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     root: {
@@ -19,7 +19,7 @@ const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     },
 
     title: {
-        marginBottom: spacing(SPACING),
+        marginBottom: spacing(0.5 * SPACING),
     },
 
     text: {
@@ -80,10 +80,11 @@ const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     },
 
     linkButton: {
-
+        height: spacing(BUTTON_HEIGHT),
     },
 
     switchButton: {
+        height: spacing(BUTTON_HEIGHT),
         marginBottom: spacing(0.5),
     },
     
