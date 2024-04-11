@@ -1,6 +1,6 @@
 import { Logger } from 'pino';
 import { Auth } from '../../types';
-import { logger as logger } from '../../utils/logger';
+import { logger } from '../../utils/logger';
 
 export interface DatabaseOptions {
     host: string,
@@ -19,10 +19,8 @@ abstract class Database {
 
     protected abstract getURI(): string;
     protected abstract getAnonymousURI(): string;
-    protected abstract start(): Promise<void>;
-    protected abstract stop(): Promise<void>;
 
-    public constructor(options: DatabaseOptions, customLogger?: Logger) {
+    public constructor(options: DatabaseOptions) {
         const { host, port, name, auth } = options;
 
         this.host = host;
@@ -30,7 +28,15 @@ abstract class Database {
         this.name = name;
         this.auth = auth;
 
-        this.logger = customLogger ? customLogger : logger;
+        this.logger = logger;
+    }
+
+    public async start() {
+
+    }
+
+    public async stop() {
+        
     }
 }
 

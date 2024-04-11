@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 import { SESSION_DURATION } from '../config/AuthConfig';
 import { logger } from '../utils/logger';
+import { DB } from '..';
 import TimeDuration from './units/TimeDuration';
-import { SESSION_DB } from '..';
 
 interface SessionArgs {
     id: string, email: string, expiresAt: Date, staySignedIn: boolean,
@@ -63,13 +63,13 @@ class Session {
     }
 
     public async save() {
-        SESSION_DB.add(this.id, this.serialize());
+        DB.set(`session:${this.id}`, this.serialize());
 
         logger.debug(`Stored session of user: ${this.email}`);
     }
 
     public async delete() {
-        SESSION_DB.remove(this.id);
+        DB.delete(`session:${this.id}`);
 
         logger.debug(`Deleted session of user: ${this.email}`);
     }
@@ -80,7 +80,7 @@ class Session {
     }
 
     public static async findById(id: string) {
-        const sessionAsString = await SESSION_DB.get(id);
+        const sessionAsString = await DB.get(`session:${id}`);
 
         if (sessionAsString) {
             return Session.deserialize(sessionAsString);

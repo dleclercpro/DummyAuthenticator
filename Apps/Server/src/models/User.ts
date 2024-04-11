@@ -1,8 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import randomWords from 'random-words';
 import { N_PASSWORD_SALT_ROUNDS } from '../config/AuthConfig';
-import { USER_DB } from '..';
-import { logger } from '../utils/logger';
+import { DB } from '..';
 
 const getRandomWord = () => randomWords({ exactly: 1, join: `` });
 
@@ -91,16 +90,16 @@ class User {
     }
 
     public async save() {
-        await USER_DB.add(`user:${this.email}`, this.serialize());
+        await DB.set(`user:${this.email}`, this.serialize());
     }
 
     public async delete() {
-        await USER_DB.remove(this.email);
+        await DB.delete(`user:${this.email}`);
     }
 
     // STATIC METHODS
     public static async findByEmail(email: string) {
-        const userAsString = await USER_DB.get(email);
+        const userAsString = await DB.get(`user:${email}`);
 
         if (userAsString) {
             return User.deserialize(userAsString);
@@ -118,7 +117,7 @@ class User {
         });
 
         // Store user in database
-        await USER_DB.add(user.getId(), user.serialize());
+        await user.save();
 
         return user;
     }

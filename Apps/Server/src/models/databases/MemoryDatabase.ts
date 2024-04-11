@@ -1,24 +1,8 @@
-import { Listener, createObserver } from '../Observer';
-
-interface SetEvent<V> {
-    prevValue: V | null,
-    value: V,
-}
-
-interface DeleteEvent<V> {
-    prevValue: V | null,
-}
-
-
-
 export interface IKeyValueDatabase<R> {
     has(id: string): Promise<boolean>;
     get(id: string): Promise<R | null>;
-    add(id: string, record: R): Promise<void>;
-    remove(id: string): Promise<void>;
-
-    onSet: (listener: Listener<SetEvent<R>>) => void;
-    onDelete: (listener: Listener<DeleteEvent<R>>) => void;
+    set(id: string, record: R): Promise<void>;
+    delete(id: string): Promise<void>;
 }
 
 
@@ -26,15 +10,12 @@ export interface IKeyValueDatabase<R> {
 export class MemoryDatabase<R> implements IKeyValueDatabase<R> {
     protected db = new Map<string, R>();
 
-    protected onSetObserver = createObserver<SetEvent<R>>();
-    protected onDeleteObserver = createObserver<DeleteEvent<R>>();
-
     public async start() {
 
     }
 
     public async stop() {
-        
+
     }
 
     public async has(id: string) {
@@ -45,21 +26,15 @@ export class MemoryDatabase<R> implements IKeyValueDatabase<R> {
         return this.db.get(id) ?? null;
     }
 
-    public async add(id: string, value: R) {
-        const prevValue = this.db.get(id) ?? null;
-
+    public async set(id: string, value: R) {
         this.db.set(id, value);
-
-        this.onSetObserver.publish({ prevValue, value });
     }
 
-    public async remove(id: string) {
+    public async delete(id: string) {
         const prevValue = this.db.get(id) ?? null;
 
         if (prevValue) {
             this.db.delete(id);
-
-            this.onDeleteObserver.publish({ prevValue });
         }
     }
 
@@ -71,13 +46,5 @@ export class MemoryDatabase<R> implements IKeyValueDatabase<R> {
 
     public async getAll() {
         return Object.values(this.db);
-    }
-
-    public onSet(listener: Listener<SetEvent<R>>) {
-        return this.onSetObserver.subscribe(listener);
-    }
-
-    public onDelete(listener: Listener<DeleteEvent<R>>) {
-        return this.onDeleteObserver.subscribe(listener);
     }
 }

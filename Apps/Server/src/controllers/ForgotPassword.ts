@@ -40,9 +40,11 @@ const ForgotPassword: RequestHandler = async (req, res) => {
         if (!user) {
             throw new ErrorUserDoesNotExist(email);
         }
+        logger.debug(`User '${user.getEmail()}' wants to reset their password...`);
 
         // Generate reset password token
         const token = await SecretManager.generateForgotPasswordToken(user);
+        logger.debug(`Token: ${token}`);
 
         // Create reset e-mail password e-mail, in which the user is brought
         // to a reset password page in the client app
@@ -60,14 +62,6 @@ const ForgotPassword: RequestHandler = async (req, res) => {
         return res.json(successResponse());
 
     } catch (err: any) {
-
-        // Do not tell client why user can't sign out: just say they
-        // are unauthorized!
-        if (err.code === ErrorUserDoesNotExist.code) {
-            return res
-                .status(HttpStatusCode.UNAUTHORIZED)
-                .json(errorResponse(ClientError.InvalidCredentials));
-        }
 
         // Unknown error
         logger.warn(err, `Unknown error:`);

@@ -1,33 +1,21 @@
 import { RedisClientType, createClient } from 'redis';
 import Database, { DatabaseOptions } from './Database';
 import { IKeyValueDatabase } from './MemoryDatabase';
-import { TimeUnit } from '../../types/TimeTypes';
-import { Logger } from 'pino';
-import { REDIS_DB_RETRY_CONNECT_MAX, REDIS_DB_RETRY_CONNECT_MAX_DELAY } from '../../config/DatabasesConfig';
+import { logger } from '../../utils/logger';
 import TimeDuration from '../units/TimeDuration';
-import { Listener, createObserver } from '../Observer';
-
-interface SetEvent<V> {
-    prevValue: V | null,
-    value: V,
-}
-
-interface DeleteEvent<V> {
-    prevValue: V | null,
-}
+import { TimeUnit } from '../../types/TimeTypes';
+import { REDIS_RETRY_CONNECT_MAX, REDIS_RETRY_CONNECT_MAX_DELAY } from '../../config/DatabasesConfig';
 
 class RedisDatabase extends Database implements IKeyValueDatabase<string> {
-    private client: RedisClientType;
-
-    protected onSetObserver = createObserver<SetEvent<string>>();
-    protected onDeleteObserver = createObserver<DeleteEvent<string>>();
+    protected client: RedisClientType;
     
-    public constructor(options: DatabaseOptions, customLogger?: Logger) {
-        super(options, customLogger);
+    public constructor(options: DatabaseOptions) {
+        super(options);
 
-        // Instanciate Redis client
+        const url = this.getURI();
+
         this.client = createClient({
-            url: this.getURI(),
+            url,
             socket: {
                 reconnectStrategy: this.retry,
             },
@@ -35,33 +23,33 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
     }
 
     protected getURI = () => {
-        const uri = this.getAnonymousURI();
+        let uri = this.getAnonymousURI();
 
         if (this.auth) {
             const { user, pass } = this.auth;
 
-            return `redis://${user}:${pass}@${uri}`;
-        }
-
-        return `redis://${uri}`;
-    }
-
-    protected getAnonymousURI = () => {
-        let uri = `${this.host}:${this.port}`;
-
-        if (this.name) {
-            uri = `${uri}/${this.name}`;
+            uri = uri.replace('[USER]', encodeURIComponent(user));
+            uri = uri.replace('[PASS]', encodeURIComponent(pass));
         }
 
         return uri;
     }
 
-    public async start() {
+    protected getAnonymousURI = () => {
+        const uri = `${this.host}:${this.port}`;
 
-        // Listen to events it emits
+        if (this.auth) {
+            return `redis://[USER]:[PASS]@${uri}`;
+        }
+
+        return `redis://${uri}`;
+    }
+
+    public async start() {
         this.listen();
 
-        // Connect to database
+        logger.debug(`Trying to connect to: ${this.getAnonymousURI()}`);
+
         await this.client.connect();
     }
 
@@ -71,27 +59,27 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
 
     protected listen = () => {
         this.client.on('ready', () => {
-            this.logger.debug('[Redis] Ready.');
+            logger.debug('Ready.');
         });
 
         this.client.on('connect', () => {
-            this.logger.debug('[Redis] Connected.');
+            logger.debug('Connected.');
         });
 
         this.client.on('reconnecting', () => {
-            this.logger.debug('[Redis] Reconnecting...');
+            logger.debug('Reconnecting...');
         });
 
         this.client.on('end', () => {
-            this.logger.debug('[Redis] Disconnected.');
+            logger.debug('Disconnected.');
         });
 
         this.client.on('warning', (warning: any) => {
-            this.logger.warn(`[Redis] ${warning.message}`);
+            logger.warn(warning.message);
         });
 
         this.client.on('error', (error: any) => {
-            this.logger.error(`[Redis] ${error.message}`);
+            logger.error(error.message);
         });
     }
 
@@ -100,20 +88,18 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
         // End reconnecting on a specific error and flush all commands with
         // a individual error
         if (error && error.code === 'ECONNREFUSED') {
-            return new Error('[Redis] The server refused the connection.');
+            logger.error('The Redis database refused the connection.');
         }
         
         // End reconnecting with built in error
-        if (retries > REDIS_DB_RETRY_CONNECT_MAX) {
-            return new Error('[Redis] Number of connection retries exhausted. Stopping connection attempts.');
+        if (retries > REDIS_RETRY_CONNECT_MAX) {
+            logger.fatal('Number of connection retries exhausted. Stopping connection attempts.')
+            process.exit(1);
         }
 
         // Reconnect after ... ms
-        const wait = Math.min(
-            new TimeDuration(retries + 0.5, TimeUnit.Second).toMs().getAmount(),
-            REDIS_DB_RETRY_CONNECT_MAX_DELAY.toMs().getAmount(),
-        );
-        this.logger.debug(`Waiting ${wait} ms...`);
+        const wait = Math.min(new TimeDuration(retries + 0.5, TimeUnit.Second).toMs().getAmount(), REDIS_RETRY_CONNECT_MAX_DELAY.toMs().getAmount());
+        logger.debug(`Waiting ${wait} ms...`);
 
         return wait;
     }
@@ -123,7 +109,7 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
     }
 
     public async has(key: string) {
-        return this.get(key) !== null;
+        return await this.get(key) !== null;
     }
 
     public async get(key: string) {
@@ -134,39 +120,48 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
         return this.client.keys(this.getPrefixedKey('*'));
     }
 
-    public async getAllValues() {
+    public async getAll() {
         const keys = await this.getAllKeys();
         const values = await Promise.all(keys.map((key) => this.client.get(key)));
 
         return values;
     }
 
-    public async add(key: string, value: string) {
-        const prefixedKey = this.getPrefixedKey(key);
-        const prevValue = await this.client.get(prefixedKey);
+    public async getKeysByPattern(pattern: string) {
+        let cursor = 0;
+        let keys: string[] = [];
 
-        await this.client.set(prefixedKey, value);
+        do {
+            const reply = await this.client.scan(cursor, {
+                MATCH: this.getPrefixedKey(pattern),
+                COUNT: 100,
+            });
 
-        this.onSetObserver.publish({ prevValue, value });
+            cursor = reply.cursor;
+            keys.push(...reply.keys);
+
+          } while (cursor !== 0);
+    
+        return keys;
     }
 
-    public async remove(key: string) {
+    public async set(key: string, value: string) {
+        const prefixedKey = this.getPrefixedKey(key);
+
+        await this.client.set(prefixedKey, value);
+    }
+
+    public async delete(key: string) {
         const prefixedKey = this.getPrefixedKey(key);
         const prevValue = await this.client.get(prefixedKey);
         
         if (prevValue) {
             await this.client.del(prefixedKey);
-
-            this.onDeleteObserver.publish({ prevValue });
         }
     }
 
-    public onSet(listener: Listener<SetEvent<string>>) {
-        return this.onSetObserver.subscribe(listener);
-    }
-
-    public onDelete(listener: Listener<DeleteEvent<string>>) {
-        return this.onDeleteObserver.subscribe(listener);
+    public async deleteAll() {
+        await this.client.flushDb();
     }
 }
 
