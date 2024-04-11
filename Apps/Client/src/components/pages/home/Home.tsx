@@ -45,7 +45,7 @@ const Home: React.FC<Props> = () => {
     const handleRenewSecret = async () => {
         setSnackbarOpen(false);
 
-        await fetchSecret(true);
+        await fetchSecret();
     }
 
     const handleSignOut = async () => {

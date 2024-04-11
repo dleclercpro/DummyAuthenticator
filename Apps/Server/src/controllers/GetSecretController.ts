@@ -10,8 +10,6 @@ import { logger } from '../utils/logger';
 import TimeDuration from '../models/units/TimeDuration';
 
 const GetSecretController: RequestHandler = async (req, res) => {
-    const { renew } = req.body;
-    
     const { session } = req;
 
     try {
@@ -20,9 +18,7 @@ const GetSecretController: RequestHandler = async (req, res) => {
         const user = await new GetUserCommand({ email: session.getEmail() }).execute();
 
         // Re-new user secret
-        if (renew) {
-            await user.renewSecret();
-        }
+        await user.renewSecret();
 
         // Fake some processing time for fetching of the secret
         await sleep(new TimeDuration(1, TimeUnit.Second));

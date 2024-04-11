@@ -111,21 +111,33 @@ const SignIn: React.FC<Props> = () => {
                 </fieldset>
 
                 <div className={classes.buttons}>
-                    <FormControlLabel
-                        className={classes.staySignedInSwitch}
-                        control={<Switch checked={staySignedIn} onChange={handleStaySignedInChange} name='stay-signed-in' />}
-                        label='Stay signed in?'
-                    />
+                    <div className='top'>
+                        <FormControlLabel
+                            className={classes.staySignedInSwitch}
+                            control={<Switch checked={staySignedIn} onChange={handleStaySignedInChange} name='stay-signed-in' />}
+                            label='Stay signed in?'
+                        />
 
-                    <LoadingButton
-                        className={classes.submitButton}
-                        type='submit'
-                        icon={<LoginIcon />}
-                        loading={loading}
-                        error={!!error}
-                    >
-                        Sign in
-                    </LoadingButton>
+                        <LoadingButton
+                            className={classes.submitButton}
+                            type='submit'
+                            icon={<LoginIcon />}
+                            loading={loading}
+                            error={!!error}
+                        >
+                            Sign in
+                        </LoadingButton>
+                    </div>
+                    <div className='bottom'>
+                        <Button
+                            className={classes.linkButton}
+                            component={Link}
+                            to={getURL(Page.ForgotPassword)}
+                            color='secondary'
+                        >
+                            I forgot my password...
+                        </Button>
+                    </div>
                 </div>
             </form>
 

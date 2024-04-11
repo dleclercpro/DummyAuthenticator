@@ -1,15 +1,15 @@
-import { Paper, Typography } from '@mui/material';
+import { Button, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
 import useAuthStyles from '../AuthStyles';
 import Snackbar from '../../Snackbar';
 import EmailField from '../../fields/EmailField';
 import LoadingButton from '../../buttons/LoadingButton';
-import LinkIcon from '@mui/icons-material/Link';
+import SendIcon from '@mui/icons-material/Send';
 import useAuth from '../../../hooks/useAuth';
 import { Page, getURL } from '../../../routes/Router';
 import { translateServerError } from '../../../errors/ServerErrors';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface Props {
 
@@ -87,15 +87,27 @@ const ForgotPassword: React.FC<Props> = () => {
                 </fieldset>
 
                 <div className={classes.buttons}>
-                    <LoadingButton
-                        className={classes.submitButton}
-                        type='submit'
-                        icon={<LinkIcon />}
-                        loading={loading}
-                        error={!!error}
-                    >
-                        Send link
-                    </LoadingButton>
+                    <div className='top'>
+                        <LoadingButton
+                            className={classes.submitButton}
+                            type='submit'
+                            icon={<SendIcon />}
+                            loading={loading}
+                            error={!!error}
+                        >
+                            Send link
+                        </LoadingButton>
+                    </div>
+                    <div className='bottom'>
+                        <Button
+                            className={classes.linkButton}
+                            component={Link}
+                            to={getURL(Page.SignIn)}
+                            color='secondary'
+                        >
+                            I remember my password!
+                        </Button>
+                    </div>
                 </div>
             </form>
 

@@ -65,10 +65,25 @@ const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
 
     buttons: {
         display: 'flex',
+        flexDirection: 'column',
 
-        [breakpoints.down('sm')]: {
-            flexDirection: 'column',
+        '& > .top': {
+            display: 'flex',
+            justifyContent: 'space-between',
+
+            '&:not(:last-child)': {
+                marginBottom: spacing(SPACING / 2),
+            },
         },
+
+        '& > .bottom': {
+            display: 'flex',
+            justifyContent: 'space-between',
+        },
+    },
+
+    linkButton: {
+
     },
 
     switchButton: {

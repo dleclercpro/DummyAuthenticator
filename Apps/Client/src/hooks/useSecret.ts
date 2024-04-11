@@ -7,12 +7,12 @@ const useSecret = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const fetchSecret = async (renew: boolean = false) => {
+    const fetchSecret = async () => {
         setError('');
         setLoading(true);
 
         try {
-            const { data } = await new CallGetSecret().execute({ renew });
+            const { data } = await new CallGetSecret().execute();
             
             if (!data) {
                 throw new Error('MISSING_SECRET');

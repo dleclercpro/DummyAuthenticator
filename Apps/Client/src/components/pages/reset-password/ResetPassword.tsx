@@ -6,7 +6,7 @@ import Snackbar from '../../Snackbar';
 import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import ResetIcon from '@mui/icons-material/LockReset';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import { translateServerError } from '../../../errors/ServerErrors';
 import { Page, getURL } from '../../../routes/Router';
@@ -88,6 +88,13 @@ const ResetPassword: React.FC<Props> = () => {
             });
     }
 
+    /* No token provided: go back home */
+    if (token === null) {
+        return (
+            <Navigate to={`/${Page.Home}`} />
+        );
+    }
+
     return (
         <Paper elevation={8} className={classes.root}>
             <form
@@ -123,15 +130,17 @@ const ResetPassword: React.FC<Props> = () => {
                 </fieldset>
 
                 <div className={classes.buttons}>
-                    <LoadingButton
-                        className={classes.submitButton}
-                        type='submit'
-                        icon={<ResetIcon />}
-                        loading={loading}
-                        error={!!error}
-                    >
-                        Reset password
-                    </LoadingButton>
+                    <div className='top'>
+                        <LoadingButton
+                            className={classes.submitButton}
+                            type='submit'
+                            icon={<ResetIcon />}
+                            loading={loading}
+                            error={!!error}
+                        >
+                            Reset password
+                        </LoadingButton>
+                    </div>
                 </div>
             </form>
 

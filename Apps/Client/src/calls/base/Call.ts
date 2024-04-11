@@ -73,7 +73,7 @@ class Call<RequestData = void, ResponseData = void> {
     async execute(payload?: RequestData) {
         let err = '';
 
-        console.trace(`Executing API call '${this.name}': ${this.url}`);
+        console.log(`Executing API call '${this.name}': ${this.url}`);
 
         // Store call's payload
         this.payload = payload;
@@ -93,7 +93,8 @@ class Call<RequestData = void, ResponseData = void> {
                     return { ...res, json: null };
                 }
             })
-            .catch(() => {
+            .catch((err) => {
+                console.error(err);
 
                 // There was some issue contacting the server: is it running?
                 err = 'FETCH_ERROR';

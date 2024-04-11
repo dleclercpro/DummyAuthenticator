@@ -104,15 +104,17 @@ const SignUp: React.FC<Props> = () => {
                 </fieldset>
 
                 <div className={classes.buttons}>
-                    <LoadingButton
-                        className={classes.submitButton}
-                        type='submit'
-                        icon={<CreateIcon />}
-                        loading={loading}
-                        error={!!error}
-                    >
-                        Sign up
-                    </LoadingButton>
+                    <div className='top'>
+                        <LoadingButton
+                            className={classes.submitButton}
+                            type='submit'
+                            icon={<CreateIcon />}
+                            loading={loading}
+                            error={!!error}
+                        >
+                            Sign up
+                        </LoadingButton>
+                    </div>
                 </div>
             </form>
 
