@@ -1,57 +1,84 @@
 import { Request, RequestHandler } from 'express';
-import { ParamsDictionary } from 'express-serve-static-core';
-import { successResponse } from '../utils/calls';
+import { errorResponse, successResponse } from '../utils/calls';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
 import SecretManager from '../models/SecretManager';
 import User from '../models/User';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
+import { ErrorExpiredToken, ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
+import { ClientError } from '../errors/ClientErrors';
 
 const validateQuery = async (req: Request) => {
     const { token } = req.query;
 
     if (!token) {
-        throw new Error('MISSING_TOKEN');
+        throw new ErrorMissingToken();
     }
 
-    const { email } = await SecretManager.decodeForgotPasswordToken(token as string);
-
-    return { email };
+    return await SecretManager.decodeForgotPasswordToken(token as string);
 }
 
 type Body = {
     password: string,
-    token: string,
  };
 
 
 
 const ResetPassword: RequestHandler = async (req, res) => {
     try {
-        const { email } = await validateQuery(req);
+        const now = new Date();
+
+        const token = await validateQuery(req);
         const { password } = req.body as Body;
 
-        logger.info(`Trying to reset password for user '${email}'...`);
+        logger.info(`Trying to reset password for user '${token.email}'...`);
 
-        const user = await User.findByEmail(email);
+        const user = await User.findByEmail(token.email);
 
         // User should exist in database
         if (!user) {
-            throw new ErrorUserDoesNotExist(email);
+            throw new ErrorUserDoesNotExist(token.email);
+        }
+
+        // Verify token validity
+        const userHasResetTheirPassword = user.getPasswordResetCount() > 0;
+        const isTokenExpired = token.expirationDate <= now || userHasResetTheirPassword && token.creationDate <= (user.getLastPasswordReset() as Date);
+
+        if (isTokenExpired) {
+            throw new ErrorExpiredToken();
         }
 
         await user.resetPassword(password);
-        
+
         logger.debug(`User '${user.getEmail()}' has successfully reset their password.`);
 
         // Success
         return res.json(successResponse());
 
     } catch (err: any) {
+        logger.warn(err);
+
+        if (err.code === ErrorUserDoesNotExist.code) {
+            return res
+                .status(HttpStatusCode.UNAUTHORIZED)
+                .json(errorResponse(ClientError.InvalidCredentials));
+        }
+
+        if (err.code === ErrorInvalidToken.code) {
+            return res
+                .status(HttpStatusCode.UNAUTHORIZED)
+                .json(errorResponse(ClientError.InvalidToken));
+        }
+
+        if (err.code === ErrorExpiredToken.code) {
+            return res
+                .status(HttpStatusCode.UNAUTHORIZED)
+                .json(errorResponse(ClientError.ExpiredToken));
+        }
 
         // Unknown error
         logger.warn(err, `Unknown error:`);
-
+        
         return res
             .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
             .send(HttpStatusMessage.INTERNAL_SERVER_ERROR);

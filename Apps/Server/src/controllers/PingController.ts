@@ -10,8 +10,6 @@ const PingController: RequestHandler = async (req, res) => {
         return res.json(successResponse());
 
     } catch (err: any) {
-
-        // Unknown error
         logger.warn(err, `Unknown error:`);
         
         return res

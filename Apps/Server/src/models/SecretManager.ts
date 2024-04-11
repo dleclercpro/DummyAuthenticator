@@ -1,8 +1,16 @@
-import { FORGOT_PASSWORD_SECRET } from '../config/AuthConfig';
+import { FORGOT_PASSWORD_SECRET, RESET_PASSWORD_TOKEN_VALIDITY } from '../config/AuthConfig';
 import { ErrorInvalidToken } from '../errors/ServerError';
 import { logger } from '../utils/logger';
 import User from './User';
 import jwt from 'jsonwebtoken';
+
+type ForgotPasswordToken = {
+  email: string,
+  creationDate: Date,
+  expirationDate: Date,
+};
+
+
 
 // Singleton
 class SecretManager {
@@ -20,7 +28,15 @@ class SecretManager {
   }
 
   public async generateForgotPasswordToken(user: User) {
-    const token = await jwt.sign({ email: user.getEmail() }, FORGOT_PASSWORD_SECRET);
+    const now = new Date();
+
+    const content: ForgotPasswordToken = {
+      email: user.getEmail(),
+      creationDate: now,
+      expirationDate: new Date(now.getTime() + RESET_PASSWORD_TOKEN_VALIDITY.toMs().getAmount()),
+    };
+    
+    const token = await jwt.sign(content, FORGOT_PASSWORD_SECRET);
     logger.debug(`Generated reset password token for user '${user.getEmail()}'.`);
 
     await user.setToken('forgotPassword', token);
@@ -30,7 +46,7 @@ class SecretManager {
 
   public async decodeForgotPasswordToken(token: string) {
     try {
-      const content = jwt.verify(token, FORGOT_PASSWORD_SECRET) as { email: string };
+      const content = jwt.verify(token, FORGOT_PASSWORD_SECRET) as ForgotPasswordToken;
       logger.debug(`Decoded e-mail contained in reset password token: ${content.email}`);
 
       return content;

@@ -27,6 +27,8 @@ const GetSecretController: RequestHandler = async (req, res) => {
         return res.json(successResponse(user.getSecret()));
 
     } catch (err: any) {
+        logger.warn(err);
+
         if (err.code === ErrorUserDoesNotExist.code) {
             return res
                 .status(HttpStatusCode.FORBIDDEN)

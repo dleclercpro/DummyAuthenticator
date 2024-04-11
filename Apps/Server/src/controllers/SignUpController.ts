@@ -34,6 +34,7 @@ const SignUpController: RequestHandler = async (req, res) => {
         return res.json(successResponse());
 
     } catch (err: any) {
+        logger.warn(err);
 
         // User already exists
         if (err.code === ErrorUserAlreadyExists.code) {

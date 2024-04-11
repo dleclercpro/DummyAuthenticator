@@ -34,3 +34,19 @@ export class ErrorInvalidToken extends ServerError {
         super(ErrorInvalidToken.code, `Invalid token provided.`);
     }
 }
+
+export class ErrorMissingToken extends ServerError {
+    public static code = -103;
+
+    constructor() {
+        super(ErrorMissingToken.code, `Missing token.`);
+    }
+}
+
+export class ErrorExpiredToken extends ServerError {
+    public static code = -104;
+
+    constructor() {
+        super(ErrorExpiredToken.code, `Expired token.`);
+    }
+}

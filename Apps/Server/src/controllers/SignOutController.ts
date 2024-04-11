@@ -20,6 +20,7 @@ const SignOutController: RequestHandler = async (req, res) => {
         return res.json(successResponse());
 
     } catch (err: any) {
+        logger.warn(err);
 
         // Do not tell client why user can't sign out: just say they
         // are unauthorized!

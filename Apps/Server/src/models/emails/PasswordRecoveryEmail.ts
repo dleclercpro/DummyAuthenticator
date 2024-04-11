@@ -7,7 +7,7 @@ import Email from './Email';
 class PasswordRecoveryEmail extends Email {
 
   public constructor(to: string, token: string) {
-    const link = `${CLIENT_ROOT}/reset-password?token=${token}`;
+    const link = `${CLIENT_ROOT}/reset-password?token=${token}&email=${to}`;
 
     const from = `Dummy Authenticator <${GMAIL_USER}>`;
     const subject = 'Reset your password';

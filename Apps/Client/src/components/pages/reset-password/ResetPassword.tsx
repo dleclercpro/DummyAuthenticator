@@ -1,4 +1,4 @@
-import { Paper, Typography } from '@mui/material';
+import { Button, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
 import useAuthStyles from '../AuthStyles';
@@ -6,10 +6,11 @@ import Snackbar from '../../Snackbar';
 import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import ResetIcon from '@mui/icons-material/LockReset';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import { translateServerError } from '../../../errors/ServerErrors';
-import { Page } from '../../../routes/Router';
+import { Page, getURL } from '../../../routes/Router';
+import EmailField from '../../fields/EmailField';
 
 interface Props {
 
@@ -24,13 +25,14 @@ const ResetPassword: React.FC<Props> = () => {
 
     const { resetPassword } = useAuth();
 
-    const token = queryParams.get('token');
+    const email = queryParams.get('email') ?? '';
+    const token = queryParams.get('token') ?? '';
 
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [error, setError] = useState(false);
 
     const [password, setPassword] = useState('');
-    const [passwordRepeat, setPasswordRepeat] = useState('');
+    const [repeatPassword, setRepeatPassword] = useState('');
 
     const [snackbarOpen, setSnackbarOpen] = useState(!!error);
     const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -45,12 +47,12 @@ const ResetPassword: React.FC<Props> = () => {
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
-        setError('');
+        setError(false);
     }
 
-    const handlePasswordRepeatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPasswordRepeat(e.target.value);
-        setError('');
+    const handleRepeatPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setRepeatPassword(e.target.value);
+        setError(false);
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -60,8 +62,9 @@ const ResetPassword: React.FC<Props> = () => {
             return;
         }
 
-        if (password !== passwordRepeat) {
-            setError('Passwords must match!');
+        if (password !== repeatPassword) {
+            setError(true);
+            setSnackbarMessage('Passwords must match!');
             return;
         }
 
@@ -70,14 +73,14 @@ const ResetPassword: React.FC<Props> = () => {
 
         return resetPassword(token, password)
             .then(() => {
-                setError('');
-                setSnackbarMessage('Please check your e-mail to recover your password!');
+                setError(false);
+                setSnackbarMessage('Your password has been successfully reset!');
                 setSnackbarOpen(true);
             })
             .catch((err: any) => {
                 const error = translateServerError(err.message);
 
-                setError(error);
+                setError(true);
                 setSnackbarMessage(error);
                 setSnackbarOpen(true);
             })
@@ -109,6 +112,15 @@ const ResetPassword: React.FC<Props> = () => {
                 </Typography>
 
                 <fieldset className={classes.fields}>
+                    <EmailField
+                        id='email'
+                        className={classes.field}
+                        value={email}
+                        error={!!error}
+                        disabled
+                        onChange={() => {}}
+                    />
+
                     <PasswordField
                         id='password'
                         className={classes.field}
@@ -121,9 +133,9 @@ const ResetPassword: React.FC<Props> = () => {
                         id='password-repeat'
                         className={classes.field}
                         label='Repeat password'
-                        value={passwordRepeat}
+                        value={repeatPassword}
                         error={!!error}
-                        onChange={handlePasswordRepeatChange}
+                        onChange={handleRepeatPasswordChange}
                     />
                 </fieldset>
 
@@ -138,6 +150,16 @@ const ResetPassword: React.FC<Props> = () => {
                         >
                             Reset password
                         </LoadingButton>
+                    </div>
+                    <div className='bottom'>
+                        <Button
+                            className={classes.linkButton}
+                            component={Link}
+                            to={getURL(Page.Home)}
+                            color='secondary'
+                        >
+                            Go back home
+                        </Button>
                     </div>
                 </div>
             </form>

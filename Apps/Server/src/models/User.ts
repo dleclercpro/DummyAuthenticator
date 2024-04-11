@@ -8,18 +8,27 @@ const getRandomWord = () => randomWords({ exactly: 1, join: `` });
 type UserTokens = Record<string, string>;
 
 interface UserArgs {
-    email: string, password: string, secret: string, tokens: UserTokens,
+    email: string,
+    password: string,
+    passwordResetCount: number,
+    lastPasswordReset: Date | null,
+    secret: string,
+    tokens: UserTokens,
 }
 
 class User {
     protected email: string;
     protected password: string;
+    protected lastPasswordReset: Date | null;
+    protected passwordResetCount: number;
     protected secret: string;
     protected tokens: UserTokens;
 
     public constructor(args: UserArgs) {
         this.email = args.email;
         this.password = args.password;
+        this.passwordResetCount = args.passwordResetCount;
+        this.lastPasswordReset = args.lastPasswordReset;
         this.secret = args.secret;
         this.tokens = {};
     }
@@ -28,6 +37,8 @@ class User {
         return JSON.stringify({
             email: this.email,
             password: this.password,
+            passwordResetCount: this.passwordResetCount,
+            lastPasswordReset: this.lastPasswordReset,
             secret: this.secret,
             tokens: this.tokens,
         });
@@ -51,6 +62,14 @@ class User {
 
     public getPassword() {
         return this.password;
+    }
+
+    public getLastPasswordReset() {
+        return this.lastPasswordReset;
+    }
+
+    public getPasswordResetCount() {
+        return this.passwordResetCount;
     }
 
     public getSecret() {
@@ -85,6 +104,8 @@ class User {
 
     public async resetPassword(newPassword: string) {
         this.password = await User.hashPassword(newPassword);
+        this.passwordResetCount += 1;
+        this.lastPasswordReset = new Date();
 
         await this.save();
     }
@@ -112,6 +133,8 @@ class User {
         const user = new User({
             email,
             password: await User.hashPassword(password),
+            passwordResetCount: 0,
+            lastPasswordReset: null,
             secret: getRandomWord(),
             tokens: {},
         });

@@ -32,6 +32,7 @@ const SignInController: RequestHandler = async (req, res) => {
         return res.json(successResponse());
 
     } catch (err: any) {
+        logger.warn(err);
 
         // Do not tell client why user can't sign in: just say that
         // their credentials are invalid
