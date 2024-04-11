@@ -10,11 +10,12 @@ interface Props {
     label?: string,
     value: string,
     error?: boolean,
+    disabled?: boolean,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
 }
 
 const PasswordField: React.FC<Props> = (props) => {
-    const { className, id, label, value, error, onChange } = props;
+    const { className, id, label, value, error, disabled, onChange } = props;
 
     const { classes } = usePasswordFieldStyles();
 
@@ -34,6 +35,7 @@ const PasswordField: React.FC<Props> = (props) => {
             label={label ?? 'Password'}
             value={value}
             error={!!error}
+            disabled={disabled}
             onChange={onChange}
         />
     );

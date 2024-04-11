@@ -159,6 +159,7 @@ const ResetPassword: React.FC<Props> = () => {
                         className={classes.field}
                         value={password}
                         error={!!error}
+                        disabled={loading}
                         onChange={handlePasswordChange}
                     />
 
@@ -168,6 +169,7 @@ const ResetPassword: React.FC<Props> = () => {
                         label='Repeat password'
                         value={repeatPassword}
                         error={!!error}
+                        disabled={loading}
                         onChange={handleRepeatPasswordChange}
                     />
                 </fieldset>
