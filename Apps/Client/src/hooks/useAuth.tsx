@@ -50,10 +50,8 @@ const useAuth = () => {
         try {
             await new CallPing().execute();
             setIsLogged(true);
-        
         } catch (err: any) {
             setIsLogged(false);
-        
         } finally {
             setIsPinged(true);
         }
@@ -61,6 +59,9 @@ const useAuth = () => {
 
     const login = async (email: string, password: string, staySignedIn: boolean) => {
         await new CallSignIn().execute({ email, password, staySignedIn })
+            .then(() => {
+                setIsLogged(true);
+            })
             .catch(({ code, error, data }) => {
                 if (error === ServerError.NoMoreLoginAttempts) {
                     const { attempts, maxAttempts } = data;
@@ -73,17 +74,16 @@ const useAuth = () => {
 
                 throw new Error(translateServerError(error));
             });
-
-        setIsLogged(true);
     }
 
     const logout = async () => {
         await new CallSignOut().execute()
             .catch(({ code, error, data }) => {
                 throw new Error(translateServerError(error));
+            })
+            .finally(() => {
+                setIsLogged(false);
             });
-
-        setIsLogged(false);
     }
 
     const forgotPassword = async (email: string) => {

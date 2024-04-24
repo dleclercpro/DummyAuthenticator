@@ -91,6 +91,8 @@ class User {
         this.secret = getRandomWord();
 
         await this.save();
+
+        return this.secret;
     }
 
     public async save() {

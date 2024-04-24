@@ -12,7 +12,7 @@ export const PASSWORD_OPTIONS = !PROD ? {} : {
     minSymbols: 1,
 };
 
-export const HOURLY_LOGIN_MAX_ATTEMPTS = 5;
+export const HOURLY_LOGIN_MAX_ATTEMPTS = 50;
 
 export const GMAIL_USER = process.env.GMAIL_USER as string;
 export const GMAIL_PASS = process.env.GMAIL_PASS as string;

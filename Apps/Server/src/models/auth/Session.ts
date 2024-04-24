@@ -59,19 +59,19 @@ class Session {
 
         await this.save();
 
-        logger.debug(`Extended session of user: ${this.email}`);
+        logger.trace(`Extended session of user: ${this.email}`);
     }
 
     public async save() {
         APP_DB.set(`session:${this.id}`, this.serialize());
 
-        logger.debug(`Stored session of user: ${this.email}`);
+        logger.trace(`Stored session of user: ${this.email}`);
     }
 
     public async delete() {
         APP_DB.delete(`session:${this.id}`);
 
-        logger.debug(`Deleted session of user: ${this.email}`);
+        logger.trace(`Deleted session of user: ${this.email}`);
     }
 
     // STATIC METHODS
