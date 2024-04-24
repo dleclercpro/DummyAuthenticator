@@ -38,7 +38,7 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         logger.info(`Trying to reset password for user '${token.content.email}'...`);
 
         // Ensure password is strong enough
-        if (!PasswordManager.areRulesFollowed(password)) {
+        if (!PasswordManager.validate(password)) {
             throw new ErrorInvalidPassword();
         }
 
@@ -52,7 +52,7 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         const lastReset = user.getPassword().getLastReset();
 
         // Verify token validity
-        const userHasResetTheirPassword = user.getPassword().wasReset();
+        const userHasResetTheirPassword = user.getPassword().wasAlreadyReset();
         const isTokenExpired = new Date(expirationDate) <= now || userHasResetTheirPassword && new Date(creationDate) <= (lastReset as Date);
 
         if (isTokenExpired) {

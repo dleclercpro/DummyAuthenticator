@@ -35,18 +35,20 @@ class PasswordManager {
   }
 
   public async reset(user: User, value: string) {
+    const now = new Date();
+    
     const password = user.getPassword();
 
     password.setValue(await this.hash(value));
     password.incrementResetCount();
-    password.setLastReset(new Date());
+    password.setLastReset(now);
   }
 
-  public async isValid(password: string, encryptedPassword: string) {
+  public async matches(password: string, encryptedPassword: string) {
     return bcrypt.compare(password, encryptedPassword);
   }
 
-  public areRulesFollowed = (password: string) => {
+  public validate = (password: string) => {
     let isValid = true;
     
     if (this.options.minLength) {

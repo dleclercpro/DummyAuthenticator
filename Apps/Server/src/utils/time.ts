@@ -6,6 +6,6 @@ export const sleep = async (duration: TimeDuration) => {
     await new Promise(resolve => setTimeout(resolve, ms));
 };
 
-export const computeTime = (t: Date, dt: TimeDuration) => {
+export const computeDate = (t: Date, dt: TimeDuration) => {
     return new Date(t.getTime() + dt.toMs().getAmount());
 }

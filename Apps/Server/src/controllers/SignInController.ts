@@ -11,7 +11,7 @@ import { LoginAttemptType } from '../models/auth/Login';
 import PasswordManager from '../models/auth/PasswordManager';
 import TimeDuration from '../models/units/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
-import { computeTime } from '../utils/time';
+import { computeDate } from '../utils/time';
 import User from '../models/auth/User';
 
 const SignInController: RequestHandler = async (req, res, next) => {
@@ -35,20 +35,21 @@ const SignInController: RequestHandler = async (req, res, next) => {
         }
 
         // Get failed login attempts in the last hour
-        const oneHourAgo = computeTime(new Date(), new TimeDuration(-1, TimeUnit.Hour));
+        const oneHourAgo = computeDate(new Date(), new TimeDuration(-1, TimeUnit.Hour));
+
         const loginAttemptsInLastHour = user.getLogin().getAttempts()
             .filter(attempt => attempt.timestamp > oneHourAgo);
         const failedLoginAttemptsInLastHour = loginAttemptsInLastHour
             .filter(attempt => attempt.type === LoginAttemptType.Failure);
 
         // Authenticate user
-        const isPasswordValid = await PasswordManager.isValid(password, user.getPassword().getValue());
+        const isAuthenticated = await PasswordManager.matches(password, user.getPassword().getValue());
 
         // Only keep login attempts of last hour
         user.getLogin().setAttempts(loginAttemptsInLastHour);
 
         // Store new login attempt
-        user.getLogin().addAttempt(isPasswordValid ? LoginAttemptType.Success : LoginAttemptType.Failure);
+        user.getLogin().addAttempt(isAuthenticated ? LoginAttemptType.Success : LoginAttemptType.Failure);
         await user.save();
 
         // Only allow X failed login attempts per hour
@@ -56,7 +57,7 @@ const SignInController: RequestHandler = async (req, res, next) => {
             throw new ErrorNoMoreLoginAttempts(user.getEmail(), failedLoginAttemptsInLastHour.length);
         }
         
-        if (!isPasswordValid) {
+        if (!isAuthenticated) {
             throw new ErrorUserWrongPassword(user);
         }
 

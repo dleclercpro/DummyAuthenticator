@@ -16,10 +16,7 @@ class Password {
 
     public constructor(args: PasswordArgs) {
         this.value = args.value;
-        this.reset = args.reset ?? {
-            count: 0,
-            last: null,
-        };
+        this.reset = args.reset ?? { count: 0, last: null };
     }
 
     public serialize() {
@@ -49,7 +46,7 @@ class Password {
         this.reset.count += 1;
     }
 
-    public wasReset() {
+    public wasAlreadyReset() {
         return this.reset.count > 0;
     }
 
