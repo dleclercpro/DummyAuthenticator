@@ -25,14 +25,22 @@ const Home: React.FC<Props> = () => {
     const { loading, error, secret, fetchSecret } = useSecret();
 
     const [isSigningOut, setIsSigningOut] = useState(false);
+
     const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     // Fetch secret on load
     useEffect(() => {
         fetchSecret();
+    }, [fetchSecret]);
 
-    // eslint-disable-next-line
-    }, []);
+    // Update snackbar on new error
+    useEffect(() => {
+        if (error !== '') {
+            setSnackbarMessage(error);
+            setSnackbarOpen(true);
+        }
+    }, [error]);
 
     const handleRenewSecret = async () => {
         setSnackbarOpen(false);
@@ -42,12 +50,16 @@ const Home: React.FC<Props> = () => {
 
     const handleSignOut = async () => {
         setSnackbarOpen(false);
+
         setIsSigningOut(true);
 
         return logout()
             .then(() => {
+
             })
-            .catch(() => { })
+            .catch(() => {
+                
+            })
             .finally(() => {
                 setIsSigningOut(false);
                 navigate(getURL(Page.SignIn));
@@ -95,7 +107,7 @@ const Home: React.FC<Props> = () => {
 
             <Snackbar
                 open={snackbarOpen}
-                message={error}
+                message={snackbarMessage}
                 severity={Severity.Error}
                 onClose={() => setSnackbarOpen(false)}
             />

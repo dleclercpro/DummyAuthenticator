@@ -64,7 +64,7 @@ const ResetPassword: React.FC<Props> = () => {
                 navigate(getURL(Page.Home));
             });
 
-    }, [token]);
+    }, [token, navigate]);
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);

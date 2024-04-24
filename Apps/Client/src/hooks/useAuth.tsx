@@ -60,7 +60,7 @@ const useAuth = () => {
     }
 
     const login = async (email: string, password: string, staySignedIn: boolean) => {
-        const response = await new CallSignIn().execute({ email, password, staySignedIn })
+        await new CallSignIn().execute({ email, password, staySignedIn })
             .catch(({ code, error, data }) => {
                 if (error === ServerError.NoMoreLoginAttempts) {
                     const { attempts, maxAttempts } = data;
@@ -70,6 +70,8 @@ const useAuth = () => {
                         .replace('{{ MAX_ATTEMPTS }}', maxAttempts)
                     );
                 }
+
+                throw new Error(translateServerError(error));
             });
 
         setIsLogged(true);

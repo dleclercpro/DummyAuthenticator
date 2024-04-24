@@ -28,6 +28,7 @@ const SignUp: React.FC<Props> = () => {
     const [password, setPassword] = useState('');
 
     const [snackbarOpen, setSnackbarOpen] = useState(!!error);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
@@ -42,8 +43,8 @@ const SignUp: React.FC<Props> = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        setSnackbarOpen(false);
         setLoading(true);
+        setSnackbarOpen(false);
 
         return new CallSignUp().execute({ email, password })
             .then(() => {
@@ -51,8 +52,10 @@ const SignUp: React.FC<Props> = () => {
             })
             .catch((err: any) => {
                 setError(err.message);
-                setSnackbarOpen(true);
                 setLoading(false);
+
+                setSnackbarMessage(err.message);
+                setSnackbarOpen(true);
             });
     }
     return (
@@ -114,7 +117,7 @@ const SignUp: React.FC<Props> = () => {
 
             <Snackbar
                 open={snackbarOpen}
-                message={error}
+                message={snackbarMessage}
                 severity={Severity.Error}
                 onClose={() => setSnackbarOpen(false)}
             />

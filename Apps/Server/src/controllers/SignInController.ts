@@ -4,7 +4,7 @@ import { errorResponse, successResponse } from '../utils/calls';
 import { ErrorUserDoesNotExist, ErrorUserWrongPassword } from '../errors/UserErrors';
 import { validate } from 'email-validator';
 import { ErrorInvalidEmail, ErrorNoMoreLoginAttempts } from '../errors/ServerError';
-import { HOURLY_LOGIN_ATTEMPT_MAX_COUNT, SESSION_COOKIE } from '../config/AuthConfig';
+import { HOURLY_LOGIN_MAX_ATTEMPTS, SESSION_COOKIE } from '../config/AuthConfig';
 import { ClientError } from '../constants';
 import Session from '../models/auth/Session';
 import { LoginAttemptType } from '../models/auth/Login';
@@ -36,21 +36,23 @@ const SignInController: RequestHandler = async (req, res, next) => {
 
         // Get failed login attempts in the last hour
         const oneHourAgo = computeTime(new Date(), new TimeDuration(-1, TimeUnit.Hour));
-        const failedLoginAttemptsInLastHour = user.getLogin().getAttempts()
-            .filter(attempt => attempt.type === LoginAttemptType.Failure)
+        const loginAttemptsInLastHour = user.getLogin().getAttempts()
             .filter(attempt => attempt.timestamp > oneHourAgo);
+        const failedLoginAttemptsInLastHour = loginAttemptsInLastHour
+            .filter(attempt => attempt.type === LoginAttemptType.Failure);
 
         // Authenticate user
         const isPasswordValid = await PasswordManager.isValid(password, user.getPassword().getValue());
 
-        // Store login attempt
-        user.getLogin()
-            .addAttempt(isPasswordValid ? LoginAttemptType.Success : LoginAttemptType.Failure);
-        
+        // Only keep login attempts of last hour
+        user.getLogin().setAttempts(loginAttemptsInLastHour);
+
+        // Store new login attempt
+        user.getLogin().addAttempt(isPasswordValid ? LoginAttemptType.Success : LoginAttemptType.Failure);
         await user.save();
 
         // Only allow X failed login attempts per hour
-        if (failedLoginAttemptsInLastHour.length > HOURLY_LOGIN_ATTEMPT_MAX_COUNT) {
+        if (failedLoginAttemptsInLastHour.length > HOURLY_LOGIN_MAX_ATTEMPTS) {
             throw new ErrorNoMoreLoginAttempts(user.getEmail(), failedLoginAttemptsInLastHour.length);
         }
         
@@ -81,7 +83,7 @@ const SignInController: RequestHandler = async (req, res, next) => {
                 .status(HttpStatusCode.UNAUTHORIZED)
                 .json(errorResponse(ClientError.NoMoreLoginAttempts, user ? {
                     attempts: user.getLogin().getAttempts().length,
-                    maxAttempts: HOURLY_LOGIN_ATTEMPT_MAX_COUNT,
+                    maxAttempts: HOURLY_LOGIN_MAX_ATTEMPTS,
                 } : {
                     
                 }));

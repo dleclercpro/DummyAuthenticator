@@ -30,6 +30,7 @@ const SignIn: React.FC<Props> = () => {
     const [staySignedIn, setStaySignedIn] = useState(true);
 
     const [snackbarOpen, setSnackbarOpen] = useState(!!error);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
@@ -48,8 +49,8 @@ const SignIn: React.FC<Props> = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        setSnackbarOpen(false);
         setLoading(true);
+        setSnackbarOpen(false);
 
         return login(email, password, staySignedIn)
             .then(() => {
@@ -57,8 +58,10 @@ const SignIn: React.FC<Props> = () => {
             })
             .catch((err: any) => {
                 setError(err.message);
-                setSnackbarOpen(true);
                 setLoading(false);
+
+                setSnackbarMessage(err.message);
+                setSnackbarOpen(true);
             });
     }
 
@@ -134,7 +137,7 @@ const SignIn: React.FC<Props> = () => {
 
             <Snackbar
                 open={snackbarOpen}
-                message={error}
+                message={snackbarMessage}
                 severity={Severity.Error}
                 onClose={() => setSnackbarOpen(false)}
             />

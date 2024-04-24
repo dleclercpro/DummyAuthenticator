@@ -102,7 +102,7 @@ class Call<RequestData = void, ResponseData = void, ErrorResponseData = void> {
 
         // There was valid JSON data in the response
         if (response && response.json) {
-            const { code, error, data } = response.json;
+            const { code, error } = response.json;
 
             // There was an error
             if (response.status >= 400 && error) {

@@ -8,27 +8,19 @@ const useSecret = () => {
     const [error, setError] = useState('');
 
     const fetchSecret = async () => {
-        setError('');
         setLoading(true);
 
-        try {
-            const { data } = await new CallGetSecret().execute();
-            
-            if (!data) {
-                throw new Error('MISSING_SECRET');
-            }
+            await new CallGetSecret().execute()
+                .then(({ data }) => {
+                    setSecret(data as string);
+                    setError('');
+                })
+                .catch(({ code, error, data }) => {
+                    setSecret('?');
+                    setError('Impossible to fetch user secret.');
+                });
 
-            setSecret(data);
-
-        } catch (err: any) {
-            setError('Impossible to fetch user secret.');
-            setSecret('?');
-
-            throw err;
-        
-        } finally {
-            setLoading(false);
-        }
+        setLoading(false);
     };
 
     return {

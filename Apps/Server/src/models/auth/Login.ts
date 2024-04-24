@@ -48,6 +48,10 @@ class Login {
         return this.attempts;
     }
 
+    public setAttempts(attempts: LoginAttempt[]) {
+        this.attempts = attempts;
+    }
+
     public getFirstAttempt() {
         return this.attempts[0];
     }
