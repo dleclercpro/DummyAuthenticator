@@ -13,6 +13,7 @@ import TimeDuration from '../models/units/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
 import { computeDate } from '../utils/time';
 import User from '../models/auth/User';
+import { logger } from '../utils/logger';
 
 const SignInController: RequestHandler = async (req, res, next) => {
     let { email, password, staySignedIn } = req.body;
@@ -54,6 +55,7 @@ const SignInController: RequestHandler = async (req, res, next) => {
 
         // Only allow X failed login attempts per hour
         if (failedLoginAttemptsInLastHour.length > HOURLY_LOGIN_MAX_ATTEMPTS) {
+            logger.warn(`User '${user.getEmail()}' has tried to log in ${loginAttemptsInLastHour.length} times in the last hour.`);
             throw new ErrorNoMoreLoginAttempts(user.getEmail(), failedLoginAttemptsInLastHour.length);
         }
         
