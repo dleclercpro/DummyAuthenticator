@@ -1,18 +1,18 @@
 import { validate } from 'email-validator';
 import { RequestHandler } from 'express';
-import CreateUserCommand from '../commands/user/CreateUserCommand';
 import { ErrorInvalidEmail, ErrorInvalidPassword } from '../errors/ServerError';
 import { ErrorUserAlreadyExists } from '../errors/UserErrors';
 import { errorResponse, successResponse } from '../utils/calls';
 import { HttpStatusCode } from '../types/HTTPTypes';
 import PasswordManager from '../models/auth/PasswordManager';
 import { ClientError } from '../constants';
+import { logger } from '../utils/logger';
+import User from '../models/auth/User';
 
 const SignUpController: RequestHandler = async (req, res, next) => {
     let { email, password } = req.body;
     
     try {
-
         // Sanitize input
         email = email.trim().toLowerCase();
 
@@ -27,7 +27,16 @@ const SignUpController: RequestHandler = async (req, res, next) => {
         }
         
         // Create new user in database
-        await new CreateUserCommand({ email, password }).execute();
+        let user = await User.findByEmail(email);
+        if (user) {
+            throw new ErrorUserAlreadyExists(user);
+        }
+        
+        // Create new user instance
+        user = await User.create(email, password);
+
+        // Report its creation
+        logger.info(`New user created: ${user.getEmail()}`);
 
         // Success
         return res.json(successResponse());

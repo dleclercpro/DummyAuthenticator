@@ -1,16 +1,22 @@
 import { RequestHandler } from 'express';
-import SignOutCommand from '../commands/auth/SignOutCommand';
 import { SESSION_COOKIE } from '../config/AuthConfig';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { errorResponse, successResponse } from '../utils/calls';
 import { HttpStatusCode } from '../types/HTTPTypes';
 import { ClientError } from '../constants';
+import User from '../models/auth/User';
 
 const SignOutController: RequestHandler = async (req, res, next) => {
     const { session } = req;
 
     try {
-        await new SignOutCommand({ session }).execute();
+        const user = await User.findByEmail(session.getEmail());
+        if (!user) {
+            throw new ErrorUserDoesNotExist(session.getEmail());
+        }
+
+        // Destroy user session
+        await session.delete();
 
         // Remove session cookie in client
         res.clearCookie(SESSION_COOKIE);
