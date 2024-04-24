@@ -32,7 +32,7 @@ const Home: React.FC<Props> = () => {
     // Fetch secret on load
     useEffect(() => {
         fetchSecret();
-    }, [fetchSecret]);
+    }, []);
 
     // Update snackbar on new error
     useEffect(() => {
