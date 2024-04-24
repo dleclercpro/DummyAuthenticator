@@ -1,6 +1,7 @@
 import { ErrorUserDoesNotExist } from '../../errors/UserErrors';
 import Command from '../Command';
 import User from '../../models/auth/User';
+import { logger } from '../../utils/logger';
 
 interface Argument {
     email: string,
@@ -24,7 +25,7 @@ class GetUserCommand extends Command<Argument, Response> {
         if (!user) {
             throw new ErrorUserDoesNotExist(email);
         }
-        
+
         return user;
     }
 }

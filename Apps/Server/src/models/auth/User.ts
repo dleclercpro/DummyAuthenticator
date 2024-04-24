@@ -2,6 +2,8 @@ import randomWords from 'random-words';
 import { DB } from '../..';
 import PasswordManager from './PasswordManager';
 import Password from './Password';
+import Login from './Login';
+import { logger } from '../../utils/logger';
 
 const getRandomWord = () => randomWords({ exactly: 1, join: `` });
 
@@ -10,18 +12,21 @@ type UserTokens = Record<string, string>;
 interface UserArgs {
     email: string,
     password: Password,
+    login: Login,
     secret: string,
     tokens: UserTokens,
 }
 
 class User {
     protected email: string;
-    public password: Password;
+    protected password: Password;
+    protected login: Login;
     protected secret: string;
     protected tokens: UserTokens;
 
     public constructor(args: UserArgs) {
         this.email = args.email;
+        this.login = args.login;
         this.password = args.password;
         this.secret = args.secret;
         this.tokens = {};
@@ -30,14 +35,23 @@ class User {
     public serialize() {
         return JSON.stringify({
             email: this.email,
-            password: this.password,
+            password: this.password.serialize(),
+            login: this.login.serialize(),
             secret: this.secret,
             tokens: this.tokens,
         });
     }
 
     public static deserialize(str: string) {
-        return new User(JSON.parse(str));
+        const args = JSON.parse(str);
+
+        const user = new User({
+            ...args,
+            password: Password.deserialize(args.password),
+            login: Login.deserialize(args.login),
+        });
+
+        return user;
     }
 
     public stringify() {
@@ -54,6 +68,10 @@ class User {
 
     public getPassword() {
         return this.password;
+    }
+
+    public getLogin() {
+        return this.login;
     }
 
     public getSecret() {
@@ -101,6 +119,7 @@ class User {
             password: new Password({
                 value: await PasswordManager.hash(password),
             }),
+            login: new Login({}),
             secret: getRandomWord(),
             tokens: {},
         });

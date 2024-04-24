@@ -49,10 +49,10 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         }
 
         // Make sure user hasn't attempted too many times to log in
-        const lastReset = user.password.getLastReset();
+        const lastReset = user.getPassword().getLastReset();
 
         // Verify token validity
-        const userHasResetTheirPassword = user.password.wasReset();
+        const userHasResetTheirPassword = user.getPassword().wasReset();
         const isTokenExpired = new Date(expirationDate) <= now || userHasResetTheirPassword && new Date(creationDate) <= (lastReset as Date);
 
         if (isTokenExpired) {

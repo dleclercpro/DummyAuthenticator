@@ -1,4 +1,5 @@
 import { ErrorUserWrongPassword } from '../../errors/UserErrors';
+import { LoginAttemptType } from '../../models/auth/Login';
 import PasswordManager from '../../models/auth/PasswordManager';
 import Session from '../../models/auth/Session';
 import User from '../../models/auth/User';
@@ -30,8 +31,13 @@ class SignInCommand extends Command<Argument, Response> {
         const user = await new GetUserCommand({ email }).execute();
 
         // Authenticate user
-        const isPasswordValid = await PasswordManager.isValid(password, user.password.getValue());
+        const isPasswordValid = await PasswordManager.isValid(password, user.getPassword().getValue());
         
+        // Store login attempt
+        user.getLogin().addAttempt(isPasswordValid ? LoginAttemptType.Success : LoginAttemptType.Failure);
+
+        await user.save();
+
         if (!isPasswordValid) {
             throw new ErrorUserWrongPassword(user);
         }
