@@ -4,7 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import { logger } from '../utils/logger';
-import { CLIENT_ROOT, DEV, PORT, ROOT } from '../config/AppConfig';
+import { ROOT, PORT, CLIENT_ROOT, DEV } from '../config/AppConfig';
 import ErrorMiddleware from '../middleware/ErrorMiddleware';
 
 class AppServer {
@@ -29,10 +29,12 @@ class AppServer {
         if (DEV) {
             logger.debug(`Enabling CORS in development environment...`);
 
-            this.app.use(cors({
+            const CORS_OPTIONS = {
                 origin: CLIENT_ROOT,
                 credentials: true,
-            }));
+            };
+
+            this.app.use(cors(CORS_OPTIONS));
         }
 
         // Define server's API endpoints

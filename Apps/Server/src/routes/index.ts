@@ -1,10 +1,9 @@
 import express, { Router } from 'express';
 import { RequestMiddleware } from '../middleware/RequestMiddleware';
-import { CLIENT_ROOT, PROD } from '../config/AppConfig';
+import { DEV, PROD, CLIENT_DIR, CLIENT_ROOT } from '../config/AppConfig';
 import ApiRouter from './api';
 import { logger } from '../utils/logger';
 import path from 'path';
-import { CLIENT_DIR } from '../config/ResourceConfig';
 
 
 
@@ -22,13 +21,13 @@ router.use(RequestMiddleware);
 // API
 router.use(`/api`, ApiRouter);
 
-// Client app
-if (PROD) {
 
-    // Serve React app's static files
+
+// Prod: serve React app as static files on production environment
+if (PROD) {
     router.use(express.static(path.join(CLIENT_DIR)));
 
-    // Define a route that serves the React app
+    // Define a default route that serves the React app
     router.get('*', (req, res) => {
         const url = path.join(CLIENT_DIR, 'index.html');
 
@@ -36,10 +35,11 @@ if (PROD) {
 
         return res.sendFile(url);
     });
-} else {
-    
-    // Redirect app to React's development server
-    router.get('*', (req, res, next) => {
+}
+
+// Dev: redirect React app's traffic to development server
+if (DEV) {
+    router.get('*', (req, res) => {
         const path = req.originalUrl;
         const url = `${CLIENT_ROOT}${path}`;
 
