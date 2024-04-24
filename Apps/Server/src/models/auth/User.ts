@@ -1,7 +1,7 @@
-import * as bcrypt from 'bcrypt';
 import randomWords from 'random-words';
-import { N_PASSWORD_SALT_ROUNDS } from '../../config/AuthConfig';
 import { DB } from '../..';
+import PasswordManager from './PasswordManager';
+import Password from './Password';
 
 const getRandomWord = () => randomWords({ exactly: 1, join: `` });
 
@@ -9,26 +9,20 @@ type UserTokens = Record<string, string>;
 
 interface UserArgs {
     email: string,
-    password: string,
-    passwordResetCount: number,
-    lastPasswordReset: Date | null,
+    password: Password,
     secret: string,
     tokens: UserTokens,
 }
 
 class User {
     protected email: string;
-    protected password: string;
-    protected lastPasswordReset: Date | null;
-    protected passwordResetCount: number;
+    public password: Password;
     protected secret: string;
     protected tokens: UserTokens;
 
     public constructor(args: UserArgs) {
         this.email = args.email;
         this.password = args.password;
-        this.passwordResetCount = args.passwordResetCount;
-        this.lastPasswordReset = args.lastPasswordReset;
         this.secret = args.secret;
         this.tokens = {};
     }
@@ -37,8 +31,6 @@ class User {
         return JSON.stringify({
             email: this.email,
             password: this.password,
-            passwordResetCount: this.passwordResetCount,
-            lastPasswordReset: this.lastPasswordReset,
             secret: this.secret,
             tokens: this.tokens,
         });
@@ -64,14 +56,6 @@ class User {
         return this.password;
     }
 
-    public getLastPasswordReset() {
-        return this.lastPasswordReset;
-    }
-
-    public getPasswordResetCount() {
-        return this.passwordResetCount;
-    }
-
     public getSecret() {
         return this.secret;
     }
@@ -88,24 +72,6 @@ class User {
 
     public async renewSecret() {
         this.secret = getRandomWord();
-
-        await this.save();
-    }
-
-    public async isPasswordValid(password: string) {
-        return bcrypt.compare(password, this.password);
-    }
-
-    public static async hashPassword(password: string) {
-        const hashedPassword = await bcrypt.hash(password, N_PASSWORD_SALT_ROUNDS);
-
-        return hashedPassword;
-    }
-
-    public async resetPassword(newPassword: string) {
-        this.password = await User.hashPassword(newPassword);
-        this.passwordResetCount += 1;
-        this.lastPasswordReset = new Date();
 
         await this.save();
     }
@@ -132,9 +98,9 @@ class User {
         // Create new user
         const user = new User({
             email,
-            password: await User.hashPassword(password),
-            passwordResetCount: 0,
-            lastPasswordReset: null,
+            password: new Password({
+                value: await PasswordManager.hash(password),
+            }),
             secret: getRandomWord(),
             tokens: {},
         });

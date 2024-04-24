@@ -27,37 +27,43 @@ type Body = {
 
 
 const ResetPasswordController: RequestHandler = async (req, res, next) => {
+    const now = new Date();
+
     try {
-        const now = new Date();
-
         const { password } = req.body as Body;
-
+    
         const token = await validateQuery(req) as { string: string, content: PasswordRecoveryToken };
         const { email, creationDate, expirationDate } = token.content;
 
         logger.info(`Trying to reset password for user '${token.content.email}'...`);
 
-        // Validate password
-        if (!PasswordManager.isPasswordValid(password)) {
+        // Ensure password is strong enough
+        if (!PasswordManager.areRulesFollowed(password)) {
             throw new ErrorInvalidPassword();
         }
 
-        const user = await User.findByEmail(email);
-
         // User should exist in database
+        const user = await User.findByEmail(email);
         if (!user) {
             throw new ErrorUserDoesNotExist(email);
         }
 
+        // Make sure user hasn't attempted too many times to log in
+        const lastReset = user.password.getLastReset();
+
         // Verify token validity
-        const userHasResetTheirPassword = user.getPasswordResetCount() > 0;
-        const isTokenExpired = new Date(expirationDate) <= now || userHasResetTheirPassword && new Date(creationDate) <= (user.getLastPasswordReset() as Date);
+        const userHasResetTheirPassword = user.password.wasReset();
+        const isTokenExpired = new Date(expirationDate) <= now || userHasResetTheirPassword && new Date(creationDate) <= (lastReset as Date);
 
         if (isTokenExpired) {
             throw new ErrorExpiredToken();
         }
 
-        await user.resetPassword(password);
+        // Actually reset user's password
+        PasswordManager.reset(user, password);
+
+        // Store changes to DB
+        await user.save();
 
         logger.debug(`User '${user.getEmail()}' has successfully reset their password.`);
 
@@ -65,6 +71,7 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         return res.json(successResponse());
 
     } catch (err: any) {
+
         if (err.code === ErrorInvalidPassword.code) {
             return res
                 .status(HttpStatusCode.BAD_REQUEST)

@@ -1,4 +1,5 @@
-import { ErrorUserDoesNotExist, ErrorUserWrongPassword } from '../../errors/UserErrors';
+import { ErrorUserWrongPassword } from '../../errors/UserErrors';
+import PasswordManager from '../../models/auth/PasswordManager';
 import Session from '../../models/auth/Session';
 import User from '../../models/auth/User';
 import { logger } from '../../utils/logger';
@@ -29,7 +30,7 @@ class SignInCommand extends Command<Argument, Response> {
         const user = await new GetUserCommand({ email }).execute();
 
         // Authenticate user
-        const isPasswordValid = await user.isPasswordValid(password);
+        const isPasswordValid = await PasswordManager.isValid(password, user.password.getValue());
         
         if (!isPasswordValid) {
             throw new ErrorUserWrongPassword(user);

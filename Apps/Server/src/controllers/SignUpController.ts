@@ -22,7 +22,7 @@ const SignUpController: RequestHandler = async (req, res, next) => {
         }
 
         // Validate password
-        if (!PasswordManager.isPasswordValid(password)) {
+        if (!PasswordManager.areRulesFollowed(password)) {
             throw new ErrorInvalidPassword();
         }
         

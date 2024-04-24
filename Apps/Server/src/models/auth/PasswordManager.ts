@@ -1,5 +1,7 @@
-import { PASSWORD_OPTIONS } from '../../config/AuthConfig';
+import * as bcrypt from 'bcrypt';
+import { N_PASSWORD_SALT_ROUNDS, PASSWORD_OPTIONS } from '../../config/AuthConfig';
 import { isAlphanumerical, isNumerical } from '../../utils/string';
+import User from './User';
 
 interface PasswordOptions {
     minLength?: number,
@@ -26,7 +28,25 @@ class PasswordManager {
     return PasswordManager.instance;
   }
 
-  public isPasswordValid = (password: string) => {
+  public async hash(password: string) {
+    const hashedPassword = await bcrypt.hash(password, N_PASSWORD_SALT_ROUNDS);
+
+    return hashedPassword;
+  }
+
+  public async reset(user: User, value: string) {
+    const password = user.getPassword();
+
+    password.setValue(await this.hash(value));
+    password.incrementResetCount();
+    password.setLastReset(new Date());
+  }
+
+  public async isValid(password: string, encryptedPassword: string) {
+    return bcrypt.compare(password, encryptedPassword);
+  }
+
+  public areRulesFollowed = (password: string) => {
     let isValid = true;
     
     if (this.options.minLength) {
