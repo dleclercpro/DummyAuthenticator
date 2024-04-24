@@ -4,9 +4,15 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import { logger } from '../utils/logger';
-import { ROOT, PORT, CLIENT_ROOT, DEV } from '../config/AppConfig';
+import { PORT, CLIENT_ROOT, DEV, PROD } from '../config/AppConfig';
 import ErrorMiddleware from '../middleware/ErrorMiddleware';
+import TimeDuration from './units/TimeDuration';
+import { TimeUnit } from '../types/TimeTypes';
+import { killAfterTimeout } from '../utils/process';
 
+
+
+// There can only be one app server: singleton!
 class AppServer {
     protected app?: express.Express;
     protected server?: http.Server;
@@ -27,7 +33,7 @@ class AppServer {
 
         // Allow all origins in dev mode
         if (DEV) {
-            logger.debug(`Enabling CORS in development environment...`);
+            logger.debug(`Enabling CORS.`);
 
             const CORS_OPTIONS = {
                 origin: CLIENT_ROOT,
@@ -55,25 +61,42 @@ class AppServer {
     public async start() {
         if (!this.server) throw new Error('MISSING_SERVER');
 
-        this.server.listen(PORT, async () => {
-            logger.debug(`App server listening at: ${ROOT}`);
+        // Listen to stop signals
+        process.on('SIGTERM', () => this.stop('SIGTERM'));
+        process.on('SIGINT', () => this.stop('SIGINT'));
+
+        // Listen to HTTP traffic on given port
+        this.server!.listen(PORT, async () => {
+            logger.debug(`Server listening on ${PROD ? 'container' : 'local'} port: ${PORT}`);
         });
     }
 
-    public async stop() {
+    public async stop(signal: string = '', timeout: TimeDuration = new TimeDuration(2, TimeUnit.Second)) {
         if (!this.server) throw new Error('MISSING_SERVER');
 
-        return new Promise<void>((resolve, reject) => {
-            this.server!.close((err) => {
-                if (err) {
-                    logger.fatal(`Could not shut down server gracefully: ${err}`);
-                    reject(err);
-                }
+        if (signal) {
+            logger.trace(`Received stop signal: ${signal}`);
+        }
 
-                logger.info(`Server shut down gracefully.`);
-                resolve();
+        // Force server shutdown after timeout
+        await Promise.race([killAfterTimeout(timeout), async () => {
+            
+            // Shut down gracefully
+            await new Promise<void>((resolve, reject) => {
+                this.server!.close((err) => {
+                    if (err) {
+                        logger.warn(`Could not shut down server gracefully: ${err}`);
+                        reject(err);
+                    }
+
+                    logger.debug(`Server shut down gracefully.`);
+                    resolve();
+                });
             });
-        });
+
+            // Exit process
+            process.exit(0);
+        }]);
     }
 }
 

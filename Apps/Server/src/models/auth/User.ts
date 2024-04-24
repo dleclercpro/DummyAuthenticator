@@ -1,5 +1,5 @@
 import randomWords from 'random-words';
-import { DB } from '../..';
+import { APP_DB } from '../..';
 import PasswordManager from './PasswordManager';
 import Password from './Password';
 import Login from './Login';
@@ -94,16 +94,16 @@ class User {
     }
 
     public async save() {
-        await DB.set(`user:${this.email}`, this.serialize());
+        await APP_DB.set(`user:${this.email}`, this.serialize());
     }
 
     public async delete() {
-        await DB.delete(`user:${this.email}`);
+        await APP_DB.delete(`user:${this.email}`);
     }
 
     // STATIC METHODS
     public static async findByEmail(email: string) {
-        const userAsString = await DB.get(`user:${email}`);
+        const userAsString = await APP_DB.get(`user:${email}`);
 
         if (userAsString) {
             return User.deserialize(userAsString);
