@@ -11,7 +11,6 @@ import LoadingButton from '../../buttons/LoadingButton';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import CreateIcon from '@mui/icons-material/Create';
 import { CallSignUp } from '../../../models/calls/auth/CallSignUp';
-import { translateServerError } from '../../../errors/ServerErrors';
 
 interface Props {
 
@@ -51,7 +50,7 @@ const SignUp: React.FC<Props> = () => {
                 navigate(getURL(Page.SignIn));
             })
             .catch((err: any) => {
-                setError(translateServerError(err.message));
+                setError(err.message);
                 setSnackbarOpen(true);
                 setLoading(false);
             });

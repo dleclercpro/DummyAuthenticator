@@ -34,11 +34,8 @@ const SignUpController: RequestHandler = async (req, res, next) => {
         
         // Create new user instance
         user = await User.create(email, password);
-
-        // Report its creation
         logger.info(`New user created: ${user.getEmail()}`);
 
-        // Success
         return res.json(successResponse());
 
     } catch (err: any) {

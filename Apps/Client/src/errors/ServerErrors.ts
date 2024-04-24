@@ -33,7 +33,7 @@ export const translateServerError = (err: ServerError) => {
         case ServerError.ExpiredToken:
             return 'The token you tried to use has expired.';
         case ServerError.NoMoreLoginAttempts:
-            return 'You have tried logging on too often in the past hour. Try again later.';
+            return 'You have tried to log in without success too many times. A maximum of {{ MAX_ATTEMPTS }} login failures are allowed per hour.';
         default:
             return 'UNKNOWN_ERROR';
     }

@@ -25,10 +25,8 @@ const validateBody = async (req: Request) => {
 const ValidateTokenController: RequestHandler = async (req, res, next) => {
     try {
         const token = await validateBody(req);
-
         logger.debug(`Received valid token.`);
 
-        // Success
         return res.json(successResponse(token));
 
     } catch (err: any) {

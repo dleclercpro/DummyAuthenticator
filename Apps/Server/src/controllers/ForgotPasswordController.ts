@@ -43,7 +43,6 @@ const ForgotPasswordController: RequestHandler = async (req, res, next) => {
         // Send user e-mail to reset their password
         await Gmailer.send(await EmailFactory.createPasswordRecoveryEmail(user));
 
-        // Success
         return res.json(successResponse());
 
     } catch (err: any) {

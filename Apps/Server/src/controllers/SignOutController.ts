@@ -21,7 +21,6 @@ const SignOutController: RequestHandler = async (req, res, next) => {
         // Remove session cookie in client
         res.clearCookie(SESSION_COOKIE);
 
-        // Success
         return res.json(successResponse());
 
     } catch (err: any) {

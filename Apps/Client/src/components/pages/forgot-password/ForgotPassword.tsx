@@ -9,7 +9,6 @@ import SendIcon from '@mui/icons-material/Send';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import useAuth from '../../../hooks/useAuth';
 import { Page, getURL } from '../../../routes/Router';
-import { translateServerError } from '../../../errors/ServerErrors';
 import { Link, useNavigate } from 'react-router-dom';
 import TimeDuration from '../../../models/TimeDuration';
 import { TimeUnit } from '../../../types/TimeTypes';
@@ -57,10 +56,8 @@ const ForgotPassword: React.FC<Props> = () => {
                 navigate(getURL(Page.Home));
             })
             .catch((err: any) => {
-                const error = translateServerError(err.message);
-
                 setError(true);
-                setSnackbarMessage(error);
+                setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
             })
             .finally(() => {

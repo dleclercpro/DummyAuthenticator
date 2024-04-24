@@ -17,6 +17,8 @@ import User from '../models/auth/User';
 const SignInController: RequestHandler = async (req, res, next) => {
     let { email, password, staySignedIn } = req.body;
 
+    let user;
+
     try {
         // Sanitize input
         email = email.trim().toLowerCase();
@@ -27,7 +29,7 @@ const SignInController: RequestHandler = async (req, res, next) => {
         }
         
         // Try to sign user in
-        const user = await User.findByEmail(email);
+        user = await User.findByEmail(email);
         if (!user) {
             throw new ErrorUserDoesNotExist(email);
         }
@@ -62,7 +64,6 @@ const SignInController: RequestHandler = async (req, res, next) => {
         // Set cookie with session ID on client's browser
         res.cookie(SESSION_COOKIE, session.getId());
 
-        // Success
         return res.json(successResponse());
 
     } catch (err: any) {
@@ -78,7 +79,12 @@ const SignInController: RequestHandler = async (req, res, next) => {
         if (err.code === ErrorNoMoreLoginAttempts.code) {
             return res
                 .status(HttpStatusCode.UNAUTHORIZED)
-                .json(errorResponse(ClientError.NoMoreLoginAttempts));
+                .json(errorResponse(ClientError.NoMoreLoginAttempts, user ? {
+                    attempts: user.getLogin().getAttempts().length,
+                    maxAttempts: HOURLY_LOGIN_ATTEMPT_MAX_COUNT,
+                } : {
+                    
+                }));
         }
 
         next(err);

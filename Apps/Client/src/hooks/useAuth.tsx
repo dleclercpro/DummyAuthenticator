@@ -4,6 +4,7 @@ import { CallSignOut } from '../models/calls/auth/CallSignOut';
 import { CallPing } from '../models/calls/user/CallPing';
 import { CallResetPassword } from '../models/calls/auth/CallResetPassword';
 import { CallForgotPassword } from '../models/calls/auth/CallForgotPassword';
+import { ServerError, translateServerError } from '../errors/ServerErrors';
 
 interface IAuthContext {
     isPinged: boolean, // Determine whether user still has active session on server
@@ -59,23 +60,42 @@ const useAuth = () => {
     }
 
     const login = async (email: string, password: string, staySignedIn: boolean) => {
-        await new CallSignIn().execute({ email, password, staySignedIn });
+        const response = await new CallSignIn().execute({ email, password, staySignedIn })
+            .catch(({ code, error, data }) => {
+                if (error === ServerError.NoMoreLoginAttempts) {
+                    const { attempts, maxAttempts } = data;
+
+                    throw new Error(translateServerError(error)
+                        .replace('{{ ATTEMPTS }}', attempts)
+                        .replace('{{ MAX_ATTEMPTS }}', maxAttempts)
+                    );
+                }
+            });
 
         setIsLogged(true);
     }
 
     const logout = async () => {
-        await new CallSignOut().execute();
-        
+        await new CallSignOut().execute()
+            .catch(({ code, error, data }) => {
+                throw new Error(translateServerError(error));
+            });
+
         setIsLogged(false);
     }
 
     const forgotPassword = async (email: string) => {
-        await new CallForgotPassword().execute({ email });
+        await new CallForgotPassword().execute({ email })
+            .catch(({ code, error, data }) => {
+                throw new Error(translateServerError(error));
+            });
     }
 
     const resetPassword = async (token: string, password: string) => {
-        await new CallResetPassword(token).execute({ password });
+        await new CallResetPassword(token).execute({ password })
+            .catch(({ code, error, data }) => {
+                throw new Error(translateServerError(error));
+            });
     }
 
     return {

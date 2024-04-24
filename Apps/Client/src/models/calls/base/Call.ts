@@ -4,7 +4,7 @@ import { ServerResponse } from '../../../types/CallTypes';
 /**
  * This is a class that models API calls.
  */
-class Call<RequestData = void, ResponseData = void> {
+class Call<RequestData = void, ResponseData = void, ErrorResponseData = void> {
     private name: string;
     private url: string;
     private method: string;
@@ -88,7 +88,7 @@ class Call<RequestData = void, ResponseData = void> {
 
                 // Try to parse JSON and return it with rest of response
                 try {
-                    return { ...res, json: await r.json() as ServerResponse<ResponseData> };
+                    return { ...res, json: await r.json() as ServerResponse<ResponseData | ErrorResponseData> };
                 } catch {
                     return { ...res, json: null };
                 }
@@ -106,12 +106,12 @@ class Call<RequestData = void, ResponseData = void> {
 
             // There was an error
             if (response.status >= 400 && error) {
-                return Promise.reject(new Error(error));
+                return Promise.reject(response.json);
             }
 
             // Everything went fine
             if (response.status < 400 && Number.isInteger(code) && code >= 0) {
-                return { code, data };
+                return Promise.resolve(response.json);
             }
         }
 

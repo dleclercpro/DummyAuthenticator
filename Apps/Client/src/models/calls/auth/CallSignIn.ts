@@ -6,7 +6,14 @@ interface Data {
     staySignedIn: boolean,
 }
 
-export class CallSignIn extends CallPUT<Data, void> {
+type ResponseData = undefined;
+
+interface ErrorResponseData {
+    attempts: number,
+    maxAttempts: number,
+}
+
+export class CallSignIn extends CallPUT<Data, ResponseData, ErrorResponseData> {
 
     constructor() {
         super(`/sign-in`);

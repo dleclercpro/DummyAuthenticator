@@ -21,7 +21,6 @@ const GetSecretController: RequestHandler = async (req, res, next) => {
         // Fake some processing time for fetching of the secret
         await sleep(new TimeDuration(1, TimeUnit.Second));
 
-        // Success
         return res.json(successResponse(user.getSecret()));
 
     } catch (err: any) {

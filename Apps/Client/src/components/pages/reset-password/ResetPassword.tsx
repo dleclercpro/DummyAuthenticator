@@ -8,7 +8,6 @@ import LoadingButton from '../../buttons/LoadingButton';
 import ResetIcon from '@mui/icons-material/LockReset';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
-import { translateServerError } from '../../../errors/ServerErrors';
 import { Page, getURL } from '../../../routes/Router';
 import EmailField from '../../fields/EmailField';
 import { sleep } from '../../../utils/time';
@@ -106,10 +105,8 @@ const ResetPassword: React.FC<Props> = () => {
                     });
             })
             .catch((err: any) => {
-                const error = translateServerError(err.message);
-
                 setError(true);
-                setSnackbarMessage(error);
+                setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
             })
             .finally(() => {
