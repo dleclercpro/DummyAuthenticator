@@ -12,6 +12,8 @@ export const PASSWORD_OPTIONS = !PROD ? {} : {
     minSymbols: 1,
 };
 
+export const HOURLY_LOGIN_ATTEMPT_MAX_COUNT = 5;
+
 export const GMAIL_USER = process.env.GMAIL_USER as string;
 export const GMAIL_PASS = process.env.GMAIL_PASS as string;
 

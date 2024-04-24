@@ -4,7 +4,7 @@ import { errorResponse, successResponse } from '../utils/calls';
 import SignInCommand from '../commands/auth/SignInCommand';
 import { ErrorUserDoesNotExist, ErrorUserWrongPassword } from '../errors/UserErrors';
 import { validate } from 'email-validator';
-import { ErrorInvalidEmail } from '../errors/ServerError';
+import { ErrorInvalidEmail, ErrorNoMoreLoginAttempts } from '../errors/ServerError';
 import { SESSION_COOKIE } from '../config/AuthConfig';
 import { ClientError } from '../constants';
 
@@ -31,16 +31,19 @@ const SignInController: RequestHandler = async (req, res, next) => {
         return res.json(successResponse());
 
     } catch (err: any) {
-        
-        // Do not tell client why user can't sign in: just say that
-        // their credentials are invalid
         if (err.code === ErrorUserDoesNotExist.code ||
             err.code === ErrorInvalidEmail.code ||
             err.code === ErrorUserWrongPassword.code
         ) {
             return res
-                .status(HttpStatusCode.FORBIDDEN)
+                .status(HttpStatusCode.UNAUTHORIZED)
                 .json(errorResponse(ClientError.InvalidCredentials));
+        }
+
+        if (err.code === ErrorNoMoreLoginAttempts.code) {
+            return res
+                .status(HttpStatusCode.UNAUTHORIZED)
+                .json(errorResponse(ClientError.NoMoreLoginAttempts));
         }
 
         next(err);

@@ -30,7 +30,18 @@ class Login {
     }
 
     public static deserialize(str: string) {
-        return new Login(JSON.parse(str));
+        const args = JSON.parse(str);
+
+        // Ensure timestamp is a Date object
+        const attempts = args.attempts
+            .map(({ type, timestamp }: { type: string, timestamp: string }) => {
+                return {
+                    type: type as LoginAttemptType,
+                    timestamp: new Date(timestamp),
+                };
+            });
+
+        return new Login({ attempts });
     }
 
     public getAttempts() {

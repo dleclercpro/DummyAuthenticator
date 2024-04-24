@@ -10,4 +10,5 @@ export enum ClientError {
   ExpiredToken = 'EXPIRED_TOKEN',
   UserAlreadyExists = 'USER_ALREADY_EXISTS',
   UserDoesNotExist = 'USER_DOES_NOT_EXIST',
+  NoMoreLoginAttempts = 'NO_MORE_LOGIN_ATTEMPTS',
 }

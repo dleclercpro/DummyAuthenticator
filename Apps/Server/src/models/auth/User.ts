@@ -3,7 +3,6 @@ import { DB } from '../..';
 import PasswordManager from './PasswordManager';
 import Password from './Password';
 import Login from './Login';
-import { logger } from '../../utils/logger';
 
 const getRandomWord = () => randomWords({ exactly: 1, join: `` });
 
