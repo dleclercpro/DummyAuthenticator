@@ -5,6 +5,7 @@ import { CallPing } from '../models/calls/user/CallPing';
 import { CallResetPassword } from '../models/calls/auth/CallResetPassword';
 import { CallForgotPassword } from '../models/calls/auth/CallForgotPassword';
 import { ServerError, translateServerError } from '../errors/ServerErrors';
+import { CallConfirmEmail } from '../models/calls/auth/CallConfirmEmail';
 
 interface IAuthContext {
     isPinged: boolean, // Determine whether user still has active session on server
@@ -12,6 +13,7 @@ interface IAuthContext {
     ping: () => Promise<void>,
     login: (email: string, password: string, staySignedIn: boolean) => Promise<void>,
     logout: () => Promise<void>,
+    confirmEmail: (token: string) => Promise<void>,
     forgotPassword: (email: string) => Promise<void>,
     resetPassword: (token: string, password: string) => Promise<void>,
 }
@@ -86,6 +88,13 @@ const useAuth = () => {
             });
     }
 
+    const confirmEmail = async (token: string) => {
+        await new CallConfirmEmail(token).execute()
+            .catch(({ code, error, data }) => {
+                throw new Error(translateServerError(error));
+            });
+    }
+
     const forgotPassword = async (email: string) => {
         await new CallForgotPassword().execute({ email })
             .catch(({ code, error, data }) => {
@@ -106,6 +115,7 @@ const useAuth = () => {
         ping,
         login,
         logout,
+        confirmEmail,
         forgotPassword,
         resetPassword,
     };

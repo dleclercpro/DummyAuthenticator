@@ -16,7 +16,7 @@ import { TimeUnit } from '../../../types/TimeTypes';
 import { CallValidateToken } from '../../../models/calls/auth/CallValidateToken';
 
 // FIXME
-export type PasswordRecoveryToken = {
+export type ResetPasswordToken = {
     email: string,
     creationDate: Date,
     expirationDate: Date,
@@ -43,10 +43,10 @@ const ResetPassword: React.FC<Props> = () => {
     const [password, setPassword] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
 
-    const [snackbarOpen, setSnackbarOpen] = useState(!!error);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    const [validatedToken, setValidatedToken] = useState<{ string: string, content: PasswordRecoveryToken } | null>(null);
+    const [validatedToken, setValidatedToken] = useState<{ string: string, content: ResetPasswordToken } | null>(null);
 
     // Validate token
     useEffect(() => {
@@ -56,11 +56,11 @@ const ResetPassword: React.FC<Props> = () => {
 
         new CallValidateToken().execute({ token })
             .then(({ data }) => {
-                setValidatedToken(data! as { string: string, content: PasswordRecoveryToken });
-
+                setValidatedToken(data! as { string: string, content: ResetPasswordToken });
                 setError(false);
             })
             .catch(() => {
+                // Invalid token: bring user back home
                 navigate(getURL(Page.Home));
             });
 

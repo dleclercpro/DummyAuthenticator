@@ -8,6 +8,7 @@ import AuthenticatedRoute from './AuthenticatedRoute';
 import UnauthenticatedRoute from './UnauthenticatedRoute';
 import ForgotPassword from '../components/pages/forgot-password/ForgotPassword';
 import ResetPassword from '../components/pages/reset-password/ResetPassword';
+import ConfirmEmail from '../components/pages/confirm-email/ConfirmEmail';
 
 export enum Page {
     Home = '',
@@ -59,6 +60,12 @@ const Router: React.FC<Props> = () => {
             <Route path='/sign-up' element={
                 <UnauthenticatedRoute>
                     <SignUp />
+                </UnauthenticatedRoute>
+            } />
+
+            <Route path='/confirm-email' element={
+                <UnauthenticatedRoute>
+                    <ConfirmEmail />
                 </UnauthenticatedRoute>
             } />
 
