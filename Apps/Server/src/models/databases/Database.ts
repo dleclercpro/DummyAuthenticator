@@ -2,12 +2,21 @@ import { Logger } from 'pino';
 import { Auth } from '../../types';
 import { logger } from '../../utils/logger';
 
+export interface IKeyValueDatabase<R> {
+    has(id: string): Promise<boolean>;
+    get(id: string): Promise<R | null>;
+    set(id: string, record: R): Promise<void>;
+    delete(id: string): Promise<void>;
+}
+
 export interface DatabaseOptions {
     host: string,
     port: number,
     name: string,
     auth?: Auth,
 }
+
+
 
 abstract class Database {
     protected host: string;

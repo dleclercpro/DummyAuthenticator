@@ -16,11 +16,11 @@ export const SESSIONS_DB_OPTIONS = {
 // Redis
 export const REDIS_HOST = process.env.REDIS_HOST!;
 export const REDIS_PORT = process.env.REDIS_PORT;
-export const REDIS_RETRY_CONNECT_MAX_DELAY = new TimeDuration(10, TimeUnit.Second);
-export const REDIS_RETRY_CONNECT_TIMEOUT = new TimeDuration(5, TimeUnit.Second);
-export const REDIS_RETRY_CONNECT_MAX = 5;
+export const REDIS_RETRY_CONN_TIMEOUT = new TimeDuration(5, TimeUnit.Second);
+export const REDIS_RETRY_CONN_MAX_BACKOFF = new TimeDuration(30, TimeUnit.Second);
+export const REDIS_RETRY_CONN_MAX_ATTEMPTS = 5;
 
-export const DB_IN_MEMORY = [true, 'true'].includes(process.env.DB_IN_MEMORY!);
+export const USE_REDIS = [true, 'true'].includes(process.env.USE_REDIS!);
 export const DB_PROTOCOL = process.env.DB_PROTOCOL!;
 export const DB_HOST = process.env.DB_HOST!;
 export const DB_PORT = parseInt(process.env.DB_PORT!);

@@ -3,19 +3,19 @@ import AppServer from './models/AppServer';
 import { logger } from './utils/logger';
 import RedisDatabase from './models/databases/RedisDatabase';
 import { MemoryDatabase } from './models/databases/MemoryDatabase';
-import { DB_IN_MEMORY, DB_HOST, DB_PORT, DB_NAME } from './config/DatabasesConfig';
+import { USE_REDIS, DB_HOST, DB_PORT, DB_NAME } from './config/DatabasesConfig';
 import Router from './routes';
 
 
 
 export const APP_SERVER = new AppServer();
-export const APP_DB = (DB_IN_MEMORY ?
-    new MemoryDatabase<string>() :
+export const APP_DB = (USE_REDIS ?
     new RedisDatabase({
         host: DB_HOST,
         port: DB_PORT,
         name: DB_NAME,
-    })
+    }) :
+    new MemoryDatabase<string>() // Fallback database: in-memory
 );
 
 

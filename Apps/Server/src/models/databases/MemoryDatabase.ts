@@ -1,17 +1,11 @@
-export interface IKeyValueDatabase<R> {
-    has(id: string): Promise<boolean>;
-    get(id: string): Promise<R | null>;
-    set(id: string, record: R): Promise<void>;
-    delete(id: string): Promise<void>;
-}
-
-
+import { logger } from '../../utils/logger';
+import { IKeyValueDatabase } from './Database';
 
 export class MemoryDatabase<R> implements IKeyValueDatabase<R> {
     protected db = new Map<string, R>();
 
     public async start() {
-
+        logger.info(`Using in-memory database.`);
     }
 
     public async stop() {
@@ -39,12 +33,10 @@ export class MemoryDatabase<R> implements IKeyValueDatabase<R> {
     }
 
     public async size() {
-        const values = await this.getAll();
-
-        return values.length;
+        return this.db.size;
     }
 
     public async getAll() {
-        return Object.values(this.db);
+        return Array.from(this.db.values());
     }
 }

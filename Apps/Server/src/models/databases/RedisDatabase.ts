@@ -1,10 +1,9 @@
 import { RedisClientType, createClient } from 'redis';
-import Database, { DatabaseOptions } from './Database';
-import { IKeyValueDatabase } from './MemoryDatabase';
+import Database, { DatabaseOptions, IKeyValueDatabase } from './Database';
 import { logger } from '../../utils/logger';
 import TimeDuration from '../units/TimeDuration';
 import { TimeUnit } from '../../types/TimeTypes';
-import { REDIS_RETRY_CONNECT_MAX, REDIS_RETRY_CONNECT_MAX_DELAY } from '../../config/DatabasesConfig';
+import { REDIS_RETRY_CONN_MAX_ATTEMPTS, REDIS_RETRY_CONN_MAX_BACKOFF } from '../../config/DatabasesConfig';
 
 class RedisDatabase extends Database implements IKeyValueDatabase<string> {
     protected client: RedisClientType;
@@ -12,12 +11,10 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
     public constructor(options: DatabaseOptions) {
         super(options);
 
-        const url = this.getURI();
-
         this.client = createClient({
-            url,
+            url: this.getURI(),
             socket: {
-                reconnectStrategy: this.retry,
+                reconnectStrategy: this.connect,
             },
         });
     }
@@ -46,6 +43,8 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
     }
 
     public async start() {
+        logger.info(`Using Redis database.`);
+
         this.listen();
 
         logger.debug(`Trying to connect to: ${this.getAnonymousURI()}`);
@@ -59,49 +58,63 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
 
     protected listen = () => {
         this.client.on('ready', () => {
-            logger.debug('Ready.');
+            logger.trace('Ready.');
         });
 
         this.client.on('connect', () => {
-            logger.debug('Connected.');
+            logger.trace('Connected.');
         });
 
         this.client.on('reconnecting', () => {
-            logger.debug('Reconnecting...');
+            logger.trace('Reconnecting...');
         });
 
         this.client.on('end', () => {
-            logger.debug('Disconnected.');
+            logger.trace('Disconnected.');
         });
 
         this.client.on('warning', (warning: any) => {
-            logger.warn(warning.message);
+            logger.trace(`Warning: ${warning}`);
         });
 
         this.client.on('error', (error: any) => {
-            logger.error(error.message);
+            logger.trace(`Error: ${error.message}`);
+
+            // Log whenever a database connection is refused
+            if (error && error.code === 'ECONNREFUSED') {
+                logger.error('Redis refused connection. Is it running?');
+            }
         });
     }
 
-    protected retry = (retries: number, error: any) => {
-
-        // End reconnecting on a specific error and flush all commands with
-        // a individual error
-        if (error && error.code === 'ECONNREFUSED') {
-            logger.error('The Redis database refused the connection.');
-        }
-        
-        // End reconnecting with built in error
-        if (retries > REDIS_RETRY_CONNECT_MAX) {
-            logger.fatal('Number of connection retries exhausted. Stopping connection attempts.')
+    protected connect = (attempts: number, error: any) => {
+        if (attempts >= REDIS_RETRY_CONN_MAX_ATTEMPTS) {
+            logger.fatal('No more connection attempts allowed: exiting...')
             process.exit(1);
         }
 
-        // Reconnect after ... ms
-        const wait = Math.min(new TimeDuration(retries + 0.5, TimeUnit.Second).toMs().getAmount(), REDIS_RETRY_CONNECT_MAX_DELAY.toMs().getAmount());
-        logger.debug(`Waiting ${wait} ms...`);
+        // First connection attempt: do not wait
+        if (attempts === 0) {
+            return 0;
+        }
 
-        return wait;
+        // Reconnect after backing off
+        const wait = this.getConnectionBackoff(attempts);
+        logger.debug(`Connection attempts left: ${REDIS_RETRY_CONN_MAX_ATTEMPTS - attempts}`);
+        logger.debug(`Retrying connection in: ${wait.format()}`);
+
+        return wait.toMs().getAmount();
+    }
+
+    private getConnectionBackoff(attempts: number) {
+        const maxBackoff = REDIS_RETRY_CONN_MAX_BACKOFF;
+        const exponentialBackoff = new TimeDuration(Math.pow(2, attempts), TimeUnit.Second);
+
+        // Backoff exponentially
+        if (exponentialBackoff.smallerThan(maxBackoff)) {
+            return exponentialBackoff;
+        }
+        return maxBackoff;
     }
 
     private getPrefixedKey(key: string) {
@@ -113,11 +126,11 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
     }
 
     public async get(key: string) {
-        return this.client.get(this.getPrefixedKey(key));
+        return await this.client.get(this.getPrefixedKey(key));
     }
 
     public async getAllKeys() {
-        return this.client.keys(this.getPrefixedKey('*'));
+        return await this.client.keys(this.getPrefixedKey('*'));
     }
 
     public async getAll() {

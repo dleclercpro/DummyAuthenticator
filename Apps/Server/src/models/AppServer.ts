@@ -14,8 +14,8 @@ import { killAfterTimeout } from '../utils/process';
 
 // There can only be one app server: singleton!
 class AppServer {
-    protected app?: express.Express;
-    protected server?: http.Server;
+    private app?: express.Express;
+    private server?: http.Server;
 
     public async setup(router: Router) {
         this.app = express();
@@ -31,16 +31,15 @@ class AppServer {
         // Enable HTTP response compression
         this.app.use(compression());
 
-        // Allow all origins in dev mode
+        // CORS
         if (DEV) {
-            logger.debug(`Enabling CORS.`);
-
             const CORS_OPTIONS = {
                 origin: CLIENT_ROOT,
                 credentials: true,
             };
 
             this.app.use(cors(CORS_OPTIONS));
+            logger.debug(`CORS enabled for client app: ${CORS_OPTIONS.origin}`);
         }
 
         // Define server's API endpoints
