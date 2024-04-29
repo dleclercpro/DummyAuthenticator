@@ -1,5 +1,6 @@
 {
   "name": "dummy-authenticator-client",
+  "version": "v2.6.0",
   "author": "David Leclerc",
   "license": "MIT",
   "private": true,
