@@ -4,18 +4,14 @@ import PasswordManager from './PasswordManager';
 import UserPassword from './UserPassword';
 import UserLogin from './UserLogin';
 import UserEmail from './UserEmail';
-import { TokenType } from '../../constants';
 
 const getRandomWord = () => randomWords({ exactly: 1, join: `` });
-
-type UserTokens = Record<TokenType, string>;
 
 interface UserArgs {
     email: UserEmail,
     password: UserPassword,
     login: UserLogin,
     secret: string,
-    tokens: UserTokens,
 }
 
 
@@ -25,14 +21,12 @@ class User {
     protected password: UserPassword;
     protected login: UserLogin;
     protected secret: string;
-    protected tokens: UserTokens;
 
     public constructor(args: UserArgs) {
         this.email = args.email;
         this.login = args.login;
         this.password = args.password;
         this.secret = args.secret;
-        this.tokens = {} as Record<TokenType, string>;
     }
 
     public serialize() {
@@ -41,7 +35,6 @@ class User {
             password: this.password.serialize(),
             login: this.login.serialize(),
             secret: this.secret,
-            tokens: this.tokens,
         });
     }
 
@@ -82,16 +75,6 @@ class User {
         return this.secret;
     }
 
-    public getTokens() {
-        return this.tokens;
-    }
-
-    public async setToken(name: TokenType, value: string) {
-        this.tokens[name] = value;
-
-        await this.save();
-    }
-
     public async renewSecret() {
         this.secret = getRandomWord();
 
@@ -129,7 +112,6 @@ class User {
             }),
             login: new UserLogin({}),
             secret: getRandomWord(),
-            tokens: {} as Record<TokenType, string>,
         });
 
         // Store user in database

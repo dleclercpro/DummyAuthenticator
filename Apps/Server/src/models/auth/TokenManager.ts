@@ -65,8 +65,6 @@ class TokenManager {
     const token = await jwt.sign(content, this.secrets[tokenType]);
     logger.debug(`Generated '${tokenType}' token for user '${user.getEmail().getValue()}'.`);
 
-    await user.setToken(tokenType, token);
-
     return { string: token, content };
   }
 
@@ -85,8 +83,6 @@ class TokenManager {
     
     const token = await jwt.sign(content, this.secrets[tokenType]);
     logger.debug(`Generated '${tokenType}' token for user '${user.getEmail().getValue()}'.`);
-
-    await user.setToken(tokenType, token);
 
     return { string: token, content };
   }
