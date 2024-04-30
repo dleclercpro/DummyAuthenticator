@@ -1,7 +1,7 @@
 import { JWT_TOKEN_SECRETS, JWT_TOKEN_LONGEVITY } from '../../config/AuthConfig';
 import { TokenType } from '../../constants';
 import { ErrorInvalidToken } from '../../errors/ServerError';
-import { ConfirmEmailToken, ResetPasswordToken } from '../../types/TokenTypes';
+import { ConfirmEmailToken, ResetPasswordToken, Token } from '../../types/TokenTypes';
 import { logger } from '../../utils/logger';
 import User from './User';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -50,41 +50,38 @@ class TokenManager {
   }
 
   public async generateEmailConfirmationToken(user: User) {
-    const now = new Date();
-    const validTime = JWT_TOKEN_LONGEVITY.toMs().getAmount();
-    const tokenType = TokenType.ConfirmEmail;
-
-    const content: ConfirmEmailToken = {
-      type: tokenType,
+    return this.generateToken(user, TokenType.ConfirmEmail, {
       email: user.getEmail().getValue(),
-      validTime,
-      creationDate: now.getTime(),
-      expirationDate: now.getTime() + validTime,
-    };
-    
-    const token = await jwt.sign(content, this.secrets[tokenType]);
-    logger.debug(`Generated '${tokenType}' token for user '${user.getEmail().getValue()}'.`);
-
-    return { string: token, content };
+    }) as Promise<{ string: string, content: ConfirmEmailToken }>;
   }
 
   public async generateResetPasswordToken(user: User) {
+    return this.generateToken(user, TokenType.ResetPassword, {
+      email: user.getEmail().getValue(),
+    }) as Promise<{ string: string, content: ResetPasswordToken }>;
+  }
+
+  private async generateToken(user: User, type: TokenType, optsContent: object = {}) {
     const now = new Date();
     const validTime = JWT_TOKEN_LONGEVITY.toMs().getAmount();
-    const tokenType = TokenType.ResetPassword;
 
-    const content: ResetPasswordToken = {
-      type: tokenType,
-      email: user.getEmail().getValue(),
+    const baseContent: Token = {
+      type,
       validTime,
       creationDate: now.getTime(),
       expirationDate: now.getTime() + validTime,
     };
-    
-    const token = await jwt.sign(content, this.secrets[tokenType]);
-    logger.debug(`Generated '${tokenType}' token for user '${user.getEmail().getValue()}'.`);
 
-    return { string: token, content };
+    // Add token-specific content to base one (and overwrite it if necessary)
+    const content = {
+      ...baseContent,
+      ...optsContent,
+    };
+
+    const token = await jwt.sign(content, this.secrets[type]);
+    logger.debug(`Generated '${type}' token for user '${user.getEmail().getValue()}'.`);
+
+    return { string: token, content: content };
   }
 }
 

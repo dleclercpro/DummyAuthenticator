@@ -1,6 +1,6 @@
 import { TokenType } from '../constants';
 
-type Token = {
+export type Token = {
   type: TokenType,
   validTime: number,      // (ms)
   creationDate: number,   // (ms)
