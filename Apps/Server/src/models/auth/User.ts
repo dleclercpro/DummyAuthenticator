@@ -101,11 +101,11 @@ class User {
     }
 
     public async save() {
-        await APP_DB.set(`user:${this.email}`, this.serialize());
+        await APP_DB.set(`user:${this.email.getValue()}`, this.serialize());
     }
 
     public async delete() {
-        await APP_DB.delete(`user:${this.email}`);
+        await APP_DB.delete(`user:${this.email.getValue()}`);
     }
 
     // STATIC METHODS
