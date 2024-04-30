@@ -1,7 +1,7 @@
-import { JWT_TOKEN_SECRET, JWT_TOKEN_LONGEVITY } from '../../config/AuthConfig';
-import { Token } from '../../constants';
+import { JWT_TOKEN_SECRETS, JWT_TOKEN_LONGEVITY } from '../../config/AuthConfig';
+import { TokenType } from '../../constants';
 import { ErrorInvalidToken } from '../../errors/ServerError';
-import { PasswordRecoveryToken } from '../../types/TokenTypes';
+import { ConfirmEmailToken, ResetPasswordToken } from '../../types/TokenTypes';
 import { logger } from '../../utils/logger';
 import User from './User';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -12,22 +12,35 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 class TokenManager {
   private static instance?: TokenManager;
 
-  private secret: string;
+  private secrets: Record<TokenType, string>;
 
-  private constructor(secret: string) {
-    this.secret = secret;
+  private constructor(secrets: Record<TokenType, string>) {
+    this.secrets = secrets;
   }
 
   public static getInstance() {
     if (!TokenManager.instance) {
-      TokenManager.instance = new TokenManager(JWT_TOKEN_SECRET);
+      TokenManager.instance = new TokenManager(JWT_TOKEN_SECRETS);
     }
     return TokenManager.instance;
   }
 
+  public async verifyToken(token: string, type: TokenType) {
+    try {
+      const secret = JWT_TOKEN_SECRETS[type];
+      
+      const content = jwt.verify(token, secret) as JwtPayload;
+
+      return { string: token, content };
+      
+    } catch (err: unknown) {
+      throw new ErrorInvalidToken();
+    }
+  }
+
   public async decodeToken(token: string) {
     try {
-      const content = jwt.verify(token, this.secret) as JwtPayload;
+      const content = jwt.decode(token) as JwtPayload;
 
       return { string: token, content };
       
@@ -39,37 +52,41 @@ class TokenManager {
   public async generateEmailConfirmationToken(user: User) {
     const now = new Date();
     const validTime = JWT_TOKEN_LONGEVITY.toMs().getAmount();
+    const tokenType = TokenType.ConfirmEmail;
 
-    const content: PasswordRecoveryToken = {
+    const content: ConfirmEmailToken = {
+      type: tokenType,
       email: user.getEmail().getValue(),
       validTime,
       creationDate: now.getTime(),
       expirationDate: now.getTime() + validTime,
     };
     
-    const token = await jwt.sign(content, JWT_TOKEN_SECRET); // FIXME
-    logger.debug(`Generated reset password token for user '${user.getEmail()}'.`);
+    const token = await jwt.sign(content, this.secrets[tokenType]);
+    logger.debug(`Generated '${tokenType}' token for user '${user.getEmail()}'.`);
 
-    await user.setToken(Token.PasswordRecovery, token);
+    await user.setToken(tokenType, token);
 
     return { string: token, content };
   }
 
-  public async generateForgotPasswordToken(user: User) {
+  public async generateResetPasswordToken(user: User) {
     const now = new Date();
     const validTime = JWT_TOKEN_LONGEVITY.toMs().getAmount();
+    const tokenType = TokenType.ResetPassword;
 
-    const content: PasswordRecoveryToken = {
+    const content: ResetPasswordToken = {
+      type: tokenType,
       email: user.getEmail().getValue(),
       validTime,
       creationDate: now.getTime(),
       expirationDate: now.getTime() + validTime,
     };
     
-    const token = await jwt.sign(content, JWT_TOKEN_SECRET);
-    logger.debug(`Generated reset password token for user '${user.getEmail()}'.`);
+    const token = await jwt.sign(content, this.secrets[tokenType]);
+    logger.debug(`Generated '${tokenType}' token for user '${user.getEmail()}'.`);
 
-    await user.setToken(Token.PasswordRecovery, token);
+    await user.setToken(tokenType, token);
 
     return { string: token, content };
   }

@@ -17,5 +17,8 @@ export const HOURLY_LOGIN_MAX_ATTEMPTS = 50;
 export const GMAIL_USER = process.env.GMAIL_USER as string;
 export const GMAIL_PASS = process.env.GMAIL_PASS as string;
 
-export const JWT_TOKEN_SECRET = process.env.JWT_TOKEN_SECRET as string;
 export const JWT_TOKEN_LONGEVITY = new TimeDuration(15, TimeUnit.Minute);
+export const JWT_TOKEN_SECRETS = {
+    ConfirmEmail: process.env.JWT_CONFIRM_EMAIL_TOKEN_SECRET as string,
+    ResetPassword: process.env.JWT_RESET_PASSWORD_TOKEN_SECRET as string,
+};

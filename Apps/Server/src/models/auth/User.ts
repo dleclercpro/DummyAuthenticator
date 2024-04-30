@@ -4,10 +4,11 @@ import PasswordManager from './PasswordManager';
 import UserPassword from './UserPassword';
 import UserLogin from './UserLogin';
 import UserEmail from './UserEmail';
+import { TokenType } from '../../constants';
 
 const getRandomWord = () => randomWords({ exactly: 1, join: `` });
 
-type UserTokens = Record<string, string>;
+type UserTokens = Record<TokenType, string>;
 
 interface UserArgs {
     email: UserEmail,
@@ -31,7 +32,7 @@ class User {
         this.login = args.login;
         this.password = args.password;
         this.secret = args.secret;
-        this.tokens = {};
+        this.tokens = {} as Record<TokenType, string>;
     }
 
     public serialize() {
@@ -85,7 +86,7 @@ class User {
         return this.tokens;
     }
 
-    public async setToken(name: string, value: string) {
+    public async setToken(name: TokenType, value: string) {
         this.tokens[name] = value;
 
         await this.save();
@@ -128,7 +129,7 @@ class User {
             }),
             login: new UserLogin({}),
             secret: getRandomWord(),
-            tokens: {},
+            tokens: {} as Record<TokenType, string>,
         });
 
         // Store user in database

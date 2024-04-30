@@ -1,13 +1,13 @@
 import { CLIENT_ROOT } from '../../config/AppConfig';
 import { GMAIL_USER } from '../../config/AuthConfig';
 import { TimeUnit } from '../../types/TimeTypes';
-import { PasswordRecoveryToken } from '../../types/TokenTypes';
+import { ConfirmEmailToken } from '../../types/TokenTypes';
 import TimeDuration from '../units/TimeDuration';
 import Email from './Email';
 
 class EmailAddressConfirmationEmail extends Email {
 
-  public constructor(to: string, token: { string: string, content: PasswordRecoveryToken }) {
+  public constructor(to: string, token: { string: string, content: ConfirmEmailToken }) {
     const link = `${CLIENT_ROOT}/confirm-email?token=${token.string}`;
 
     const from = `Dummy Authenticator <${GMAIL_USER}>`;

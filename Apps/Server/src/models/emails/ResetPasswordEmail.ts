@@ -1,13 +1,13 @@
 import { CLIENT_ROOT } from '../../config/AppConfig';
 import { GMAIL_USER } from '../../config/AuthConfig';
 import { TimeUnit } from '../../types/TimeTypes';
-import { PasswordRecoveryToken } from '../../types/TokenTypes';
+import { ResetPasswordToken } from '../../types/TokenTypes';
 import TimeDuration from '../units/TimeDuration';
 import Email from './Email';
 
-class PasswordRecoveryEmail extends Email {
+class ResetPasswordEmail extends Email {
 
-  public constructor(to: string, token: { string: string, content: PasswordRecoveryToken }) {
+  public constructor(to: string, token: { string: string, content: ResetPasswordToken }) {
     const link = `${CLIENT_ROOT}/reset-password?token=${token.string}`;
 
     const from = `Dummy Authenticator <${GMAIL_USER}>`;
@@ -40,4 +40,4 @@ class PasswordRecoveryEmail extends Email {
   }
 }
 
-export default PasswordRecoveryEmail;
+export default ResetPasswordEmail;

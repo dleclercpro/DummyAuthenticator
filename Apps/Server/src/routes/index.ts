@@ -1,7 +1,7 @@
 import express, { Router } from 'express';
 import { RequestMiddleware } from '../middleware/RequestMiddleware';
 import { DEV, PROD, CLIENT_DIR, CLIENT_ROOT } from '../config/AppConfig';
-import ApiRouter from './api';
+import APIRouter from './APIRouter';
 import { logger } from '../utils/logger';
 import path from 'path';
 
@@ -19,7 +19,7 @@ router.use(RequestMiddleware);
 // ROUTES
 
 // API
-router.use(`/api`, ApiRouter);
+router.use(`/api`, APIRouter);
 
 
 

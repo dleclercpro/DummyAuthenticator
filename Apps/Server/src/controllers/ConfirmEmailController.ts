@@ -6,8 +6,8 @@ import TokenManager from '../models/auth/TokenManager';
 import User from '../models/auth/User';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { ErrorExpiredToken, ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
-import { PasswordRecoveryToken } from '../types/TokenTypes';
-import { ClientError } from '../constants';
+import { ResetPasswordToken } from '../types/TokenTypes';
+import { ClientError, TokenType } from '../constants';
 
 const validateQuery = async (req: Request) => {
     const { token } = req.query;
@@ -16,7 +16,7 @@ const validateQuery = async (req: Request) => {
         throw new ErrorMissingToken();
     }
 
-    return await TokenManager.decodeToken(token as string);
+    return await TokenManager.verifyToken(token as string, TokenType.ConfirmEmail);
 }
 
 
@@ -25,7 +25,7 @@ const ConfirmEmailController: RequestHandler = async (req, res, next) => {
     const now = new Date();
 
     try {
-        const token = await validateQuery(req) as { string: string, content: PasswordRecoveryToken };
+        const token = await validateQuery(req) as { string: string, content: ResetPasswordToken };
         const { email, expirationDate } = token.content;
 
         logger.info(`Trying to confirm e-mail address for user '${token.content.email}'...`);

@@ -7,8 +7,8 @@ import User from '../models/auth/User';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { ErrorExpiredToken, ErrorInvalidPassword, ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
 import PasswordManager from '../models/auth/PasswordManager';
-import { PasswordRecoveryToken } from '../types/TokenTypes';
-import { ClientError } from '../constants';
+import { ResetPasswordToken } from '../types/TokenTypes';
+import { ClientError, TokenType } from '../constants';
 
 const validateQuery = async (req: Request) => {
     const { token } = req.query;
@@ -17,7 +17,7 @@ const validateQuery = async (req: Request) => {
         throw new ErrorMissingToken();
     }
 
-    return await TokenManager.decodeToken(token as string);
+    return await TokenManager.verifyToken(token as string, TokenType.ResetPassword);
 }
 
 type Body = {
@@ -32,7 +32,7 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
     try {
         const { password } = req.body as Body;
     
-        const token = await validateQuery(req) as { string: string, content: PasswordRecoveryToken };
+        const token = await validateQuery(req) as { string: string, content: ResetPasswordToken };
         const { email, creationDate, expirationDate } = token.content;
 
         logger.info(`Trying to reset password for user '${token.content.email}'...`);

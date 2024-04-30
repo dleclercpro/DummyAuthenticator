@@ -1,5 +1,6 @@
-export enum Token {
-  PasswordRecovery = 'password-recovery',
+export enum TokenType {
+  ConfirmEmail = 'ConfirmEmail',
+  ResetPassword = 'ResetPassword',
 }
 
 export enum ClientError {
