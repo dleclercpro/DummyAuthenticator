@@ -8,6 +8,8 @@ import PasswordManager from '../models/auth/PasswordManager';
 import { ClientError } from '../constants';
 import { logger } from '../utils/logger';
 import User from '../models/auth/User';
+import Gmailer from '../models/emails/Gmailer';
+import EmailFactory from '../models/emails/EmailFactory';
 
 const SignUpController: RequestHandler = async (req, res, next) => {
     let { email, password } = req.body;
@@ -26,7 +28,7 @@ const SignUpController: RequestHandler = async (req, res, next) => {
             throw new ErrorInvalidPassword();
         }
         
-        // Create new user in database
+        // Ensure user doesn't already exist
         let user = await User.findByEmail(email);
         if (user) {
             throw new ErrorUserAlreadyExists(user);
@@ -34,7 +36,11 @@ const SignUpController: RequestHandler = async (req, res, next) => {
         
         // Create new user instance
         user = await User.create(email, password);
-        logger.info(`New user created: ${user.getEmail()}`);
+        logger.info(`New user created: ${user.getEmail().getValue()}`);
+
+        // Send e-mail confirmation e-mail to new user
+        await Gmailer.send(await EmailFactory.createConfirmationEmail(user));
+        logger.debug(`Confirmation e-mail sent to user: ${user.getEmail().getValue()}`);
 
         return res.json(successResponse());
 

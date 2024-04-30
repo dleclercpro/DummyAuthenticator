@@ -1,6 +1,7 @@
 import User from '../auth/User';
 import TokenManager from '../auth/TokenManager';
 import PasswordRecoveryEmail from './PasswordRecoveryEmail';
+import EmailAddressConfirmationEmail from './EmailAddressConfirmationEmail';
 
 
 
@@ -19,10 +20,16 @@ class EmailFactory {
     return EmailFactory.instance;
   }
 
+  public async createConfirmationEmail(user: User) {
+    const token = await TokenManager.generateForgotPasswordToken(user);
+
+    return new EmailAddressConfirmationEmail(user.getEmail().getValue(), token);
+  }
+
   public async createPasswordRecoveryEmail(user: User) {
     const token = await TokenManager.generateForgotPasswordToken(user);
 
-    return new PasswordRecoveryEmail(user.getEmail(), token);
+    return new PasswordRecoveryEmail(user.getEmail().getValue(), token);
   }
 }
 

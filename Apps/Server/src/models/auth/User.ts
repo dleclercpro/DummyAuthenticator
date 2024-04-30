@@ -1,25 +1,28 @@
 import randomWords from 'random-words';
 import { APP_DB } from '../..';
 import PasswordManager from './PasswordManager';
-import Password from './Password';
-import Login from './Login';
+import UserPassword from './UserPassword';
+import UserLogin from './UserLogin';
+import UserEmail from './UserEmail';
 
 const getRandomWord = () => randomWords({ exactly: 1, join: `` });
 
 type UserTokens = Record<string, string>;
 
 interface UserArgs {
-    email: string,
-    password: Password,
-    login: Login,
+    email: UserEmail,
+    password: UserPassword,
+    login: UserLogin,
     secret: string,
     tokens: UserTokens,
 }
 
+
+
 class User {
-    protected email: string;
-    protected password: Password;
-    protected login: Login;
+    protected email: UserEmail;
+    protected password: UserPassword;
+    protected login: UserLogin;
     protected secret: string;
     protected tokens: UserTokens;
 
@@ -33,7 +36,7 @@ class User {
 
     public serialize() {
         return JSON.stringify({
-            email: this.email,
+            email: this.email.serialize(),
             password: this.password.serialize(),
             login: this.login.serialize(),
             secret: this.secret,
@@ -46,19 +49,20 @@ class User {
 
         const user = new User({
             ...args,
-            password: Password.deserialize(args.password),
-            login: Login.deserialize(args.login),
+            email: UserEmail.deserialize(args.email),
+            password: UserPassword.deserialize(args.password),
+            login: UserLogin.deserialize(args.login),
         });
 
         return user;
     }
 
     public stringify() {
-        return this.getEmail();
+        return this.getEmail().getValue();
     }
 
     public getId() {
-        return this.getEmail();
+        return this.getEmail().getValue();
     }
 
     public getEmail() {
@@ -116,11 +120,13 @@ class User {
 
         // Create new user
         const user = new User({
-            email,
-            password: new Password({
+            email: new UserEmail({
+                value: email,
+            }),
+            password: new UserPassword({
                 value: await PasswordManager.hash(password),
             }),
-            login: new Login({}),
+            login: new UserLogin({}),
             secret: getRandomWord(),
             tokens: {},
         });

@@ -10,7 +10,7 @@ type PasswordArgs = {
 
 
 
-class Password {
+class UserPassword {
     private value: string;
     private reset: PasswordReset;
 
@@ -27,7 +27,7 @@ class Password {
     }
 
     public static deserialize(str: string) {
-        return new Password(JSON.parse(str));
+        return new UserPassword(JSON.parse(str));
     }
 
     public getValue() {
@@ -59,4 +59,4 @@ class Password {
     }
 }
 
-export default Password;
+export default UserPassword;

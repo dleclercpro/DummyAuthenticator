@@ -36,12 +36,31 @@ class TokenManager {
     }
   }
 
+  public async generateEmailConfirmationToken(user: User) {
+    const now = new Date();
+    const validTime = JWT_TOKEN_LONGEVITY.toMs().getAmount();
+
+    const content: PasswordRecoveryToken = {
+      email: user.getEmail().getValue(),
+      validTime,
+      creationDate: now.getTime(),
+      expirationDate: now.getTime() + validTime,
+    };
+    
+    const token = await jwt.sign(content, JWT_TOKEN_SECRET); // FIXME
+    logger.debug(`Generated reset password token for user '${user.getEmail()}'.`);
+
+    await user.setToken(Token.PasswordRecovery, token);
+
+    return { string: token, content };
+  }
+
   public async generateForgotPasswordToken(user: User) {
     const now = new Date();
     const validTime = JWT_TOKEN_LONGEVITY.toMs().getAmount();
 
     const content: PasswordRecoveryToken = {
-      email: user.getEmail(),
+      email: user.getEmail().getValue(),
       validTime,
       creationDate: now.getTime(),
       expirationDate: now.getTime() + validTime,

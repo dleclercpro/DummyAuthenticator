@@ -15,10 +15,10 @@ const GetSecretController: RequestHandler = async (req, res, next) => {
         if (!user) {
             throw new ErrorUserDoesNotExist(session.getEmail());
         }
+        logger.info(`User '${user.getEmail().getValue()}' is asking for a new secret.`);
 
         // Re-new user secret
         const secret = await user.renewSecret();
-        logger.info(`User '${user.getEmail()}' is asking for a new secret: ${secret}`);
 
         // Fake some processing time for fetching of the secret
         await sleep(new TimeDuration(1, TimeUnit.Second));

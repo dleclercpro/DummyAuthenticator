@@ -5,8 +5,7 @@ import { logger } from '../utils/logger';
 import TokenManager from '../models/auth/TokenManager';
 import User from '../models/auth/User';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
-import { ErrorExpiredToken, ErrorInvalidPassword, ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
-import PasswordManager from '../models/auth/PasswordManager';
+import { ErrorExpiredToken, ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
 import { PasswordRecoveryToken } from '../types/TokenTypes';
 import { ClientError } from '../constants';
 
@@ -20,27 +19,16 @@ const validateQuery = async (req: Request) => {
     return await TokenManager.decodeToken(token as string);
 }
 
-type Body = {
-    password: string,
- };
 
 
-
-const ResetPasswordController: RequestHandler = async (req, res, next) => {
+const ConfirmEmailController: RequestHandler = async (req, res, next) => {
     const now = new Date();
 
     try {
-        const { password } = req.body as Body;
-    
         const token = await validateQuery(req) as { string: string, content: PasswordRecoveryToken };
-        const { email, creationDate, expirationDate } = token.content;
+        const { email, expirationDate } = token.content;
 
-        logger.info(`Trying to reset password for user '${token.content.email}'...`);
-
-        // Ensure password is strong enough
-        if (!PasswordManager.validate(password)) {
-            throw new ErrorInvalidPassword();
-        }
+        logger.info(`Trying to confirm e-mail address for user '${token.content.email}'...`);
 
         // User should exist in database
         const user = await User.findByEmail(email);
@@ -48,33 +36,23 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
             throw new ErrorUserDoesNotExist(email);
         }
 
-        // Make sure user hasn't attempted too many times to log in
-        const lastReset = user.getPassword().getLastReset();
-
         // Verify token validity
-        const userHasResetTheirPassword = user.getPassword().wasAlreadyReset();
-        const isTokenExpired = new Date(expirationDate) <= now || userHasResetTheirPassword && new Date(creationDate) <= (lastReset as Date);
+        const isTokenExpired = new Date(expirationDate) <= now;
 
         if (isTokenExpired) {
             throw new ErrorExpiredToken();
         }
 
-        // Actually reset user's password
-        PasswordManager.reset(user, password);
+        // Confirm user's e-mail address
+        user.getEmail().confirm();
 
         // Store changes to DB
         await user.save();
-        logger.debug(`User '${user.getEmail().getValue()}' has successfully reset their password.`);
+        logger.debug(`User '${user.getEmail().getValue()}' has confirmed their e-mail address.`);
 
         return res.json(successResponse());
 
     } catch (err: any) {
-
-        if (err.code === ErrorInvalidPassword.code) {
-            return res
-                .status(HttpStatusCode.BAD_REQUEST)
-                .json(errorResponse(ClientError.InvalidPassword));
-        }
 
         if (err.code === ErrorUserDoesNotExist.code) {
             return res
@@ -98,4 +76,4 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
     }
 }
 
-export default ResetPasswordController;
+export default ConfirmEmailController;

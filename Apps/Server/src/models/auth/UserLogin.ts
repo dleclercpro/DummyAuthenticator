@@ -16,7 +16,7 @@ type LoginArgs = {
 
 
 
-class Login {
+class UserLogin {
     private attempts: LoginAttempt[];
 
     public constructor(args: LoginArgs) {
@@ -41,7 +41,7 @@ class Login {
                 };
             });
 
-        return new Login({ attempts });
+        return new UserLogin({ attempts });
     }
 
     public getAttempts() {
@@ -68,4 +68,4 @@ class Login {
     }
 }
 
-export default Login;
+export default UserLogin;

@@ -7,7 +7,7 @@ import { ErrorInvalidEmail, ErrorNoMoreLoginAttempts } from '../errors/ServerErr
 import { HOURLY_LOGIN_MAX_ATTEMPTS, SESSION_COOKIE } from '../config/AuthConfig';
 import { ClientError } from '../constants';
 import Session from '../models/auth/Session';
-import { LoginAttemptType } from '../models/auth/Login';
+import { LoginAttemptType } from '../models/auth/UserLogin';
 import PasswordManager from '../models/auth/PasswordManager';
 import TimeDuration from '../models/units/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
@@ -55,8 +55,8 @@ const SignInController: RequestHandler = async (req, res, next) => {
 
         // Only allow X failed login attempts per hour
         if (failedLoginAttemptsInLastHour.length > HOURLY_LOGIN_MAX_ATTEMPTS) {
-            logger.warn(`User '${user.getEmail()}' has tried to log in ${loginAttemptsInLastHour.length} times in the last hour.`);
-            throw new ErrorNoMoreLoginAttempts(user.getEmail(), failedLoginAttemptsInLastHour.length);
+            logger.warn(`User '${user.getEmail().getValue()}' has tried to log in ${loginAttemptsInLastHour.length} times in the last hour.`);
+            throw new ErrorNoMoreLoginAttempts(user.getEmail().getValue(), failedLoginAttemptsInLastHour.length);
         }
         
         if (!isAuthenticated) {
@@ -64,7 +64,7 @@ const SignInController: RequestHandler = async (req, res, next) => {
         }
 
         // Create session for user
-        const session = await Session.create(user.getEmail(), staySignedIn);
+        const session = await Session.create(user.getEmail().getValue(), staySignedIn);
 
         // Set cookie with session ID on client's browser
         res.cookie(SESSION_COOKIE, session.getId());
