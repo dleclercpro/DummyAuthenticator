@@ -46,7 +46,8 @@ const SignUpController: RequestHandler = async (req, res, next) => {
         return res.json(successResponse());
 
     } catch (err: any) {
-        logger.warn(`Could not create new user with e-mail '${email}': ${err.message}`);
+        logger.warn(`Could not create new user with e-mail '${email}'.`);
+        logger.warn(err.message);
 
         // User already exists
         if (err.code === ErrorUserAlreadyExists.code) {

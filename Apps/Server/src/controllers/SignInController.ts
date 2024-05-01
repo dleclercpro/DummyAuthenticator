@@ -78,7 +78,8 @@ const SignInController: RequestHandler = async (req, res, next) => {
         return res.json(successResponse());
 
     } catch (err: any) {
-        logger.warn(`Failed login attempt for user with e-mail '${email}': ${err.message}`);
+        logger.warn(`Failed login attempt for user with e-mail '${email}'.`);
+        logger.warn(err.message);
 
         if (err.code === ErrorUserDoesNotExist.code ||
             err.code === ErrorInvalidEmail.code ||
