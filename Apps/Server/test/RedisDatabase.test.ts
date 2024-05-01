@@ -1,5 +1,6 @@
 import RedisDatabase from '../src/models/databases/RedisDatabase';
 import { DatabaseOptions } from '../src/models/databases/Database';
+import { REDIS_DATABASE } from '../src/config/DatabasesConfig';
 
 const OPTIONS: DatabaseOptions = {
     host: 'localhost',
@@ -10,7 +11,7 @@ const OPTIONS: DatabaseOptions = {
 
 
 describe('RedisDatabase', () => {
-    const db: RedisDatabase = new RedisDatabase(OPTIONS);
+    const db: RedisDatabase = new RedisDatabase(OPTIONS, REDIS_DATABASE);
 
     beforeAll(async () => {
         await db.start();

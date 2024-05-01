@@ -3,17 +3,23 @@ import Database, { DatabaseOptions, IKeyValueDatabase } from './Database';
 import { logger } from '../../utils/logger';
 import TimeDuration from '../units/TimeDuration';
 import { TimeUnit } from '../../types/TimeTypes';
-import { REDIS_DATABASE, REDIS_RETRY_CONN_MAX_ATTEMPTS, REDIS_RETRY_CONN_MAX_BACKOFF } from '../../config/DatabasesConfig';
+import { REDIS_RETRY_CONN_MAX_ATTEMPTS, REDIS_RETRY_CONN_MAX_BACKOFF } from '../../config/DatabasesConfig';
 
 class RedisDatabase extends Database implements IKeyValueDatabase<string> {
-    protected client: RedisClientType;
+    private index: number; // Database index
+    private client: RedisClientType;
     
-    public constructor(options: DatabaseOptions) {
+    public constructor(options: DatabaseOptions, index: number = 0) {
         super(options);
+
+        if (index < 0 || index > 15) {
+            throw new Error('INVALID_REDIS_DATABASE_INDEX');
+        }
+        this.index = index;
 
         this.client = createClient({
             url: this.getURI(),
-            database: REDIS_DATABASE,
+            database: index,
             socket: {
                 reconnectStrategy: this.connect,
             },
@@ -44,7 +50,7 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
     }
 
     public async start() {
-        logger.info(`Using Redis database.`);
+        logger.info(`Using Redis database '${this.index}'.`);
 
         this.listen();
 

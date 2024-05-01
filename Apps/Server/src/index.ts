@@ -3,14 +3,14 @@ import AppServer from './models/AppServer';
 import { logger } from './utils/logger';
 import RedisDatabase from './models/databases/RedisDatabase';
 import MemoryDatabase from './models/databases/MemoryDatabase';
-import { REDIS_ENABLE, REDIS_OPTIONS } from './config/DatabasesConfig';
+import { REDIS_DATABASE, REDIS_ENABLE, REDIS_OPTIONS } from './config/DatabasesConfig';
 import Router from './routes';
 
 
 
 export const APP_SERVER = new AppServer();
 export const APP_DB = (REDIS_ENABLE ?
-    new RedisDatabase(REDIS_OPTIONS) :
+    new RedisDatabase(REDIS_OPTIONS, REDIS_DATABASE) :
     new MemoryDatabase<string>() // Fallback database: in-memory
 );
 
