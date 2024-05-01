@@ -5,6 +5,7 @@ import { errorResponse, successResponse } from '../utils/calls';
 import { HttpStatusCode } from '../types/HTTPTypes';
 import { ClientError } from '../constants';
 import User from '../models/auth/User';
+import { logger } from '../utils/logger';
 
 const SignOutController: RequestHandler = async (req, res, next) => {
     const { session } = req;
@@ -20,6 +21,7 @@ const SignOutController: RequestHandler = async (req, res, next) => {
 
         // Remove session cookie in client
         res.clearCookie(SESSION_COOKIE);
+        logger.debug(`User logged out: ${user.getEmail().getValue()}`);
 
         return res.json(successResponse());
 

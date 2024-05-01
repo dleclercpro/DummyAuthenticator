@@ -12,4 +12,5 @@ export enum ClientError {
   UserAlreadyExists = 'USER_ALREADY_EXISTS',
   UserDoesNotExist = 'USER_DOES_NOT_EXIST',
   NoMoreLoginAttempts = 'NO_MORE_LOGIN_ATTEMPTS',
+  UnconfirmedEmail = 'UNCONFIRMED_EMAIL',
 }

@@ -24,3 +24,11 @@ export class ErrorUserWrongPassword extends ServerError {
         super(ErrorUserWrongPassword.code, `Wrong password entered for user: ${user.stringify()}`);
     }
 }
+
+export class ErrorEmailNotConfirmed extends ServerError {
+    public static code = -303;
+    
+    constructor(user: User) {
+        super(ErrorEmailNotConfirmed.code, `User e-mail is not confirmed: ${user.stringify()}`);
+    }
+}

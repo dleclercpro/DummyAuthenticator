@@ -21,12 +21,12 @@ class EmailFactory {
   }
 
   public async createConfirmationEmail(user: User) {
-    const token = await TokenManager.generateResetPasswordToken(user);
+    const token = await TokenManager.generateEmailConfirmationToken(user);
 
     return new EmailAddressConfirmationEmail(user.getEmail().getValue(), token);
   }
 
-  public async createPasswordRecoveryEmail(user: User) {
+  public async createResetPasswordEmail(user: User) {
     const token = await TokenManager.generateResetPasswordToken(user);
 
     return new ResetPasswordEmail(user.getEmail().getValue(), token);

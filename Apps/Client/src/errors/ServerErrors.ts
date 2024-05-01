@@ -10,6 +10,7 @@ export enum ServerError {
     UserDoesNotExist = 'USER_DOES_NOT_EXIST',
     UserAlreadyExists = 'USER_ALREADY_EXISTS',
     NoMoreLoginAttempts = 'NO_MORE_LOGIN_ATTEMPTS',
+    UnconfirmedEmail = 'UNCONFIRMED_EMAIL',
 }
 
 export const translateServerError = (err: ServerError) => {
@@ -34,6 +35,8 @@ export const translateServerError = (err: ServerError) => {
             return 'The token you tried to use has expired.';
         case ServerError.NoMoreLoginAttempts:
             return 'You have tried to log in without success too many times. A maximum of {{ MAX_ATTEMPTS }} login failures are allowed per hour.';
+        case ServerError.UnconfirmedEmail:
+            return 'Please confirm your e-mail address, and then try logging in again.';
         default:
             return 'UNKNOWN_ERROR';
     }

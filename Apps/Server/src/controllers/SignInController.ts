@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { HttpStatusCode } from '../types/HTTPTypes';
 import { errorResponse, successResponse } from '../utils/calls';
-import { ErrorUserDoesNotExist, ErrorUserWrongPassword } from '../errors/UserErrors';
+import { ErrorEmailNotConfirmed, ErrorUserDoesNotExist, ErrorUserWrongPassword } from '../errors/UserErrors';
 import { validate } from 'email-validator';
 import { ErrorInvalidEmail, ErrorNoMoreLoginAttempts } from '../errors/ServerError';
 import { HOURLY_LOGIN_MAX_ATTEMPTS, SESSION_COOKIE } from '../config/AuthConfig';
@@ -33,6 +33,11 @@ const SignInController: RequestHandler = async (req, res, next) => {
         user = await User.findByEmail(email);
         if (!user) {
             throw new ErrorUserDoesNotExist(email);
+        }
+
+        // Is e-mail confirmed?
+        if (!user.getEmail().isConfirmed()) {
+            throw new ErrorEmailNotConfirmed(user);
         }
 
         // Get failed login attempts in the last hour
@@ -68,6 +73,7 @@ const SignInController: RequestHandler = async (req, res, next) => {
 
         // Set cookie with session ID on client's browser
         res.cookie(SESSION_COOKIE, session.getId());
+        logger.debug(`User logged in: ${user.getEmail().getValue()}`);
 
         return res.json(successResponse());
 
@@ -79,6 +85,12 @@ const SignInController: RequestHandler = async (req, res, next) => {
             return res
                 .status(HttpStatusCode.UNAUTHORIZED)
                 .json(errorResponse(ClientError.InvalidCredentials));
+        }
+
+        if (err.code === ErrorEmailNotConfirmed.code) {
+            return res
+                .status(HttpStatusCode.FORBIDDEN)
+                .json(errorResponse(ClientError.UnconfirmedEmail));
         }
 
         if (err.code === ErrorNoMoreLoginAttempts.code) {
