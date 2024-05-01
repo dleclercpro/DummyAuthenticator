@@ -10,7 +10,7 @@ import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import CreateIcon from '@mui/icons-material/Create';
-import { CallSignUp } from '../../../models/calls/auth/CallSignUp';
+import useAuth from '../../../hooks/useAuth';
 
 interface Props {
 
@@ -19,6 +19,7 @@ interface Props {
 const SignUp: React.FC<Props> = () => {
     const { classes } = useAuthStyles();
 
+    const { signUp } = useAuth();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
@@ -46,9 +47,9 @@ const SignUp: React.FC<Props> = () => {
         setLoading(true);
         setSnackbarOpen(false);
 
-        return new CallSignUp().execute({ email, password })
+        return signUp(email, password)
             .then(() => {
-                navigate(getURL(Page.SignIn));
+                navigate(getURL(Page.Home));
             })
             .catch((err: any) => {
                 setError(err.message);
@@ -58,6 +59,7 @@ const SignUp: React.FC<Props> = () => {
                 setSnackbarOpen(true);
             });
     }
+
     return (
         <Paper elevation={8} className={classes.root}>
             <form

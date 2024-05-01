@@ -21,13 +21,13 @@ const ValidateTokenController: RequestHandler = async (req, res, next) => {
         }
 
         // Decode token (without verifying signature) to check for type
-        const { content } = await TokenManager.decodeToken(token);
+        const decodedToken = await TokenManager.decodeToken(token);
 
         // Verify token's signature based on type
-        await TokenManager.verifyToken(token, content.type);
-        logger.debug(`Received valid token of type: ${content.type}`);
+        await TokenManager.verifyToken(token, decodedToken.content.type);
+        logger.debug(`Received valid token of type: ${decodedToken.content.type}`);
 
-        return res.json(successResponse(token));
+        return res.json(successResponse(decodedToken));
 
     } catch (err: any) {
         if (err.code === ErrorInvalidToken.code) {

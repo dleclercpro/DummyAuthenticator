@@ -4,9 +4,6 @@ import useAuthStyles from '../AuthStyles';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import { Page, getURL } from '../../../routes/Router';
-import { sleep } from '../../../utils/time';
-import TimeDuration from '../../../models/TimeDuration';
-import { TimeUnit } from '../../../types/TimeTypes';
 import { CallValidateToken } from '../../../models/calls/auth/CallValidateToken';
 
 // FIXME
@@ -60,11 +57,6 @@ const ConfirmEmail: React.FC<Props> = () => {
         confirmEmail(token)
             .then(() => {
                 setError('');
-
-                return sleep(new TimeDuration(5, TimeUnit.Second))
-                    .then(() => {
-                        navigate(getURL(Page.Home));
-                    });
             })
             .catch((err: any) => {
                 setError(err.message);
@@ -91,12 +83,12 @@ const ConfirmEmail: React.FC<Props> = () => {
         <Paper elevation={8} className={classes.root}>
             <div className={`${classes.form} confirm-email`}>
                 <Typography variant='h1' className={classes.title}>
-                    Confirm your e-mail address
+                    Confirm e-mail
                 </Typography>
 
                 <Typography className={classes.text}>
                     {loading && 'Please wait...'}
-                    {!loading && !error && 'Thanks for confirming your e-mail address.'}
+                    {!loading && !error && `Thanks for confirming your e-mail address: ${validatedToken}`}
                     {!loading && !!error && `Could not confirm your e-mail address: ${error}`}
                 </Typography>
             </div>

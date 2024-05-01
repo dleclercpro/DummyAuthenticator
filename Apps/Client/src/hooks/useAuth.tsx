@@ -6,13 +6,15 @@ import { CallResetPassword } from '../models/calls/auth/CallResetPassword';
 import { CallForgotPassword } from '../models/calls/auth/CallForgotPassword';
 import { ServerError, translateServerError } from '../errors/ServerErrors';
 import { CallConfirmEmail } from '../models/calls/auth/CallConfirmEmail';
+import { CallSignUp } from '../models/calls/auth/CallSignUp';
 
 interface IAuthContext {
     isPinged: boolean, // Determine whether user still has active session on server
     isLogged: boolean,
     ping: () => Promise<void>,
-    login: (email: string, password: string, staySignedIn: boolean) => Promise<void>,
-    logout: () => Promise<void>,
+    signUp: (email: string, password: string) => Promise<void>,
+    signIn: (email: string, password: string, staySignedIn: boolean) => Promise<void>,
+    signOut: () => Promise<void>,
     confirmEmail: (token: string) => Promise<void>,
     forgotPassword: (email: string) => Promise<void>,
     resetPassword: (token: string, password: string) => Promise<void>,
@@ -59,7 +61,17 @@ const useAuth = () => {
         }
     }
 
-    const login = async (email: string, password: string, staySignedIn: boolean) => {
+    const signUp = async (email: string, password: string) => {
+        await new CallSignUp().execute({ email, password })
+        .then(() => {
+
+        })
+        .catch(({ code, error, data }) => {
+            throw new Error(translateServerError(error));
+        });
+    }
+
+    const signIn = async (email: string, password: string, staySignedIn: boolean) => {
         await new CallSignIn().execute({ email, password, staySignedIn })
             .then(() => {
                 setIsLogged(true);
@@ -78,7 +90,7 @@ const useAuth = () => {
             });
     }
 
-    const logout = async () => {
+    const signOut = async () => {
         await new CallSignOut().execute()
             .catch(({ code, error, data }) => {
                 throw new Error(translateServerError(error));
@@ -113,8 +125,9 @@ const useAuth = () => {
         isPinged,
         isLogged,
         ping,
-        login,
-        logout,
+        signUp,
+        signIn,
+        signOut,
         confirmEmail,
         forgotPassword,
         resetPassword,

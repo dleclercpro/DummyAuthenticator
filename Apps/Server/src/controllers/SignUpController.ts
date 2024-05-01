@@ -17,6 +17,7 @@ const SignUpController: RequestHandler = async (req, res, next) => {
     try {
         // Sanitize input
         email = email.trim().toLowerCase();
+        logger.debug(`Trying to create new user with e-mail: ${email}`);
 
         // Validate e-mail
         if (!validate(email)) {
@@ -45,6 +46,7 @@ const SignUpController: RequestHandler = async (req, res, next) => {
         return res.json(successResponse());
 
     } catch (err: any) {
+        logger.warn(`Could not create new user with e-mail '${email}': ${err.message}`);
 
         // User already exists
         if (err.code === ErrorUserAlreadyExists.code) {

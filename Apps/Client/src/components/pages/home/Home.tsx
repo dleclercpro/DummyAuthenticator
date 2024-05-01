@@ -19,7 +19,7 @@ interface Props {
 const Home: React.FC<Props> = () => {
     const { classes } = useHomeStyles();
 
-    const { logout } = useAuth();
+    const { signOut } = useAuth();
     const navigate = useNavigate();
 
     const { loading, error, secret, fetchSecret } = useSecret();
@@ -53,7 +53,7 @@ const Home: React.FC<Props> = () => {
 
         setIsSigningOut(true);
 
-        return logout()
+        return signOut()
             .then(() => {
 
             })

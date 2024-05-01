@@ -19,7 +19,7 @@ interface Props {
 const SignIn: React.FC<Props> = () => {
     const { classes } = useAuthStyles();
 
-    const { login } = useAuth();
+    const { signIn } = useAuth();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
@@ -52,7 +52,7 @@ const SignIn: React.FC<Props> = () => {
         setLoading(true);
         setSnackbarOpen(false);
 
-        return login(email, password, staySignedIn)
+        return signIn(email, password, staySignedIn)
             .then(() => {
                 navigate(getURL(Page.Home));
             })
