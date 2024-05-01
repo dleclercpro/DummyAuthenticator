@@ -3,7 +3,7 @@ version: '3.8'
 
 services:
   auth-app:
-    image: dleclercpro/dummy-authenticator:latest
+    image: dleclercpro/dummy-authenticator:v2.7.0
     container_name: auth-app
     networks:
       - custom
