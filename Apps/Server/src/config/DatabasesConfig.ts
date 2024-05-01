@@ -1,7 +1,7 @@
 import TimeDuration from '../models/units/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
 
-export const REDIS_USE = [true, 'true'].includes(process.env.REDIS_USE!);
+export const REDIS_ENABLE = [true, 'true'].includes(process.env.REDIS_ENABLE!);
 
 export const REDIS_RETRY_CONN_TIMEOUT = new TimeDuration(5, TimeUnit.Second);
 export const REDIS_RETRY_CONN_MAX_BACKOFF = new TimeDuration(30, TimeUnit.Second);
