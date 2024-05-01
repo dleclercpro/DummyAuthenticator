@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import { RequestMiddleware } from '../middleware/RequestMiddleware';
-import { DEV, PROD, CLIENT_DIR, CLIENT_ROOT } from '../config/AppConfig';
+import { DEV, PROD, CLIENT_DIR, CLIENT_ROOT, TEST } from '../config/AppConfig';
 import APIRouter from './APIRouter';
 import { logger } from '../utils/logger';
 import path from 'path';
@@ -38,7 +38,7 @@ if (PROD) {
 }
 
 // Dev: redirect React app's traffic to development server
-if (DEV) {
+if (DEV || TEST) {
     router.get('*', (req, res) => {
         const path = req.originalUrl;
         const url = `${CLIENT_ROOT}${path}`;

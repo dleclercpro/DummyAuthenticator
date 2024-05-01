@@ -4,7 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import { logger } from '../utils/logger';
-import { PORT, CLIENT_ROOT, DEV, PROD } from '../config/AppConfig';
+import { PORT, CLIENT_ROOT, DEV, PROD, TEST } from '../config/AppConfig';
 import ErrorMiddleware from '../middleware/ErrorMiddleware';
 import TimeDuration from './units/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
@@ -32,7 +32,7 @@ class AppServer {
         this.app.use(compression());
 
         // CORS
-        if (DEV) {
+        if (DEV || TEST) {
             const CORS_OPTIONS = {
                 origin: CLIENT_ROOT,
                 credentials: true,

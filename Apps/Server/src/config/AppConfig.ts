@@ -6,6 +6,7 @@ import path from 'path';
 // Environment
 export const ENV = loadEnvironment();
 export const DEV = ENV === Environment.Development;
+export const TEST = ENV === Environment.Test;
 export const PROD = ENV === Environment.Production;
 
 // Server

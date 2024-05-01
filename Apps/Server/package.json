@@ -11,6 +11,7 @@
     "compile": "tsc -p ./tsconfig.json",
     "delete": "rimraf ./build",
     "lint": "eslint ./src",
+    "test": "cross-env ENV=test jest",
     "package:main": "echo \"Main: $npm_package_main\"",
     "package:name": "echo \"Name: $npm_package_name\"",
     "package:version": "echo \"Version: $npm_package_version\""
@@ -32,6 +33,8 @@
     "redis": "^4.6.11"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.24.5",
+    "@babel/preset-typescript": "^7.24.1",
     "@types/bcrypt": "^5.0.0",
     "@types/compression": "^1.7.2",
     "@types/cookie-parser": "^1.4.3",
