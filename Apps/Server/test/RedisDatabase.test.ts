@@ -1,13 +1,31 @@
-import MemoryDatabase from '../src/models/databases/MemoryDatabase';
+import RedisDatabase from '../src/models/databases/RedisDatabase';
+import { DatabaseOptions } from '../src/models/databases/Database';
 
-describe('MemoryDatabase', () => {
-    let db: MemoryDatabase<any>;
+const OPTIONS: DatabaseOptions = {
+    host: 'localhost',
+    port: 6379,
+    name: 'auth-test'
+};
 
-    beforeEach(() => {
-        db = new MemoryDatabase<any>();
+
+
+describe('RedisDatabase', () => {
+    const db: RedisDatabase = new RedisDatabase(OPTIONS);
+
+    beforeAll(async () => {
+        await db.start();
     });
 
-    test('has() should return false when the item does not exist', async () => {
+    afterAll(async () => {
+        await db.stop();
+    });
+
+    // Clean up test database after each test
+    afterEach(async () => {
+        await db.deleteAll();
+    });
+
+    test('has() should return false when the key does not exist', async () => {
         const result = await db.has('nonexistent');
         expect(result).toBe(false);
     });
@@ -24,29 +42,11 @@ describe('MemoryDatabase', () => {
         expect(item).toBe('value');
     });
 
-    test('set() should add items of various types and ensure they are retrievable', async () => {
-        await db.set('stringKey', 'stringValue');
-        await db.set('numberKey', 123);
-        await db.set('objectKey', { name: 'test' });
-    
-        const stringItem = await db.get('stringKey');
-        const numberItem = await db.get('numberKey');
-        const objectItem = await db.get('objectKey');
-    
-        expect(stringItem).toBe('stringValue');
-        expect(numberItem).toBe(123);
-        expect(objectItem).toEqual({ name: 'test' });
-    });
-    
-
     test('delete() should remove the specified item', async () => {
         await db.set('key', 'value');
-        const result1 = await db.has('key');
-        expect(result1).toBe(true);
-
         await db.delete('key');
-        const result2 = await db.has('key');
-        expect(result2).toBe(false);
+        const result = await db.has('key');
+        expect(result).toBe(false);
     });
 
     test('get() should return null when the item does not exist', async () => {
@@ -61,10 +61,11 @@ describe('MemoryDatabase', () => {
         expect(items.sort()).toEqual(['value1', 'value2'].sort());
     });
 
-    test('size() should return the number of items', async () => {
+    test('deleteAll() should clear all items', async () => {
         await db.set('key1', 'value1');
         await db.set('key2', 'value2');
-        const size = await db.size();
-        expect(size).toBe(2);
+        await db.deleteAll();
+        const size = await db.getAll();
+        expect(size).toEqual([]);
     });
 });

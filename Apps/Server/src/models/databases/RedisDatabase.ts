@@ -3,7 +3,7 @@ import Database, { DatabaseOptions, IKeyValueDatabase } from './Database';
 import { logger } from '../../utils/logger';
 import TimeDuration from '../units/TimeDuration';
 import { TimeUnit } from '../../types/TimeTypes';
-import { REDIS_RETRY_CONN_MAX_ATTEMPTS, REDIS_RETRY_CONN_MAX_BACKOFF } from '../../config/DatabasesConfig';
+import { REDIS_DATABASE, REDIS_RETRY_CONN_MAX_ATTEMPTS, REDIS_RETRY_CONN_MAX_BACKOFF } from '../../config/DatabasesConfig';
 
 class RedisDatabase extends Database implements IKeyValueDatabase<string> {
     protected client: RedisClientType;
@@ -13,6 +13,7 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
 
         this.client = createClient({
             url: this.getURI(),
+            database: REDIS_DATABASE,
             socket: {
                 reconnectStrategy: this.connect,
             },

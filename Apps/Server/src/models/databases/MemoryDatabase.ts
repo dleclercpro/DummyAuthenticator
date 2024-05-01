@@ -1,7 +1,7 @@
 import { logger } from '../../utils/logger';
 import { IKeyValueDatabase } from './Database';
 
-export class MemoryDatabase<R> implements IKeyValueDatabase<R> {
+class MemoryDatabase<R> implements IKeyValueDatabase<R> {
     protected db = new Map<string, R>();
 
     public async start() {
@@ -40,3 +40,5 @@ export class MemoryDatabase<R> implements IKeyValueDatabase<R> {
         return Array.from(this.db.values());
     }
 }
+
+export default MemoryDatabase;

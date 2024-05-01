@@ -88,7 +88,7 @@ const ConfirmEmail: React.FC<Props> = () => {
 
                 <Typography className={classes.text}>
                     {loading && 'Please wait...'}
-                    {!loading && !error && `Thanks for confirming your e-mail address: ${validatedToken}`}
+                    {!loading && !error && `Thanks for confirming your e-mail address: ${validatedToken.content.email}`}
                     {!loading && !!error && `Could not confirm your e-mail address: ${error}`}
                 </Typography>
             </div>

@@ -2,19 +2,15 @@ import { ENV } from './config/AppConfig'; // Do NOT remove!
 import AppServer from './models/AppServer';
 import { logger } from './utils/logger';
 import RedisDatabase from './models/databases/RedisDatabase';
-import { MemoryDatabase } from './models/databases/MemoryDatabase';
-import { USE_REDIS, DB_HOST, DB_PORT, DB_NAME } from './config/DatabasesConfig';
+import MemoryDatabase from './models/databases/MemoryDatabase';
+import { REDIS_USE, REDIS_OPTIONS } from './config/DatabasesConfig';
 import Router from './routes';
 
 
 
 export const APP_SERVER = new AppServer();
-export const APP_DB = (USE_REDIS ?
-    new RedisDatabase({
-        host: DB_HOST,
-        port: DB_PORT,
-        name: DB_NAME,
-    }) :
+export const APP_DB = (REDIS_USE ?
+    new RedisDatabase(REDIS_OPTIONS) :
     new MemoryDatabase<string>() // Fallback database: in-memory
 );
 
@@ -33,8 +29,14 @@ const execute = async () => {
 
 // Run server
 execute()
-    .catch((err) => {
+    .catch(async (err) => {
         logger.fatal(err, `Uncaught error:`);
+
+        logger.info(`Shutting down server...`);
+        await APP_SERVER.stop();
+
+        logger.info(`Shutting down database...`);
+        await APP_DB.stop();
     });
 
 
