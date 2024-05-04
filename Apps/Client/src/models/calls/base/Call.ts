@@ -116,11 +116,11 @@ class Call<RequestData = void, ResponseData = void, ErrorResponseData = void> {
         }
 
         // There were other issues
-        err = err ?? `UNEXPECTED_ERROR`;
+        err = err !== '' ? err : `UNEXPECTED_ERROR`;
         console.error(`Error in call '${this.name}': ${err} [${response ? response.status : '?'}]`);
 
         // Something went wrong, but we let the processing happen further down the line
-        return Promise.reject(new Error(err));
+        throw new Error(err);
     }
 }
 

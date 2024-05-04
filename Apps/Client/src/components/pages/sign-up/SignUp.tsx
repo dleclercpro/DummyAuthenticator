@@ -72,7 +72,7 @@ const SignUp: React.FC<Props> = () => {
                 </Typography>
 
                 <Typography className={classes.text}>
-                    Please enter your credentials:
+                    Please choose a username and a password to create your account:
                 </Typography>
 
                 <fieldset className={classes.fields}>

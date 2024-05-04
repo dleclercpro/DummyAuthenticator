@@ -4,6 +4,7 @@ import Router from '../routes/Router';
 import { Container } from '@mui/system';
 import useAuth from '../hooks/useAuth';
 import Spinner from './Spinner';
+import WarningSharpIcon from '@mui/icons-material/WarningSharp';
 
 interface Props {
 
@@ -12,7 +13,8 @@ interface Props {
 const App: React.FC<Props> = () => {
     const { classes } = useAppStyles();
 
-    const { isPinged, ping } = useAuth();
+    const { isPinging, errorPing, ping } = useAuth();
+    const hasError = !!errorPing;
 
     // Try to connect to server on application start
     useEffect(() => {
@@ -21,9 +23,19 @@ const App: React.FC<Props> = () => {
     // eslint-disable-next-line
     }, []);
 
-    if (!isPinged) {
+    if (isPinging || hasError) {
         return (
-            <Spinner size='large' />
+            <div className={classes.container}>
+                {isPinging && (
+                    <Spinner size='large' />
+                )}
+                {!isPinging && hasError && (
+                    <>
+                        <WarningSharpIcon color='error' className={classes.icon} />
+                        <p>Could not ping server: <strong>{errorPing}</strong></p>
+                    </>
+                )}
+            </div>
         );
     }
     

@@ -9,7 +9,8 @@ import { CallConfirmEmail } from '../models/calls/auth/CallConfirmEmail';
 import { CallSignUp } from '../models/calls/auth/CallSignUp';
 
 interface IAuthContext {
-    isPinged: boolean, // Determine whether user still has active session on server
+    errorPing: string,
+    isPinging: boolean, // Determine whether user still has active session on server
     isLogged: boolean,
     ping: () => Promise<void>,
     signUp: (email: string, password: string) => Promise<void>,
@@ -47,17 +48,28 @@ export default function AuthContextConsumer() {
 
 
 const useAuth = () => {  
-    const [isPinged, setIsPinged] = useState(false);
+    const [errorPing, setErrorPing] = useState('');
+    const [isPinging, setIsPinging] = useState(false);
     const [isLogged, setIsLogged] = useState(false);
 
     const ping = async () => {
+        setIsPinging(true);
+
         try {
             await new CallPing().execute();
             setIsLogged(true);
+            setErrorPing('');
         } catch (err: any) {
             setIsLogged(false);
+
+            // Invalid credentials error is normal when user not logged in: ignore error
+            if (err.error === ServerError.InvalidCredentials) {
+                return;
+            }
+
+            setErrorPing(err.message);
         } finally {
-            setIsPinged(true);
+            setIsPinging(false);
         }
     }
 
@@ -122,8 +134,9 @@ const useAuth = () => {
     }
 
     return {
-        isPinged,
         isLogged,
+        isPinging,
+        errorPing,
         ping,
         signUp,
         signIn,
