@@ -50,7 +50,7 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
     }
 
     public async start() {
-        logger.info(`Using Redis database '${this.index}'.`);
+        logger.debug(`Starting Redis database '${this.index}'.`);
 
         this.listen();
 
@@ -180,7 +180,8 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
         }
     }
 
-    public async deleteAll() {
+    public async deleteAllKeys() {
+        logger.debug(`Flushing Redis database '${this.index}'.`);
         await this.client.flushDb();
     }
 }

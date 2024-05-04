@@ -23,7 +23,7 @@ describe('RedisDatabase', () => {
 
     // Clean up test database after each test
     afterEach(async () => {
-        await db.deleteAll();
+        await db.deleteAllKeys();
     });
 
     test('has() should return false when the key does not exist', async () => {
@@ -65,7 +65,7 @@ describe('RedisDatabase', () => {
     test('deleteAll() should clear all items', async () => {
         await db.set('key1', 'value1');
         await db.set('key2', 'value2');
-        await db.deleteAll();
+        await db.deleteAllKeys();
         const size = await db.getAll();
         expect(size).toEqual([]);
     });
