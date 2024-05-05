@@ -6,7 +6,7 @@ dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Define constant image details
 user="dleclercpro"
 app="dummy-authenticator"
-release="latest"
+release="v2.10.0"
 
 # Build app image and push it to DockerHub
 docker buildx build --platform linux/amd64,linux/arm64 -t $user/$app:$release -f ./Dockerfile . --push
