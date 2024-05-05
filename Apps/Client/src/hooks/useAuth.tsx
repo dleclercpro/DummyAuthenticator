@@ -12,6 +12,7 @@ interface IAuthContext {
     errorPing: string,
     isPinging: boolean, // Determine whether user still has active session on server
     isLogged: boolean,
+    setIsLogged: (isLogged: boolean) => void,
     ping: () => Promise<void>,
     signUp: (email: string, password: string) => Promise<void>,
     signIn: (email: string, password: string, staySignedIn: boolean) => Promise<void>,
@@ -127,6 +128,8 @@ const useAuth = () => {
     }
 
     const resetPassword = async (password: string, token?: string) => {
+
+        // No need for token when logged in
         if (isLogged) {
             await new CallResetPassword().execute({ password })
                 .catch(({ code, error, data }) => {
@@ -136,6 +139,7 @@ const useAuth = () => {
             return;
         }
 
+        // Need token to reset password when logged out
         if (!token) {
             throw new Error('MISSING_TOKEN');
         }
@@ -147,9 +151,10 @@ const useAuth = () => {
     }
 
     return {
-        isLogged,
         isPinging,
         errorPing,
+        isLogged,
+        setIsLogged,
         ping,
         signUp,
         signIn,

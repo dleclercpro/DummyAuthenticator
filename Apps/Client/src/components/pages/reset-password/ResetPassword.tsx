@@ -29,7 +29,7 @@ const ResetPassword: React.FC<Props> = () => {
     const queryParams = new URLSearchParams(location.search);
     const token = queryParams.get('token') ?? '';
 
-    const { isLogged, resetPassword } = useAuth();
+    const { isLogged, setIsLogged, resetPassword } = useAuth();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
@@ -88,15 +88,19 @@ const ResetPassword: React.FC<Props> = () => {
         setLoading(true);
 
         return resetPassword(password, token)
-            .then(() => {
+            .then(async () => {
                 setError(false);
                 setSnackbarMessage('Your password has been successfully reset!');
                 setSnackbarOpen(true);
 
-                return sleep(new TimeDuration(5, TimeUnit.Second))
-                    .then(() => {
-                        navigate(getURL(Page.Home));
-                    });
+                // Wait a bit for user to see snackbar
+                await sleep(new TimeDuration(5, TimeUnit.Second));
+
+                // Log out (in case user is logged in) after resetting password
+                setIsLogged(false);
+
+                // Go back to home page
+                navigate(getURL(Page.Home));
             })
             .catch((err: any) => {
                 setError(true);
