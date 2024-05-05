@@ -4,6 +4,7 @@ import { DEV, PROD, CLIENT_DIR, CLIENT_ROOT, TEST } from '../config/AppConfig';
 import APIRouter from './APIRouter';
 import { logger } from '../utils/logger';
 import path from 'path';
+import { SessionMiddleware } from '../middleware/SessionMiddleware';
 
 
 
@@ -13,6 +14,7 @@ const router = Router();
 
 // MIDDLEWARE
 router.use(RequestMiddleware);
+router.use(SessionMiddleware);
 
 
 

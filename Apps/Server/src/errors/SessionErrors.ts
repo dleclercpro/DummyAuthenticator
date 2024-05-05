@@ -1,10 +1,10 @@
 import { ServerError } from './ServerError';
 
-export class ErrorMissingSessionId extends ServerError {
+export class ErrorNoSession extends ServerError {
     public static code = -100;
     
     constructor() {
-        super(ErrorMissingSessionId.code, `Missing session ID.`);
+        super(ErrorNoSession.code, `No session found.`);
     }
 }
 

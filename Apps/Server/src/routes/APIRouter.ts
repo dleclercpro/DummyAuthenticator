@@ -4,11 +4,11 @@ import PingController from '../controllers/PingController';
 import SignInController from '../controllers/SignInController';
 import SignOutController from '../controllers/SignOutController';
 import SignUpController from '../controllers/SignUpController';
-import { SessionMiddleware } from '../middleware/SessionMiddleware';
 import ResetPasswordController from '../controllers/ResetPasswordController';
 import ForgotPasswordController from '../controllers/ForgotPasswordController';
 import ConfirmEmailController from '../controllers/ConfirmEmailController';
 import ValidateTokenController from '../controllers/ValidateTokenController';
+import { AuthMiddleware } from '../middleware/AuthMiddleware';
 
 
 
@@ -21,17 +21,17 @@ const APIRouter = Router();
 // Authentication
 APIRouter.post(`/sign-up`, [], SignUpController);
 APIRouter.put(`/sign-in`, [], SignInController);
-APIRouter.get(`/sign-out`, [SessionMiddleware], SignOutController);
+APIRouter.get(`/sign-out`, [AuthMiddleware], SignOutController);
 APIRouter.put('/confirm-email', [], ConfirmEmailController);
 APIRouter.post(`/forgot-password`, [], ForgotPasswordController);
 APIRouter.post(`/reset-password`, [], ResetPasswordController);
-APIRouter.get('/ping', [SessionMiddleware], PingController);
+APIRouter.get('/ping', [AuthMiddleware], PingController);
 
 // Tokens
 APIRouter.put('/token', [], ValidateTokenController);
 
 // Secret
-APIRouter.get('/secret', [SessionMiddleware], GetSecretController);
+APIRouter.get('/secret', [AuthMiddleware], GetSecretController);
 
 
 

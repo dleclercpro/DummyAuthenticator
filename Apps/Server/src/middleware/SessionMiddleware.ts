@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { SESSION_COOKIE } from '../config/AuthConfig';
-import { ErrorExpiredSession, ErrorInvalidSessionId, ErrorMissingSessionId } from '../errors/SessionErrors';
+import { ErrorInvalidSessionId } from '../errors/SessionErrors';
 import { errorResponse } from '../utils/calls';
 import Session from '../models/auth/Session';
 import { HttpStatusCode } from '../types/HTTPTypes';
@@ -8,13 +8,16 @@ import { TimeUnit } from '../types/TimeTypes';
 import TimeDuration from '../models/units/TimeDuration';
 import { ClientError } from '../constants';
 
+/*
+    Try and find session, then set it in request object
+*/
 export const SessionMiddleware: RequestHandler = async (req, res, next) => {
     try {
         const { [SESSION_COOKIE]: sessionId } = req.cookies;
 
         // No session ID cookie?
         if (!sessionId) {
-            throw new ErrorMissingSessionId();
+            return next();
         }
 
         // Try to find user session
@@ -23,11 +26,6 @@ export const SessionMiddleware: RequestHandler = async (req, res, next) => {
         // Invalid session ID
         if (!session) {
             throw new ErrorInvalidSessionId(sessionId);
-        }
-
-        // Is session expired?
-        if (session.getExpiresAt() <= new Date()) {
-            throw new ErrorExpiredSession(sessionId);
         }
 
         // Extend session duration if desired on every
@@ -46,10 +44,7 @@ export const SessionMiddleware: RequestHandler = async (req, res, next) => {
         // Remove session cookie in user's browser
         res.clearCookie(SESSION_COOKIE);
 
-        if (err.code === ErrorMissingSessionId.code ||
-            err.code === ErrorInvalidSessionId.code ||
-            err.code === ErrorExpiredSession.code
-        ) {
+        if (err.code === ErrorInvalidSessionId.code) {
             return res
                 .status(HttpStatusCode.UNAUTHORIZED)
                 .json(errorResponse(ClientError.InvalidCredentials));
