@@ -11,7 +11,13 @@ import { ResetPasswordToken } from '../types/TokenTypes';
 import { ClientError, TokenType } from '../constants';
 
 const validateQuery = async (req: Request) => {
+    const { session } = req;
     const { token } = req.query;
+
+    // No need for token when user logged in
+    if (session) {
+        return;
+    }
 
     if (!token) {
         throw new ErrorMissingToken();
@@ -30,12 +36,23 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
     const now = new Date();
 
     try {
+        const { session } = req;
         const { password } = req.body as Body;
     
-        const token = await validateQuery(req) as { string: string, content: ResetPasswordToken };
-        const { email, creationDate, expirationDate } = token.content;
+        let email = '';
+        let creationDate = 0;
+        let expirationDate = 0;
 
-        logger.info(`Trying to reset password for user '${token.content.email}'...`);
+        const token = await validateQuery(req) as { string: string, content: ResetPasswordToken };
+
+        if (token) {
+            email = token.content.email;
+            creationDate = token.content.creationDate;
+            expirationDate = token.content.expirationDate;
+        } else {
+            email = session.getEmail();
+        }
+        logger.info(`Trying to reset password for user: ${email}`);
 
         // Ensure password is strong enough
         if (!PasswordManager.validate(password)) {
@@ -51,16 +68,18 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         // Make sure user hasn't attempted too many times to log in
         const lastReset = user.getPassword().getLastReset();
 
-        // Verify token validity
-        const userHasResetTheirPassword = user.getPassword().wasAlreadyReset();
-        const isTokenExpired = new Date(expirationDate) <= now || userHasResetTheirPassword && new Date(creationDate) <= (lastReset as Date);
-
-        if (isTokenExpired) {
-            throw new ErrorExpiredToken();
+        // Verify token validity (if it exists)
+        if (token) {
+            const userHasResetTheirPassword = user.getPassword().wasAlreadyReset();
+            const isTokenExpired = new Date(expirationDate) <= now || userHasResetTheirPassword && new Date(creationDate) <= (lastReset as Date);
+    
+            if (isTokenExpired) {
+                throw new ErrorExpiredToken();
+            }
         }
 
         // Actually reset user's password
-        PasswordManager.reset(user, password);
+        await PasswordManager.reset(user, password);
 
         // Store changes to DB
         await user.save();

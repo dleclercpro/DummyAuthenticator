@@ -1,6 +1,6 @@
 import { Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { SPACING } from '../../../styles';
+import { BUTTON_HEIGHT, SPACING } from '../../../styles';
 
 const useHomeStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     root: {
@@ -36,6 +36,7 @@ const useHomeStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
 
     button: {
         width: '100%',
+        height: spacing(BUTTON_HEIGHT),
 
         '&:not(:last-child)': {
             marginBottom: spacing(1),

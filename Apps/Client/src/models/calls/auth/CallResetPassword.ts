@@ -6,7 +6,8 @@ interface Data {
 
 export class CallResetPassword extends CallPOST<Data, void> {
 
-    constructor(token: string) {
-        super(`/reset-password?token=${token}`);
+    constructor(token?: string) {
+        const url = `/reset-password`;
+        super(token ? `${url}?token=${token}` : url);
     }
 }

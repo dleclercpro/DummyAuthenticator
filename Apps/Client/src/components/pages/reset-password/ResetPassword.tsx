@@ -29,7 +29,7 @@ const ResetPassword: React.FC<Props> = () => {
     const queryParams = new URLSearchParams(location.search);
     const token = queryParams.get('token') ?? '';
 
-    const { resetPassword } = useAuth();
+    const { isLogged, resetPassword } = useAuth();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
@@ -44,7 +44,7 @@ const ResetPassword: React.FC<Props> = () => {
 
     // Validate token
     useEffect(() => {
-        if (!token) {
+        if (!token || isLogged) {
             return;
         }
 
@@ -58,7 +58,7 @@ const ResetPassword: React.FC<Props> = () => {
                 navigate(getURL(Page.Home));
             });
 
-    }, [token, navigate]);
+    }, [token, isLogged]);
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
@@ -73,7 +73,7 @@ const ResetPassword: React.FC<Props> = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (token === null) {
+        if (!isLogged && token === null) {
             return;
         }
 
@@ -87,7 +87,7 @@ const ResetPassword: React.FC<Props> = () => {
         setSnackbarOpen(false);
         setLoading(true);
 
-        return resetPassword(token, password)
+        return resetPassword(password, token)
             .then(() => {
                 setError(false);
                 setSnackbarMessage('Your password has been successfully reset!');
@@ -109,12 +109,12 @@ const ResetPassword: React.FC<Props> = () => {
     }
 
     /* Token not yet validated by server */
-    if (validatedToken === null) {
+    if (!isLogged && validatedToken === null) {
         return null;
     }
 
     /* No token provided: go back home */
-    if (token === null) {
+    if (!isLogged && token === null) {
         return (
             <Navigate to={getURL(Page.Home)} />
         );

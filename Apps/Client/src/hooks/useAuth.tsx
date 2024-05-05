@@ -18,7 +18,7 @@ interface IAuthContext {
     signOut: () => Promise<void>,
     confirmEmail: (token: string) => Promise<void>,
     forgotPassword: (email: string) => Promise<void>,
-    resetPassword: (token: string, password: string) => Promise<void>,
+    resetPassword: (password: string, token?: string) => Promise<void>,
 }
 
 export const AuthContext = createContext<IAuthContext>({} as IAuthContext);
@@ -126,7 +126,20 @@ const useAuth = () => {
             });
     }
 
-    const resetPassword = async (token: string, password: string) => {
+    const resetPassword = async (password: string, token?: string) => {
+        if (isLogged) {
+            await new CallResetPassword().execute({ password })
+                .catch(({ code, error, data }) => {
+                    throw new Error(translateServerError(error));
+                });
+
+            return;
+        }
+
+        if (!token) {
+            throw new Error('MISSING_TOKEN');
+        }
+
         await new CallResetPassword(token).execute({ password })
             .catch(({ code, error, data }) => {
                 throw new Error(translateServerError(error));

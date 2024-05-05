@@ -76,9 +76,7 @@ const Router: React.FC<Props> = () => {
             } />
 
             <Route path='/reset-password' element={
-                <UnauthenticatedRoute>
-                    <ResetPassword />
-                </UnauthenticatedRoute>
+                <ResetPassword />
             } />
 
             <Route path='*' element={<NoMatch />} />

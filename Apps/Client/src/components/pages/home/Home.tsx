@@ -1,16 +1,17 @@
-import { Paper, Typography } from '@mui/material';
+import { Button, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
 import useHomeStyles from './HomeStyles';
 import Snackbar from '../../Snackbar';
-import LoadingButton from '../../buttons/LoadingButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import PasswordIcon from '@mui/icons-material/Key';
 import useAuth from '../../../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
 import useSecret from '../../../hooks/useSecret';
 import Spinner from '../../Spinner';
+import LoadingButton from '../../buttons/LoadingButton';
 
 interface Props {
 
@@ -98,6 +99,17 @@ const Home: React.FC<Props> = () => {
                 >
                     Renew secret
                 </LoadingButton>
+
+                <Button
+                    className={classes.button}
+                    variant='contained'
+                    component={Link}
+                    to={getURL(Page.ResetPassword)}
+                    color='secondary'
+                    startIcon={<PasswordIcon />}
+                >
+                    Reset password
+                </Button>
                 
                 <LoadingButton
                     className={classes.button}
