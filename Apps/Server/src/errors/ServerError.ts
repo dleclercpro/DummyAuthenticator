@@ -60,3 +60,11 @@ export class ErrorNoMoreLoginAttempts extends ServerError {
         super(ErrorNoMoreLoginAttempts.code, `Number of maximum login attempts per hour reached for user '${user}': (${attemptCount}/${HOURLY_LOGIN_MAX_ATTEMPTS})`);
     }
 }
+
+export class ErrorNewPasswordMustBeDifferent extends ServerError {
+    public static code = -106;
+    
+    constructor() {
+        super(ErrorNewPasswordMustBeDifferent.code, `New password must be different than the previous one.`);
+    }
+}

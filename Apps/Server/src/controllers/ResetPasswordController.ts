@@ -5,7 +5,7 @@ import { logger } from '../utils/logger';
 import TokenManager from '../models/auth/TokenManager';
 import User from '../models/auth/User';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
-import { ErrorExpiredToken, ErrorInvalidPassword, ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
+import { ErrorExpiredToken, ErrorInvalidPassword, ErrorInvalidToken, ErrorMissingToken, ErrorNewPasswordMustBeDifferent } from '../errors/ServerError';
 import PasswordManager from '../models/auth/PasswordManager';
 import { ResetPasswordToken } from '../types/TokenTypes';
 import { ClientError, TokenType } from '../constants';
@@ -52,17 +52,22 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         } else {
             email = session.getEmail();
         }
-        logger.info(`Trying to reset password for user: ${email}`);
-
-        // Ensure password is strong enough
-        if (!PasswordManager.validate(password)) {
-            throw new ErrorInvalidPassword();
-        }
 
         // User should exist in database
         const user = await User.findByEmail(email);
         if (!user) {
             throw new ErrorUserDoesNotExist(email);
+        }
+        logger.info(`Trying to reset password for user: ${email}`);
+
+        // Check if password is the same as previous one: it should be different!
+        if (await PasswordManager.matches(password, user.getPassword().getValue())) {
+            throw new ErrorNewPasswordMustBeDifferent();
+        }
+
+        // Ensure password is strong enough
+        if (!PasswordManager.validate(password)) {
+            throw new ErrorInvalidPassword();
         }
 
         // Make sure user hasn't attempted too many times to log in
@@ -88,6 +93,12 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         return res.json(successResponse());
 
     } catch (err: any) {
+
+        if (err.code === ErrorNewPasswordMustBeDifferent.code) {
+            return res
+                .status(HttpStatusCode.BAD_REQUEST)
+                .json(errorResponse(ClientError.PasswordMustBeDifferent));
+        }
 
         if (err.code === ErrorInvalidPassword.code) {
             return res
