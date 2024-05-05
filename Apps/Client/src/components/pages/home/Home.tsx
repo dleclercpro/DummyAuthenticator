@@ -80,7 +80,11 @@ const Home: React.FC<Props> = () => {
             </Typography>
             
             <Typography className={classes.text}>
-                Here is your secret: <b>{loading ? '...' : secret}</b>
+                You are logged in. Here is your secret:
+            </Typography>
+
+            <Typography className={classes.secret}>
+                {loading ? '...' : secret}
             </Typography>
 
             <div className={classes.buttons}>

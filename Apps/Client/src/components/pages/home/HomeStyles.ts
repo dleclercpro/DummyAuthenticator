@@ -7,7 +7,7 @@ const useHomeStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
-        maxWidth: 320,
+        maxWidth: 420,
         padding: spacing(3),
 
         [breakpoints.down('sm')]: {
@@ -20,7 +20,13 @@ const useHomeStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     },
 
     text: {
-        marginBottom: spacing(SPACING),
+        marginBottom: spacing(1.5 * SPACING),
+    },
+
+    secret: {
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: spacing(1.5 * SPACING),
     },
 
     buttons: {

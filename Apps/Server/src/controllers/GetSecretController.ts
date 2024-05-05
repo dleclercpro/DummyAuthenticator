@@ -15,7 +15,7 @@ const GetSecretController: RequestHandler = async (req, res, next) => {
         if (!user) {
             throw new ErrorUserDoesNotExist(session.getEmail());
         }
-        logger.info(`User '${user.getEmail().getValue()}' is asking for its secret.`);
+        logger.trace(`User '${user.getEmail().getValue()}' is asking for its secret.`);
 
         // Fake some processing time for fetching of the secret
         await sleep(new TimeDuration(1, TimeUnit.Second));
@@ -24,7 +24,7 @@ const GetSecretController: RequestHandler = async (req, res, next) => {
         const secret = user.getSecret().getValue();
 
         // Re-new user secret
-        logger.debug(`Renewing user's secret: ${user.getEmail().getValue()}`);
+        logger.trace(`Renewing user's secret: ${user.getEmail().getValue()}`);
         await user.renewSecret();
 
         return res.json(successResponse(secret));
