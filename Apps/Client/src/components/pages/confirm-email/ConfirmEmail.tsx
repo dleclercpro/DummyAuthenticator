@@ -8,13 +8,7 @@ import { CallValidateToken } from '../../../models/calls/auth/CallValidateToken'
 import SuccessIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/WarningSharp';
 import BackIcon from '@mui/icons-material/ArrowBack';
-
-// FIXME
-export type ConfirmEmailToken = {
-    email: string,
-    creationDate: Date,
-    expirationDate: Date,
-};
+import { ConfirmEmailToken } from '../../../types/TokenTypes';
 
 interface Props {
 

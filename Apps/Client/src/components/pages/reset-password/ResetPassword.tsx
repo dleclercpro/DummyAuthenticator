@@ -14,13 +14,7 @@ import { sleep } from '../../../utils/time';
 import TimeDuration from '../../../models/TimeDuration';
 import { TimeUnit } from '../../../types/TimeTypes';
 import { CallValidateToken } from '../../../models/calls/auth/CallValidateToken';
-
-// FIXME
-export type ResetPasswordToken = {
-    email: string,
-    creationDate: Date,
-    expirationDate: Date,
-};
+import { ResetPasswordToken } from '../../../types/TokenTypes';
 
 interface Props {
 

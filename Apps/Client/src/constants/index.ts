@@ -3,3 +3,8 @@ export enum Environment {
   Development = 'development',
   Test = 'test',
 };
+
+export enum TokenType {
+  ConfirmEmail = 'ConfirmEmail',
+  ResetPassword = 'ResetPassword',
+}
