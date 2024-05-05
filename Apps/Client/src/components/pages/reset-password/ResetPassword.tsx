@@ -188,7 +188,7 @@ const ResetPassword: React.FC<Props> = () => {
             <Snackbar
                 open={snackbarOpen}
                 message={snackbarMessage}
-                severity={!!error ? Severity.Error : Severity.Info}
+                severity={!!error ? Severity.Error : Severity.Success}
                 onClose={() => setSnackbarOpen(false)}
             />
         </Paper>
