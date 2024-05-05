@@ -41,7 +41,7 @@ class AppServer {
             };
 
             this.app.use(cors(CORS_OPTIONS));
-            logger.debug(`CORS enabled for client app: ${CORS_OPTIONS.origin}`);
+            logger.debug(`CORS enabled: [${CORS_OPTIONS.origin}]`);
         }
 
         // Define server's API endpoints
@@ -71,12 +71,11 @@ class AppServer {
             const admin = await User.findByEmail(email);
             
             if (admin) {
-                logger.debug(`Admin already exists: ${email}`);
                 return;
             }
 
             await User.createAdmin(email, password);
-            logger.debug(`Admin created: ${email}`);
+            logger.debug(`Default admin user created: ${email}`);
         });
 
         // Listen to HTTP traffic on given port

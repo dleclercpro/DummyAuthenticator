@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import useAppStyles from './AppStyles';
-import Router, { Page, getURL } from '../routes/Router';
+import Router from '../routes/Router';
 import { Container } from '@mui/system';
 import useAuth from '../hooks/useAuth';
 import Spinner from './Spinner';
@@ -21,12 +21,7 @@ const App: React.FC<Props> = () => {
 
     // Try to connect to server on application start
     useEffect(() => {
-        ping()
-            .then((isAdmin: boolean) => {
-                navigate(getURL(isAdmin ? Page.Admin : Page.Home));
-            });
-
-    // eslint-disable-next-line
+        ping();
     }, []);
 
     if (isPinging || hasError) {
