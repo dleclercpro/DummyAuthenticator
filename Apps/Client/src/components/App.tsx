@@ -4,7 +4,7 @@ import Router from '../routes/Router';
 import { Container } from '@mui/system';
 import useAuth from '../hooks/useAuth';
 import Spinner from './Spinner';
-import WarningSharpIcon from '@mui/icons-material/WarningSharp';
+import ErrorIcon from '@mui/icons-material/WarningSharp';
 
 interface Props {
 
@@ -31,7 +31,7 @@ const App: React.FC<Props> = () => {
                 )}
                 {!isPinging && hasError && (
                     <>
-                        <WarningSharpIcon color='error' className={classes.icon} />
+                        <ErrorIcon color='error' className={classes.icon} />
                         <p>Could not ping server: <strong>{errorPing}</strong></p>
                     </>
                 )}

@@ -1,4 +1,4 @@
-import { Paper, Typography } from '@mui/material';
+import { Button, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
 import useAuthStyles from '../AuthStyles';
@@ -6,10 +6,10 @@ import Snackbar from '../../Snackbar';
 import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import ResetIcon from '@mui/icons-material/LockReset';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import BackIcon from '@mui/icons-material/ArrowBack';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import { Page, getURL } from '../../../routes/Router';
-import EmailField from '../../fields/EmailField';
 import { sleep } from '../../../utils/time';
 import TimeDuration from '../../../models/TimeDuration';
 import { TimeUnit } from '../../../types/TimeTypes';
@@ -142,15 +142,6 @@ const ResetPassword: React.FC<Props> = () => {
                 </Typography>
 
                 <fieldset className={classes.fields}>
-                    <EmailField
-                        id='email'
-                        className={classes.field}
-                        value={validatedToken.content.email}
-                        error={!!error}
-                        disabled
-                        onChange={() => {}}
-                    />
-
                     <PasswordField
                         id='password'
                         className={classes.field}
@@ -173,12 +164,22 @@ const ResetPassword: React.FC<Props> = () => {
 
                 <div className={classes.buttons}>
                     <div className='top'>
+                        <Button
+                            className={classes.linkButton}
+                            component={Link}
+                            to={getURL(Page.SignIn)}
+                            color='secondary'
+                            startIcon={<BackIcon />}
+                        >
+                            Back to homepage
+                        </Button>
                         <LoadingButton
                             className={classes.submitButton}
                             type='submit'
                             icon={<ResetIcon />}
                             loading={loading}
                             error={!!error}
+                            disabled={password === '' || password !== repeatPassword}
                         >
                             Reset password
                         </LoadingButton>

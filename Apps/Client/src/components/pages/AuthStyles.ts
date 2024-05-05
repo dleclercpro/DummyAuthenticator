@@ -18,8 +18,17 @@ const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
         flexDirection: 'column',
     },
 
+    titleContainer: {
+
+    },
+
     title: {
         marginBottom: spacing(0.5 * SPACING),
+    },
+
+    textContainer: {
+        display: 'flex',
+        alignItems: 'center',
     },
 
     text: {
@@ -100,6 +109,13 @@ const useAuthStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
 
     staySignedInSwitch: {
         marginTop: spacing(-0.5),
+    },
+
+    icon: {
+        width: spacing(6),
+        height: spacing(6),
+
+        marginRight: spacing(SPACING),
     },
 }));
 

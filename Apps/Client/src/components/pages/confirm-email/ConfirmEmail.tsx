@@ -1,10 +1,13 @@
-import { Paper, Typography } from '@mui/material';
+import { Button, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import useAuthStyles from '../AuthStyles';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import { Page, getURL } from '../../../routes/Router';
 import { CallValidateToken } from '../../../models/calls/auth/CallValidateToken';
+import SuccessIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/WarningSharp';
+import BackIcon from '@mui/icons-material/ArrowBack';
 
 // FIXME
 export type ConfirmEmailToken = {
@@ -86,11 +89,28 @@ const ConfirmEmail: React.FC<Props> = () => {
                     Confirm e-mail
                 </Typography>
 
-                <Typography className={classes.text}>
-                    {loading && 'Please wait...'}
-                    {!loading && !error && `Thanks for confirming your e-mail address: ${validatedToken.content.email}`}
-                    {!loading && !!error && `Could not confirm your e-mail address: ${error}`}
-                </Typography>
+                <div className={classes.textContainer}>
+                    {!loading && !error && <SuccessIcon color='success'  className={classes.icon} />}
+                    {!loading && !!error && <ErrorIcon color='error' className={classes.icon} />}
+
+                    <Typography className={classes.text}>
+                        {loading && 'Please wait...'}
+                        {!loading && !error && `Thanks for confirming your e-mail address!`}
+                        {!loading && !!error && `Could not confirm your e-mail address: ${error}`}
+                    </Typography>
+                </div>
+
+                <div className={classes.buttons}>
+                    <Button
+                        className={classes.linkButton}
+                        component={Link}
+                        to={getURL(Page.SignIn)}
+                        color='secondary'
+                        startIcon={<BackIcon />}
+                    >
+                        Back to homepage
+                    </Button>
+                </div>
             </div>
         </Paper>
     );

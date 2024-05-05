@@ -8,6 +8,8 @@ import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { ErrorExpiredToken, ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
 import { ResetPasswordToken } from '../types/TokenTypes';
 import { ClientError, TokenType } from '../constants';
+import TimeDuration from '../models/units/TimeDuration';
+import { TimeUnit } from '../types/TimeTypes';
 
 const validateQuery = async (req: Request) => {
     const { token } = req.query;
@@ -40,8 +42,10 @@ const ConfirmEmailController: RequestHandler = async (req, res, next) => {
         const isTokenExpired = new Date(expirationDate) <= now;
 
         if (isTokenExpired) {
+            logger.warn(`Received expired token.`);
             throw new ErrorExpiredToken();
         }
+        logger.debug(`Received valid token (expiring in ${new TimeDuration(expirationDate - now.getTime(), TimeUnit.Millisecond).format()}).`);
 
         // Confirm user's e-mail address
         user.getEmail().confirm();
