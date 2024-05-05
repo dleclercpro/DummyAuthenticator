@@ -8,6 +8,7 @@ This is a simple Node application, which demonstrates how server-side authentica
 - **Logout**: Log out of the application.
 - **Password Reset**: Reset your password via email verification (using JWT tokens), or directly in the app in case you're already logged in.
 - **Protection against Bruteforce Attacks**: Only allow users a given number of failed login attempts per hour to avoid repeated authentication attempts.
+- **Administration Panel**: Allow pre-defined user to execute administrative actions (e.g. delete a user).
 
 ## Setup
 Ensure Docker is installed on your machine, along with its Compose feature. Inside the project's root directory, execute the following command:
