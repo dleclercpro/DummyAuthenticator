@@ -4,6 +4,7 @@ import PasswordManager from './PasswordManager';
 import UserPassword from './UserPassword';
 import UserLogin from './UserLogin';
 import UserEmail from './UserEmail';
+import UserSecret from './UserSecret';
 
 const getRandomWord = () => randomWords({ exactly: 1, join: `` });
 
@@ -11,7 +12,7 @@ interface UserArgs {
     email: UserEmail,
     password: UserPassword,
     login: UserLogin,
-    secret: string,
+    secret: UserSecret,
 }
 
 
@@ -20,7 +21,7 @@ class User {
     protected email: UserEmail;
     protected password: UserPassword;
     protected login: UserLogin;
-    protected secret: string;
+    protected secret: UserSecret;
 
     public constructor(args: UserArgs) {
         this.email = args.email;
@@ -34,7 +35,7 @@ class User {
             email: this.email.serialize(),
             password: this.password.serialize(),
             login: this.login.serialize(),
-            secret: this.secret,
+            secret: this.secret.serialize(),
         });
     }
 
@@ -46,6 +47,7 @@ class User {
             email: UserEmail.deserialize(args.email),
             password: UserPassword.deserialize(args.password),
             login: UserLogin.deserialize(args.login),
+            secret: UserSecret.deserialize(args.secret),
         });
 
         return user;
@@ -76,7 +78,11 @@ class User {
     }
 
     public async renewSecret() {
-        this.secret = getRandomWord();
+        const now = new Date();
+
+        this.secret.setValue(getRandomWord());
+        this.secret.incrementResetCount();
+        this.secret.setLastReset(now);
 
         await this.save();
 
@@ -111,7 +117,9 @@ class User {
                 value: await PasswordManager.hash(password),
             }),
             login: new UserLogin({}),
-            secret: getRandomWord(),
+            secret: new UserSecret({
+                value: getRandomWord(),
+            }),
         });
 
         // Store user in database
