@@ -1,11 +1,11 @@
 import CallPOST from '../base/CallPOST';
 
-interface Data {
+export interface Data {
     email: string,
     password: string,
 }
 
-export class CallSignUp extends CallPOST<Data, void> {
+export default class CallSignUp extends CallPOST<Data, void> {
 
     constructor() {
         super(`/sign-up`);

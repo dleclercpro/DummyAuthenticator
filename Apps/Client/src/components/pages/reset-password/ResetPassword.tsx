@@ -13,7 +13,7 @@ import { Page, getURL } from '../../../routes/Router';
 import { sleep } from '../../../utils/time';
 import TimeDuration from '../../../models/TimeDuration';
 import { TimeUnit } from '../../../types/TimeTypes';
-import { CallValidateToken } from '../../../models/calls/auth/CallValidateToken';
+import * as CallValidateToken from '../../../models/calls/auth/CallValidateToken';
 import { ResetPasswordToken } from '../../../types/TokenTypes';
 
 interface Props {
@@ -48,7 +48,7 @@ const ResetPassword: React.FC<Props> = () => {
             return;
         }
 
-        new CallValidateToken().execute({ token })
+        new CallValidateToken.default().execute({ token })
             .then(({ data }) => {
                 setValidatedToken(data! as { string: string, content: ResetPasswordToken });
                 setError(false);

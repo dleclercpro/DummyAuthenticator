@@ -5,15 +5,16 @@ import { getURL, Page } from './Router';
 
 interface Props {
     children: ReactElement,
+    shouldBeAdmin?: boolean,
 }
 
 const AuthenticatedRoute: React.FC<Props> = (props) => {
-    const { children } = props;
+    const { children, shouldBeAdmin } = props;
 
-    const { isLogged } = useAuth();
+    const { isLogged, isAdmin } = useAuth();
     const location = useLocation();
 
-    if (!isLogged) {
+    if (!isLogged || (shouldBeAdmin && !isAdmin)) {
         return (
             <Navigate
                 to={getURL(Page.SignIn)}

@@ -1,19 +1,21 @@
 import CallPUT from '../base/CallPUT';
 
-interface Data {
+export interface Data {
     email: string,
     password: string,
     staySignedIn: boolean,
 }
 
-type ResponseData = undefined;
+export type ResponseData = {
+    isAdmin: boolean,
+};
 
-interface ErrorResponseData {
+export interface ErrorResponseData {
     attempts: number,
     maxAttempts: number,
 }
 
-export class CallSignIn extends CallPUT<Data, ResponseData, ErrorResponseData> {
+export default class CallSignIn extends CallPUT<Data, ResponseData, ErrorResponseData> {
 
     constructor() {
         super(`/sign-in`);

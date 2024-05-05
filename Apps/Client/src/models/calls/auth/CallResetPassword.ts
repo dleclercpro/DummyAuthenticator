@@ -1,10 +1,10 @@
 import CallPOST from '../base/CallPOST';
 
-interface Data {
+export interface Data {
     password: string,
 }
 
-export class CallResetPassword extends CallPOST<Data, void> {
+export default class CallResetPassword extends CallPOST<Data, void> {
 
     constructor(token?: string) {
         const url = `/reset-password`;

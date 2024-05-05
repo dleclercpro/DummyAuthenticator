@@ -9,9 +9,11 @@ import UnauthenticatedRoute from './UnauthenticatedRoute';
 import ForgotPassword from '../components/pages/forgot-password/ForgotPassword';
 import ResetPassword from '../components/pages/reset-password/ResetPassword';
 import ConfirmEmail from '../components/pages/confirm-email/ConfirmEmail';
+import Admin from '../components/pages/admin/Admin';
 
 export enum Page {
     Home = '',
+    Admin = 'admin',
     SignIn = 'sign-in',
     SignUp = 'sign-up',
     ForgotPassword = 'forgot-password',
@@ -27,6 +29,7 @@ export const getURL = (page: Page) => {
             break;
 
         // Authentication pages
+        case Page.Admin:
         case Page.SignIn:
         case Page.SignUp:
         case Page.ForgotPassword:
@@ -48,6 +51,12 @@ const Router: React.FC<Props> = () => {
             <Route path='/' element={
                 <AuthenticatedRoute>
                     <Home />
+                </AuthenticatedRoute>
+            } />
+
+            <Route path='/admin' element={
+                <AuthenticatedRoute shouldBeAdmin>
+                    <Admin />
                 </AuthenticatedRoute>
             } />
 

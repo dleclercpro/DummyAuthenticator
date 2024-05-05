@@ -69,7 +69,7 @@ const SignInController: RequestHandler = async (req, res, next) => {
         }
 
         // Create session for user
-        const session = await Session.create(user.getEmail().getValue(), staySignedIn);
+        const session = await Session.create(user, staySignedIn);
 
         // Set cookie with session ID on client's browser
         res.cookie(SESSION_COOKIE, session.getId());

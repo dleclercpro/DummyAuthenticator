@@ -3,19 +3,22 @@ import { SESSION_DURATION } from '../../config/AuthConfig';
 import { logger } from '../../utils/logger';
 import { APP_DB } from '../..';
 import TimeDuration from '../units/TimeDuration';
+import User from './User';
 
 interface SessionArgs {
-    id: string, email: string, expiresAt: Date, staySignedIn: boolean,
+    id: string, admin: boolean, email: string, expiresAt: Date, staySignedIn: boolean,
 }
 
 class Session {
     protected id: string;
+    protected admin: boolean;
     protected email: string;
     protected expiresAt: Date;
     public staySignedIn: boolean;
 
     public constructor(args: SessionArgs) {
         this.id = args.id;
+        this.admin = args.admin;
         this.email = args.email;
         this.expiresAt = args.expiresAt;
         this.staySignedIn = args.staySignedIn;
@@ -24,6 +27,7 @@ class Session {
     public serialize() {
         return JSON.stringify({
             id: this.id,
+            admin: this.admin,
             email: this.email,
             expiresAt: this.expiresAt,
             staySignedIn: this.staySignedIn,
@@ -40,6 +44,10 @@ class Session {
 
     public stringify() {
         return this.getId();
+    }
+
+    public isAdmin() {
+        return this.admin;
     }
 
     public getId() {
@@ -87,7 +95,7 @@ class Session {
         }
     }
 
-    public static async create(email: string, staySignedIn: boolean = false) {
+    public static async create(user: User, staySignedIn: boolean = false) {
         let id = '';
 
         // Find a unique, non-existent ID for the new session 
@@ -99,7 +107,7 @@ class Session {
         const expiresAt = new Date(new Date().getTime() + SESSION_DURATION.toMs().getAmount());
 
         // Create new session
-        const session = new Session({ id, email, expiresAt, staySignedIn });
+        const session = new Session({ id, admin: user.isAdmin(), email: user.getEmail().getValue(), expiresAt, staySignedIn });
 
         // Store session in database
         await session.save();

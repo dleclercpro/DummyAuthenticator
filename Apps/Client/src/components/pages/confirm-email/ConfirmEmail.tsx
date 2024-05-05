@@ -4,7 +4,7 @@ import useAuthStyles from '../AuthStyles';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import { Page, getURL } from '../../../routes/Router';
-import { CallValidateToken } from '../../../models/calls/auth/CallValidateToken';
+import * as CallValidateToken from '../../../models/calls/auth/CallValidateToken';
 import SuccessIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/WarningSharp';
 import BackIcon from '@mui/icons-material/ArrowBack';
@@ -34,7 +34,7 @@ const ConfirmEmail: React.FC<Props> = () => {
     useEffect(() => {
         if (!token) return;
 
-        new CallValidateToken().execute({ token })
+        new CallValidateToken.default().execute({ token })
             .then(({ data }) => {
                 setValidatedToken(data! as { string: string, content: ConfirmEmailToken });
             })

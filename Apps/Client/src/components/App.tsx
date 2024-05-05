@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import useAppStyles from './AppStyles';
-import Router from '../routes/Router';
+import Router, { Page, getURL } from '../routes/Router';
 import { Container } from '@mui/system';
 import useAuth from '../hooks/useAuth';
 import Spinner from './Spinner';
 import ErrorIcon from '@mui/icons-material/WarningSharp';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
 
@@ -13,12 +14,17 @@ interface Props {
 const App: React.FC<Props> = () => {
     const { classes } = useAppStyles();
 
+    const navigate = useNavigate();
+
     const { isPinging, errorPing, ping } = useAuth();
     const hasError = !!errorPing;
 
     // Try to connect to server on application start
     useEffect(() => {
-        ping();
+        ping()
+            .then((isAdmin: boolean) => {
+                navigate(getURL(isAdmin ? Page.Admin : Page.Home));
+            });
 
     // eslint-disable-next-line
     }, []);

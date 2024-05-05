@@ -1,8 +1,8 @@
 import CallGET from '../base/CallGET';
 
-type Response = string;
+export type ResponseData = string;
 
-export class CallGetSecret extends CallGET<void, Response> {
+export default class CallGetSecret extends CallGET<void, ResponseData> {
 
     constructor() {
         super(`/secret`);

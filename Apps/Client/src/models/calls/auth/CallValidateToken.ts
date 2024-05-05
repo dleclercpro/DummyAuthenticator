@@ -1,15 +1,15 @@
 import CallPUT from '../base/CallPUT';
 
-interface Data {
+export interface Data {
     token: string,
 }
 
-interface Response {
+export interface ResponseData {
     string: string,
     content: object,
 }
 
-export class CallValidateToken extends CallPUT<Data, Response> {
+export default class CallValidateToken extends CallPUT<Data, ResponseData> {
 
     constructor() {
         super(`/token`);

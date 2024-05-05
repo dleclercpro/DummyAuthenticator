@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CallGetSecret } from '../models/calls/user/CallGetSecret';
+import * as CallGetSecret from '../models/calls/user/CallGetSecret';
 
 const useSecret = () => {    
     const [secret, setSecret] = useState('');
@@ -10,15 +10,16 @@ const useSecret = () => {
     const fetchSecret = async () => {
         setLoading(true);
 
-            await new CallGetSecret().execute()
-                .then(({ data }) => {
-                    setSecret(data as string);
-                    setError('');
-                })
-                .catch(({ code, error, data }) => {
-                    setSecret('?');
-                    setError('Impossible to fetch user secret.');
-                });
+        await new CallGetSecret.default()
+            .execute()
+            .then(({ data }) => {
+                setSecret(data as CallGetSecret.ResponseData);
+                setError('');
+            })
+            .catch(({ code, error, data }) => {
+                setSecret('?');
+                setError('Impossible to fetch user secret.');
+            });
 
         setLoading(false);
     };
