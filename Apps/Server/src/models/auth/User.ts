@@ -13,6 +13,7 @@ interface UserArgs {
     password: UserPassword,
     login: UserLogin,
     secret: UserSecret,
+    admin: boolean,
 }
 
 
@@ -22,12 +23,14 @@ class User {
     protected password: UserPassword;
     protected login: UserLogin;
     protected secret: UserSecret;
+    protected admin: boolean;
 
     public constructor(args: UserArgs) {
         this.email = args.email;
         this.login = args.login;
         this.password = args.password;
         this.secret = args.secret;
+        this.admin = args.admin;
     }
 
     public serialize() {
@@ -36,6 +39,7 @@ class User {
             password: this.password.serialize(),
             login: this.login.serialize(),
             secret: this.secret.serialize(),
+            admin: this.admin,
         });
     }
 
@@ -75,6 +79,10 @@ class User {
 
     public getSecret() {
         return this.secret;
+    }
+
+    public isAdmin() {
+        return this.admin;
     }
 
     public async renewSecret() {
@@ -120,6 +128,31 @@ class User {
             secret: new UserSecret({
                 value: getRandomWord(),
             }),
+            admin: false,
+        });
+
+        // Store user in database
+        await user.save();
+
+        return user;
+    }
+
+    public static async createAdmin(email: string, password: string) {
+
+        // Create new admin user
+        const user = new User({
+            email: new UserEmail({
+                value: email,
+                confirmed: true, // Admin users do not need to confirm their e-mail
+            }),
+            password: new UserPassword({
+                value: await PasswordManager.hash(password),
+            }),
+            login: new UserLogin({}),
+            secret: new UserSecret({
+                value: getRandomWord(),
+            }),
+            admin: true,
         });
 
         // Store user in database

@@ -73,9 +73,16 @@ const SignInController: RequestHandler = async (req, res, next) => {
 
         // Set cookie with session ID on client's browser
         res.cookie(SESSION_COOKIE, session.getId());
-        logger.debug(`User logged in: ${user.getEmail().getValue()}`);
 
-        return res.json(successResponse());
+        if (user.isAdmin()) {
+            logger.debug(`Admin logged in: ${user.getEmail().getValue()}`);
+        } else {
+            logger.debug(`User logged in: ${user.getEmail().getValue()}`);
+        }
+
+        return res.json(successResponse({
+            isAdmin: user.isAdmin(),
+        }));
 
     } catch (err: any) {
         logger.warn(`Failed login attempt for user: ${email}`);

@@ -2,6 +2,11 @@ import TimeDuration from '../models/units/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
 import { PROD } from './AppConfig';
 
+export const ADMINS = process.env.ADMINS!
+    .split(',')
+    .map(str => str.split(':'))
+    .map(([email, password]) => ({ email, password }));
+
 export const SESSION_COOKIE = process.env.SESSION_COOKIE!;
 export const SESSION_DURATION = new TimeDuration(15, TimeUnit.Minute);
 
