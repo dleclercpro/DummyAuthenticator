@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { N_PASSWORD_SALT_ROUNDS, PASSWORD_OPTIONS } from '../../config/AuthConfig';
 import { isAlphanumerical, isNumerical } from '../../utils/string';
-import User from './User';
+import User from '../user/User';
 
 interface PasswordOptions {
     minLength?: number,

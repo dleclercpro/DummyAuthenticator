@@ -1,4 +1,4 @@
-import User from '../models/auth/User';
+import User from '../models/user/User';
 import { ServerError } from './ServerError';
 
 export class ErrorUserAlreadyExists extends ServerError {

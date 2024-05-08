@@ -1,5 +1,5 @@
 import { APP_DB } from '../..';
-import PasswordManager from './PasswordManager';
+import PasswordManager from '../auth/PasswordManager';
 import UserPassword from './UserPassword';
 import UserLogin from './UserLogin';
 import UserEmail from './UserEmail';

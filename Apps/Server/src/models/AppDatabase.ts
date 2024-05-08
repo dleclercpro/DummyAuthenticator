@@ -1,10 +1,10 @@
 import { logger } from '../utils/logger';
 import { ADMINS } from '../config/AuthConfig';
-import User from './auth/User';
+import User from './user/User';
 import { REDIS_ENABLE, REDIS_OPTIONS, REDIS_DATABASE } from '../config/DatabasesConfig';
 import MemoryDatabase from './databases/MemoryDatabase';
 import RedisDatabase from './databases/RedisDatabase';
-import Admin from './auth/Admin';
+import Admin from './user/Admin';
 
 
 

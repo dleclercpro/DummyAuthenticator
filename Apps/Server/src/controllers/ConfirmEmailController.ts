@@ -3,7 +3,7 @@ import { errorResponse, successResponse } from '../utils/calls';
 import { HttpStatusCode } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
 import TokenManager from '../models/auth/TokenManager';
-import User from '../models/auth/User';
+import User from '../models/user/User';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { ErrorExpiredToken, ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
 import { ResetPasswordToken } from '../types/TokenTypes';

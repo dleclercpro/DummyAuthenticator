@@ -7,12 +7,12 @@ import { ErrorInvalidEmail, ErrorNoMoreLoginAttempts } from '../errors/ServerErr
 import { HOURLY_LOGIN_MAX_ATTEMPTS, SESSION_COOKIE } from '../config/AuthConfig';
 import { ClientError } from '../constants';
 import Session from '../models/auth/Session';
-import { LoginAttemptType } from '../models/auth/UserLogin';
+import { LoginAttemptType } from '../models/user/UserLogin';
 import PasswordManager from '../models/auth/PasswordManager';
 import TimeDuration from '../models/units/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
 import { computeDate } from '../utils/time';
-import User from '../models/auth/User';
+import User from '../models/user/User';
 import { logger } from '../utils/logger';
 
 const SignInController: RequestHandler = async (req, res, next) => {

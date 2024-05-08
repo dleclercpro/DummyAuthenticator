@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { TokenType } from '../src/constants';
 import { ErrorInvalidToken } from '../src/errors/ServerError';
 import TokenManager from '../src/models/auth/TokenManager';
-import User from '../src/models/auth/User';
+import User from '../src/models/user/User';
 
 jest.mock('jsonwebtoken', () => ({
   verify: jest.fn(),

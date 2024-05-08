@@ -1,4 +1,4 @@
-import User from '../auth/User';
+import User from '../user/User';
 import TokenManager from '../auth/TokenManager';
 import ResetPasswordEmail from './ResetPasswordEmail';
 import EmailAddressConfirmationEmail from './EmailAddressConfirmationEmail';

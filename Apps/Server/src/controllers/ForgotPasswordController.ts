@@ -5,7 +5,7 @@ import { HttpStatusCode } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
 import { validate } from 'email-validator';
 import { ErrorInvalidEmail, ErrorInvalidPassword } from '../errors/ServerError';
-import User from '../models/auth/User';
+import User from '../models/user/User';
 import EmailFactory from '../models/emails/EmailFactory';
 import Gmailer from '../models/emails/Gmailer';
 import { ClientError } from '../constants';

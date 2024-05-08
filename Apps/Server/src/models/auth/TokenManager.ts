@@ -3,7 +3,7 @@ import { TokenType } from '../../constants';
 import { ErrorInvalidToken } from '../../errors/ServerError';
 import { ConfirmEmailToken, ResetPasswordToken, Token } from '../../types/TokenTypes';
 import { logger } from '../../utils/logger';
-import User from './User';
+import User from '../user/User';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
 

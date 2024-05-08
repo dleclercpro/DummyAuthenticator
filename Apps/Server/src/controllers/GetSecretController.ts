@@ -3,7 +3,7 @@ import { successResponse } from '../utils/calls';
 import { sleep } from '../utils/time';
 import { TimeUnit } from '../types/TimeTypes';
 import TimeDuration from '../models/units/TimeDuration';
-import User from '../models/auth/User';
+import User from '../models/user/User';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { logger } from '../utils/logger';
 

@@ -4,7 +4,7 @@ import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { errorResponse, successResponse } from '../utils/calls';
 import { HttpStatusCode } from '../types/HTTPTypes';
 import { ClientError } from '../constants';
-import User from '../models/auth/User';
+import User from '../models/user/User';
 import { logger } from '../utils/logger';
 
 const SignOutController: RequestHandler = async (req, res, next) => {

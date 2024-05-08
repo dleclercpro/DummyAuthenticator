@@ -3,7 +3,7 @@ import { SESSION_DURATION } from '../../config/AuthConfig';
 import { logger } from '../../utils/logger';
 import { APP_DB } from '../..';
 import TimeDuration from '../units/TimeDuration';
-import User from './User';
+import User from '../user/User';
 
 interface SessionArgs {
     id: string, admin: boolean, email: string, expiresAt: Date, staySignedIn: boolean,

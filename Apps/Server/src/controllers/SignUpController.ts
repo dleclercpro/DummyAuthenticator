@@ -7,7 +7,7 @@ import { HttpStatusCode } from '../types/HTTPTypes';
 import PasswordManager from '../models/auth/PasswordManager';
 import { ClientError } from '../constants';
 import { logger } from '../utils/logger';
-import User from '../models/auth/User';
+import User from '../models/user/User';
 import Gmailer from '../models/emails/Gmailer';
 import EmailFactory from '../models/emails/EmailFactory';
 
