@@ -21,10 +21,9 @@ const Home: React.FC<Props> = () => {
     const { classes } = useHomeStyles();
 
     const { isAdmin, signOut } = useAuth();
+    const secret = useSecret();
     
     const navigate = useNavigate();
-
-    const { loading, error, secret, fetchSecret } = useSecret();
 
     const [isSigningOut, setIsSigningOut] = useState(false);
 
@@ -40,21 +39,21 @@ const Home: React.FC<Props> = () => {
 
     // Fetch secret on load
     useEffect(() => {
-        fetchSecret();
+        secret.renew();
     }, []);
 
     // Update snackbar on new error
     useEffect(() => {
-        if (error !== '') {
-            setSnackbarMessage(error);
+        if (secret.error !== '') {
+            setSnackbarMessage(secret.error);
             setSnackbarOpen(true);
         }
-    }, [error]);
+    }, [secret.error]);
 
     const handleRenewSecret = async () => {
         setSnackbarOpen(false);
 
-        await fetchSecret();
+        await secret.renew();
     }
 
     const handleSignOut = async () => {
@@ -69,7 +68,7 @@ const Home: React.FC<Props> = () => {
     }
 
     // No secret yet: wait
-    if (!secret) {
+    if (!secret.value) {
         return (
             <Spinner size='large' />
         );
@@ -86,7 +85,7 @@ const Home: React.FC<Props> = () => {
             </Typography>
 
             <Typography className={classes.secret}>
-                {loading ? '...' : secret}
+                {secret.value}
             </Typography>
 
             <div className={classes.buttons}>
@@ -95,7 +94,7 @@ const Home: React.FC<Props> = () => {
                     variant='outlined'
                     color='secondary'
                     icon={<RefreshIcon />}
-                    loading={loading}
+                    loading={secret.isLoading}
                     onClick={handleRenewSecret}
                 >
                     Renew secret

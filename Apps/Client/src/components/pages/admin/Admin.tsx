@@ -8,7 +8,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import PasswordIcon from '@mui/icons-material/Key';
 import DatabaseIcon from '@mui/icons-material/Storage';
 import useAuth from '../../../hooks/useAuth';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
 import useSecret from '../../../hooks/useSecret';
 import Spinner from '../../Spinner';
@@ -23,7 +23,8 @@ const Admin: React.FC<Props> = () => {
     const { classes } = useAdminStyles();
 
     const { setIsLogged, signOut } = useAuth();
-    const { loading, error, secret, fetchSecret } = useSecret();
+
+    const secret = useSecret();
     const db = useDatabase();
 
     const [isSigningOut, setIsSigningOut] = useState(false);
@@ -33,21 +34,21 @@ const Admin: React.FC<Props> = () => {
 
     // Fetch secret on load
     useEffect(() => {
-        fetchSecret();
+        secret.renew();
     }, []);
 
     // Update snackbar on new error
     useEffect(() => {
-        if (error !== '') {
-            setSnackbarMessage(error);
+        if (secret.error !== '') {
+            setSnackbarMessage(secret.error);
             setSnackbarOpen(true);
         }
-    }, [error]);
+    }, [secret.error]);
 
     const handleRenewSecret = async () => {
         setSnackbarOpen(false);
 
-        await fetchSecret();
+        await secret.renew();
     }
 
     const handleFlushDatabase = async () => {
@@ -78,7 +79,7 @@ const Admin: React.FC<Props> = () => {
     }
 
     // No secret yet: wait
-    if (!secret) {
+    if (!secret.value) {
         return (
             <Spinner size='large' />
         );
@@ -95,7 +96,7 @@ const Admin: React.FC<Props> = () => {
             </Typography>
 
             <Typography className={classes.secret}>
-                {loading ? '...' : secret}
+                {secret.value}
             </Typography>
 
             <div className={classes.buttons}>
@@ -104,7 +105,7 @@ const Admin: React.FC<Props> = () => {
                     variant='contained'
                     color='primary'
                     icon={<RefreshIcon />}
-                    loading={loading}
+                    loading={secret.isLoading}
                     onClick={handleRenewSecret}
                 >
                     Renew secret
