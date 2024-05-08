@@ -11,18 +11,14 @@ interface Props {
 const AuthenticatedRoute: React.FC<Props> = (props) => {
     const { children, shouldBeAdmin } = props;
 
-    const { isPinged, isLogged, isAdmin } = useAuth();
+    const { ping, isLogged, isAdmin } = useAuth();
     const location = useLocation();
 
-    if (!isPinged) {
+    if (!ping.isDone) {
         return null;
     }
 
     if (!isLogged || (shouldBeAdmin && !isAdmin)) {
-        console.log(`Redirecting to sign in page...`);
-        console.log(`isLogged: ${isLogged}`);
-        console.log(`isAdmin: ${isAdmin}`);
-
         return (
             <Navigate
                 to={getURL(Page.SignIn)}

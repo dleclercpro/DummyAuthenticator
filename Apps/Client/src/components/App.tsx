@@ -13,24 +13,23 @@ interface Props {
 const App: React.FC<Props> = () => {
     const { classes } = useAppStyles();
 
-    const { isPinging, errorPing, ping } = useAuth();
-    const hasError = !!errorPing;
+    const { ping } = useAuth();
 
     // Try to connect to server on application start
     useEffect(() => {
-        ping();
+        ping.execute();
     }, []);
 
-    if (isPinging || hasError) {
+    if (ping.isLoading || ping.error) {
         return (
             <div className={classes.container}>
-                {isPinging && (
+                {ping.isLoading && (
                     <Spinner size='large' />
                 )}
-                {!isPinging && hasError && (
+                {ping.isDone && ping.error && (
                     <>
                         <ErrorIcon color='error' className={classes.icon} />
-                        <p>Could not ping server: <strong>{errorPing}</strong></p>
+                        <p>Could not ping server: <strong>{ping.error}</strong></p>
                     </>
                 )}
             </div>

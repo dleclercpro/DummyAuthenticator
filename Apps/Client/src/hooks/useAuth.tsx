@@ -8,15 +8,22 @@ import * as CallForgotPassword from '../models/calls/auth/CallForgotPassword';
 import * as CallConfirmEmail from '../models/calls/auth/CallConfirmEmail';
 import * as CallSignUp from '../models/calls/auth/CallSignUp';
 
+interface IPingContext {
+    isLoading: boolean,
+    isDone: boolean,
+    error: string,
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    setIsDone: React.Dispatch<React.SetStateAction<boolean>>,
+    setError: React.Dispatch<React.SetStateAction<string>>,
+    execute: () => void,
+}
+
 interface IAuthContext {
-    isPinging: boolean, // Determine whether user still has active session on server
-    isPinged: boolean,
-    errorPing: string,
+    ping: IPingContext,
     isLogged: boolean,
     isAdmin: boolean,
     setIsLogged: (isLogged: boolean) => void,
     setIsAdmin: (isAdmin: boolean) => void,
-    ping: () => Promise<boolean>,
     signUp: (email: string, password: string) => Promise<void>,
     signIn: (email: string, password: string, staySignedIn: boolean) => Promise<boolean>,
     signOut: () => Promise<void>,
@@ -51,17 +58,27 @@ export default function AuthContextConsumer() {
 
 
 
-const useAuth = () => {  
-    const [isPinging, setIsPinging] = useState(false);
-    const [isPinged, setIsPinged] = useState(false);
-    const [errorPing, setErrorPing] = useState('');
-
+const useAuth = () => {
     const [isLogged, setIsLogged] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
 
-    const ping = async () => {
-        setIsPinged(false);
-        setIsPinging(true);
+    const [pingIsLoading, setPingIsLoading] = useState(false);
+    const [pingIsDone, setPingIsDone] = useState(false);
+    const [pingError, setPingError] = useState('');
+
+    const ping = {
+        isLoading: pingIsLoading,
+        isDone: pingIsDone,
+        error: pingError,
+        setIsLoading: setPingIsLoading,
+        setIsDone: setPingIsDone,
+        setError: setPingError,
+        execute: () => {},
+    };
+
+    const pingExecute = async () => {
+        ping.setIsDone(false);
+        ping.setIsLoading(true);
 
         try {
             const { data } = await new CallPing.default().execute()
@@ -71,7 +88,7 @@ const useAuth = () => {
             setIsAdmin(admin);
             setIsLogged(true);
 
-            setErrorPing('');
+            ping.setError('');
 
             return admin;
         } catch (err: any) {
@@ -83,14 +100,18 @@ const useAuth = () => {
                 return false;
             }
 
-            setErrorPing(err.message);
+            ping.setError(err.message);
 
             return false;
         } finally {
-            setIsPinging(false);
-            setIsPinged(true);
+            ping.setIsLoading(false);
+            ping.setIsDone(true);
         }
     }
+
+    ping.execute = pingExecute;
+
+
 
     const signUp = async (email: string, password: string) => {
         await new CallSignUp.default()
@@ -196,14 +217,11 @@ const useAuth = () => {
     }
 
     return {
-        isPinging,
-        isPinged,
-        errorPing,
+        ping,
         isLogged,
         isAdmin,
         setIsLogged,
         setIsAdmin,
-        ping,
         signUp,
         signIn,
         signOut,
