@@ -88,18 +88,6 @@ class User {
         return this.type === UserType.Admin;
     }
 
-    public async renewSecret() {
-        const now = new Date();
-
-        this.secret.setValue(getRandomWord());
-        this.secret.incrementResetCount();
-        this.secret.setLastReset(now);
-
-        await this.save();
-
-        return this.secret;
-    }
-
     public async save() {
         await APP_DB.set(`user:${this.email.getValue()}`, this.serialize());
     }

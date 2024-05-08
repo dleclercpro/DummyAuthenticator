@@ -6,6 +6,7 @@ import TimeDuration from '../models/units/TimeDuration';
 import User from '../models/user/User';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { logger } from '../utils/logger';
+import SecretManager from '../models/auth/SecretManager';
 
 const GetSecretController: RequestHandler = async (req, res, next) => {
     const { session } = req;
@@ -25,7 +26,10 @@ const GetSecretController: RequestHandler = async (req, res, next) => {
 
         // Re-new user secret
         logger.trace(`Renewing user's secret: ${user.getEmail().getValue()}`);
-        await user.renewSecret();
+        SecretManager.renew(user.getSecret());
+
+        // Store it in database
+        await user.save();
 
         return res.json(successResponse(secret));
 
