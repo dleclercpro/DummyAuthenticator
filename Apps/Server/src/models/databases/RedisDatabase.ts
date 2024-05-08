@@ -1,17 +1,9 @@
 import { RedisClientType, createClient } from 'redis';
-import { IKeyValueDatabase } from './Database';
 import { logger } from '../../utils/logger';
 import TimeDuration from '../units/TimeDuration';
 import { TimeUnit } from '../../types/TimeTypes';
 import { REDIS_RETRY_CONN_MAX_ATTEMPTS, REDIS_RETRY_CONN_MAX_BACKOFF } from '../../config/DatabasesConfig';
-import { Auth } from '../../types';
-
-export interface DatabaseOptions {
-    host: string,
-    port: number,
-    name: string,
-    auth?: Auth,
-}
+import { Auth, DatabaseOptions, IKeyValueDatabase } from '../../types';
 
 class RedisDatabase implements IKeyValueDatabase<string> {
     private host: string;

@@ -1,5 +1,5 @@
+import { IKeyValueDatabase } from '../../types';
 import { logger } from '../../utils/logger';
-import { IKeyValueDatabase } from './Database';
 
 class MemoryDatabase<R> implements IKeyValueDatabase<R> {
     protected db = new Map<string, R>();
