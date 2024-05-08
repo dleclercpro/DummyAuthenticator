@@ -32,3 +32,11 @@ export class ErrorEmailNotConfirmed extends ServerError {
         super(ErrorEmailNotConfirmed.code, `User e-mail is not confirmed: ${user.stringify()}`);
     }
 }
+
+export class ErrorUserMustBeAdmin extends ServerError {
+    public static code = -304;
+    
+    constructor() {
+        super(ErrorUserMustBeAdmin.code, `User must be admin to do that!`);
+    }
+}

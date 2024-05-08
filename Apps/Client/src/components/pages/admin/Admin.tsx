@@ -6,12 +6,14 @@ import Snackbar from '../../Snackbar';
 import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PasswordIcon from '@mui/icons-material/Key';
+import DatabaseIcon from '@mui/icons-material/Storage';
 import useAuth from '../../../hooks/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
 import useSecret from '../../../hooks/useSecret';
 import Spinner from '../../Spinner';
 import LoadingButton from '../../buttons/LoadingButton';
+import useDatabase from '../../../hooks/useDatabase';
 
 interface Props {
 
@@ -20,10 +22,9 @@ interface Props {
 const Admin: React.FC<Props> = () => {
     const { classes } = useAdminStyles();
 
-    const { signOut } = useAuth();
-    const navigate = useNavigate();
-
+    const { setIsLogged, signOut } = useAuth();
     const { loading, error, secret, fetchSecret } = useSecret();
+    const db = useDatabase();
 
     const [isSigningOut, setIsSigningOut] = useState(false);
 
@@ -49,21 +50,30 @@ const Admin: React.FC<Props> = () => {
         await fetchSecret();
     }
 
-    const handleSignOut = async () => {
+    const handleFlushDatabase = async () => {
         setSnackbarOpen(false);
 
+        return db.flush()
+            .catch((err) => {
+                setSnackbarMessage(err.message);
+                setSnackbarOpen(true);
+            })
+            .finally(() => {
+                setIsLogged(false);
+            });
+    }
+
+    const handleSignOut = async () => {
+        setSnackbarOpen(false);
         setIsSigningOut(true);
 
         return signOut()
-            .then(() => {
-
-            })
-            .catch(() => {
-                
+            .catch((err) => {
+                setSnackbarMessage(err.message);
+                setSnackbarOpen(true);
             })
             .finally(() => {
                 setIsSigningOut(false);
-                navigate(getURL(Page.SignIn));
             });
     }
 
@@ -110,6 +120,17 @@ const Admin: React.FC<Props> = () => {
                 >
                     Reset password
                 </Button>
+
+                <LoadingButton
+                    className={classes.button}
+                    variant='contained'
+                    color='primary'
+                    icon={<DatabaseIcon />}
+                    loading={db.isFlushing}
+                    onClick={handleFlushDatabase}
+                >
+                    Flush database
+                </LoadingButton>
                 
                 <LoadingButton
                     className={classes.button}

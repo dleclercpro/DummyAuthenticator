@@ -1,16 +1,34 @@
 import { RedisClientType, createClient } from 'redis';
-import Database, { DatabaseOptions, IKeyValueDatabase } from './Database';
+import { IKeyValueDatabase } from './Database';
 import { logger } from '../../utils/logger';
 import TimeDuration from '../units/TimeDuration';
 import { TimeUnit } from '../../types/TimeTypes';
 import { REDIS_RETRY_CONN_MAX_ATTEMPTS, REDIS_RETRY_CONN_MAX_BACKOFF } from '../../config/DatabasesConfig';
+import { Auth } from '../../types';
 
-class RedisDatabase extends Database implements IKeyValueDatabase<string> {
+export interface DatabaseOptions {
+    host: string,
+    port: number,
+    name: string,
+    auth?: Auth,
+}
+
+class RedisDatabase implements IKeyValueDatabase<string> {
+    private host: string;
+    private port: number;
+    private name: string;
+    private auth?: Auth;
+
     private index: number; // Database index
     private client: RedisClientType;
     
     public constructor(options: DatabaseOptions, index: number = 0) {
-        super(options);
+        const { host, port, name, auth } = options;
+
+        this.host = host;
+        this.port = port;
+        this.name = name;
+        this.auth = auth;
 
         if (index < 0 || index > 15) {
             throw new Error('INVALID_REDIS_DATABASE_INDEX');
@@ -26,7 +44,7 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
         });
     }
 
-    protected getURI = () => {
+    private getURI = () => {
         let uri = this.getAnonymousURI();
 
         if (this.auth) {
@@ -39,7 +57,7 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
         return uri;
     }
 
-    protected getAnonymousURI = () => {
+    private getAnonymousURI = () => {
         const uri = `${this.host}:${this.port}`;
 
         if (this.auth) {
@@ -63,7 +81,7 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
         await this.client.quit();
     }
 
-    protected listen = () => {
+    private listen = () => {
         this.client.on('ready', () => {
             logger.trace('Ready.');
         });
@@ -94,7 +112,7 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
         });
     }
 
-    protected connect = (attempts: number, error: any) => {
+    private connect = (attempts: number, error: any) => {
         if (attempts >= REDIS_RETRY_CONN_MAX_ATTEMPTS) {
             logger.fatal('No more connection attempts allowed: exiting...')
             process.exit(1);
@@ -136,15 +154,30 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
         return await this.client.get(this.getPrefixedKey(key));
     }
 
+    public async set(key: string, value: string) {
+        const prefixedKey = this.getPrefixedKey(key);
+
+        await this.client.set(prefixedKey, value);
+    }
+
+    public async delete(key: string) {
+        const prefixedKey = this.getPrefixedKey(key);
+        const prevValue = await this.client.get(prefixedKey);
+        
+        if (prevValue) {
+            await this.client.del(prefixedKey);
+        }
+    }
+
     public async getAllKeys() {
         return await this.client.keys(this.getPrefixedKey('*'));
     }
 
-    public async getAll() {
+    public async getAllValues() {
         const keys = await this.getAllKeys();
         const values = await Promise.all(keys.map((key) => this.client.get(key)));
 
-        return values;
+        return values as string[];
     }
 
     public async getKeysByPattern(pattern: string) {
@@ -165,22 +198,7 @@ class RedisDatabase extends Database implements IKeyValueDatabase<string> {
         return keys;
     }
 
-    public async set(key: string, value: string) {
-        const prefixedKey = this.getPrefixedKey(key);
-
-        await this.client.set(prefixedKey, value);
-    }
-
-    public async delete(key: string) {
-        const prefixedKey = this.getPrefixedKey(key);
-        const prevValue = await this.client.get(prefixedKey);
-        
-        if (prevValue) {
-            await this.client.del(prefixedKey);
-        }
-    }
-
-    public async deleteAllKeys() {
+    public async flush() {
         logger.debug(`Flushing Redis database '${this.index}'.`);
         await this.client.flushDb();
     }

@@ -18,12 +18,12 @@ const SignOutController: RequestHandler = async (req, res, next) => {
 
         // Destroy user session
         await session.delete();
-
-        // Remove session cookie in client
-        res.clearCookie(SESSION_COOKIE);
         logger.debug(`User logged out: ${user.getEmail().getValue()}`);
 
-        return res.json(successResponse());
+        // Remove session cookie in client
+        return res
+            .clearCookie(SESSION_COOKIE)
+            .json(successResponse());
 
     } catch (err: any) {
 

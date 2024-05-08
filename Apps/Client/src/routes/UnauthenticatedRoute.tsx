@@ -10,8 +10,12 @@ interface Props {
 const UnauthenticatedRoute: React.FC<Props> = (props) => {
     const { children } = props;
 
-    const { isLogged } = useAuth();
+    const { isPinged, isLogged } = useAuth();
     const location = useLocation();
+
+    if (!isPinged) {
+        return null;
+    }
 
     if (isLogged) {
         return (

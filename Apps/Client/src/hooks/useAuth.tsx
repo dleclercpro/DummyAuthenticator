@@ -9,8 +9,9 @@ import * as CallConfirmEmail from '../models/calls/auth/CallConfirmEmail';
 import * as CallSignUp from '../models/calls/auth/CallSignUp';
 
 interface IAuthContext {
-    errorPing: string,
     isPinging: boolean, // Determine whether user still has active session on server
+    isPinged: boolean,
+    errorPing: string,
     isLogged: boolean,
     isAdmin: boolean,
     setIsLogged: (isLogged: boolean) => void,
@@ -51,12 +52,15 @@ export default function AuthContextConsumer() {
 
 
 const useAuth = () => {  
-    const [errorPing, setErrorPing] = useState('');
     const [isPinging, setIsPinging] = useState(false);
+    const [isPinged, setIsPinged] = useState(false);
+    const [errorPing, setErrorPing] = useState('');
+
     const [isLogged, setIsLogged] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
 
     const ping = async () => {
+        setIsPinged(false);
         setIsPinging(true);
 
         try {
@@ -84,6 +88,7 @@ const useAuth = () => {
             return false;
         } finally {
             setIsPinging(false);
+            setIsPinged(true);
         }
     }
 
@@ -192,6 +197,7 @@ const useAuth = () => {
 
     return {
         isPinging,
+        isPinged,
         errorPing,
         isLogged,
         isAdmin,

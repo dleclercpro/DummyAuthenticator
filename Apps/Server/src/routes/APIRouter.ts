@@ -9,6 +9,7 @@ import ForgotPasswordController from '../controllers/ForgotPasswordController';
 import ConfirmEmailController from '../controllers/ConfirmEmailController';
 import ValidateTokenController from '../controllers/ValidateTokenController';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
+import FlushDatabaseController from '../controllers/FlushDatabaseController';
 
 
 
@@ -26,6 +27,9 @@ APIRouter.put('/confirm-email', [], ConfirmEmailController);
 APIRouter.post(`/forgot-password`, [], ForgotPasswordController);
 APIRouter.post(`/reset-password`, [], ResetPasswordController);
 APIRouter.get('/ping', [AuthMiddleware], PingController);
+
+// Administration
+APIRouter.delete('/database', [AuthMiddleware], FlushDatabaseController);
 
 // Tokens
 APIRouter.put('/token', [], ValidateTokenController);

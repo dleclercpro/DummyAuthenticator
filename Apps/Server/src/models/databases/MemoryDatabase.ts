@@ -36,8 +36,23 @@ class MemoryDatabase<R> implements IKeyValueDatabase<R> {
         return this.db.size;
     }
 
-    public async getAll() {
+    public async getAllKeys() {
+        return Array.from(this.db.keys());
+    }
+
+    public async getAllValues() {
         return Array.from(this.db.values());
+    }
+
+    public async getKeysByPattern(pattern: string) {
+        const keys = await this.getAllKeys();
+
+        return keys
+            .filter((key: string) => key.startsWith(pattern));
+    }
+
+    public async flush() {
+        this.db = new Map();
     }
 }
 

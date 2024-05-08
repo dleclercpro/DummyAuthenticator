@@ -54,7 +54,6 @@ const SignIn: React.FC<Props> = () => {
 
         return signIn(email, password, staySignedIn)
             .then((isAdmin: boolean) => {
-                console.log(isAdmin);
                 navigate(getURL(isAdmin ? Page.Admin : Page.Home));
             })
             .catch((err: any) => {

@@ -20,7 +20,8 @@ interface Props {
 const Home: React.FC<Props> = () => {
     const { classes } = useHomeStyles();
 
-    const { signOut } = useAuth();
+    const { isAdmin, signOut } = useAuth();
+    
     const navigate = useNavigate();
 
     const { loading, error, secret, fetchSecret } = useSecret();
@@ -29,6 +30,13 @@ const Home: React.FC<Props> = () => {
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
+
+    // Redirect admin
+    useEffect(() => {
+        if (isAdmin) {
+            navigate(getURL(Page.Admin));
+        }
+    }, []);
 
     // Fetch secret on load
     useEffect(() => {
@@ -55,15 +63,8 @@ const Home: React.FC<Props> = () => {
         setIsSigningOut(true);
 
         return signOut()
-            .then(() => {
-
-            })
-            .catch(() => {
-                
-            })
             .finally(() => {
                 setIsSigningOut(false);
-                navigate(getURL(Page.SignIn));
             });
     }
 
@@ -79,9 +80,9 @@ const Home: React.FC<Props> = () => {
             <Typography variant='h1' className={classes.title}>
                 Home
             </Typography>
-            
+
             <Typography className={classes.text}>
-                You are logged in. Here is your secret:
+                Hello, <strong>[{isAdmin ? 'ADMIN' : 'USER'}]</strong>. Here is your secret:
             </Typography>
 
             <Typography className={classes.secret}>

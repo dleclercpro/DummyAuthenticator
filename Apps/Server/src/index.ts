@@ -1,18 +1,13 @@
 import { ENV } from './config/AppConfig'; // Do NOT remove!
 import AppServer from './models/AppServer';
 import { logger } from './utils/logger';
-import RedisDatabase from './models/databases/RedisDatabase';
-import MemoryDatabase from './models/databases/MemoryDatabase';
-import { REDIS_DATABASE, REDIS_ENABLE, REDIS_OPTIONS } from './config/DatabasesConfig';
 import Router from './routes';
+import AppDatabase from './models/AppDatabase';
 
 
 
 export const APP_SERVER = new AppServer();
-export const APP_DB = (REDIS_ENABLE ?
-    new RedisDatabase(REDIS_OPTIONS, REDIS_DATABASE) :
-    new MemoryDatabase<string>() // Fallback database: in-memory
-);
+export const APP_DB = new AppDatabase();
 
 
 
@@ -20,6 +15,7 @@ const execute = async () => {
     logger.debug(`Environment: ${ENV}`);
 
     await APP_DB.start();
+    await APP_DB.setup();
 
     await APP_SERVER.setup(Router);
     await APP_SERVER.start();

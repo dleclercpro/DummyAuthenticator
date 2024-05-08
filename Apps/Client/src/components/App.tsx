@@ -5,7 +5,6 @@ import { Container } from '@mui/system';
 import useAuth from '../hooks/useAuth';
 import Spinner from './Spinner';
 import ErrorIcon from '@mui/icons-material/WarningSharp';
-import { useNavigate } from 'react-router-dom';
 
 interface Props {
 
@@ -13,8 +12,6 @@ interface Props {
 
 const App: React.FC<Props> = () => {
     const { classes } = useAppStyles();
-
-    const navigate = useNavigate();
 
     const { isPinging, errorPing, ping } = useAuth();
     const hasError = !!errorPing;
