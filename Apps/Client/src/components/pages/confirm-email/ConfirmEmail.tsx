@@ -4,11 +4,11 @@ import useAuthStyles from '../AuthStyles';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import { Page, getURL } from '../../../routes/Router';
-import * as CallValidateToken from '../../../models/calls/auth/CallValidateToken';
 import SuccessIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/WarningSharp';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { ConfirmEmailToken } from '../../../types/TokenTypes';
+import useToken from '../../../hooks/useToken';
 
 interface Props {
 
@@ -21,37 +21,32 @@ const ConfirmEmail: React.FC<Props> = () => {
     const navigate = useNavigate();
 
     const queryParams = new URLSearchParams(location.search);
-    const token = queryParams.get('token') ?? '';
 
     const { confirmEmail } = useAuth();
+    const token = useToken<ConfirmEmailToken>(queryParams.get('token') ?? '');
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const [validatedToken, setValidatedToken] = useState<{ string: string, content: ConfirmEmailToken } | null>(null);
-
     // Validate token
     useEffect(() => {
-        if (!token) return;
+        if (!token.unvalidatedValue) return;
 
-        new CallValidateToken.default().execute({ token })
-            .then(({ data }) => {
-                setValidatedToken(data! as { string: string, content: ConfirmEmailToken });
-            })
+        token.validate()
             .catch(() => {
                 // Invalid token: bring user back home
                 navigate(getURL(Page.Home));
             });
 
-    }, [token]);
+    }, [token.unvalidatedValue]);
 
     // Confirm e-mail address once token has been validated
     useEffect(() => {
-        if (validatedToken === null) return;
+        if (token.validatedValue === '') return;
 
         setLoading(true);
 
-        confirmEmail(token)
+        confirmEmail(token.validatedValue)
             .then(() => {
                 setError('');
             })
@@ -62,15 +57,15 @@ const ConfirmEmail: React.FC<Props> = () => {
                 setLoading(false);
             });
 
-    }, [validatedToken]);
+    }, [token.validatedValue]);
 
     /* Token not yet validated by server */
-    if (validatedToken === null) {
+    if (token.validatedValue === null) {
         return null;
     }
 
     /* No token provided: go back home */
-    if (token === null) {
+    if (token.unvalidatedValue === null) {
         return (
             <Navigate to={getURL(Page.Home)} />
         );
