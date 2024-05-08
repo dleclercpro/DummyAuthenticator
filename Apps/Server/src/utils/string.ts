@@ -1,3 +1,5 @@
+import randomWords from 'random-words';
+
 export const stringToBoolean = (str: string) => {
     const newValue = str ? str.toLowerCase() : '';
     
@@ -37,3 +39,5 @@ export const isAlphabetical = (str: string): boolean => {
 export const isAlphanumerical = (str: string): boolean => {
     return isAlphabetical(str) || isNumerical(str);
 }
+
+export const getRandomWord = () => randomWords({ exactly: 1, join: `` });

@@ -13,13 +13,11 @@ const FlushDatabaseController: RequestHandler = async (req, res, next) => {
     const { session } = req;
 
     try {
-        logger.debug(`Admin user '${session.getEmail()}' is trying to flush database.`);
-
         if (!session.isAdmin) {
             throw new ErrorUserMustBeAdmin();
         }
 
-        logger.debug(`Flushing database...`);
+        logger.debug(`Admin user '${session.getEmail()}' is trying to flush database.`);
         await sleep(new TimeDuration(2, TimeUnit.Second));
         await APP_DB.flush();
         logger.debug(`Flushed database successfully.`);
@@ -35,7 +33,7 @@ const FlushDatabaseController: RequestHandler = async (req, res, next) => {
             );
 
     } catch (err: any) {
-        logger.warn(`Failed database flushing attempt for user: ${session.getEmail()}`);
+        logger.warn(`Failed database flushing attempt for admin user: ${session.getEmail()}`);
         logger.warn(err.message);
 
         if (err.code === ErrorUserMustBeAdmin.code) {

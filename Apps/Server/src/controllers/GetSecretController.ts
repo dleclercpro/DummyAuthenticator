@@ -15,7 +15,7 @@ const GetSecretController: RequestHandler = async (req, res, next) => {
         if (!user) {
             throw new ErrorUserDoesNotExist(session.getEmail());
         }
-        logger.trace(`User '${user.getEmail().getValue()}' is asking for its secret.`);
+        logger.trace(`${user.getType()} user '${user.getEmail().getValue()}' is asking for its secret.`);
 
         // Fake some processing time for fetching of the secret
         await sleep(new TimeDuration(1, TimeUnit.Second));

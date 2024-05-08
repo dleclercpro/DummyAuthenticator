@@ -60,7 +60,7 @@ const SignInController: RequestHandler = async (req, res, next) => {
 
         // Only allow X failed login attempts per hour
         if (failedLoginAttemptsInLastHour.length > HOURLY_LOGIN_MAX_ATTEMPTS) {
-            logger.warn(`User '${user.getEmail().getValue()}' has tried to log in ${loginAttemptsInLastHour.length} times in the last hour.`);
+            logger.warn(`${user.getType()} user '${user.getEmail().getValue()}' has tried to log in ${loginAttemptsInLastHour.length} times in the last hour.`);
             throw new ErrorNoMoreLoginAttempts(user.getEmail().getValue(), failedLoginAttemptsInLastHour.length);
         }
         
@@ -73,12 +73,7 @@ const SignInController: RequestHandler = async (req, res, next) => {
 
         // Set cookie with session ID on client's browser
         res.cookie(SESSION_COOKIE, session.getId());
-
-        if (user.isAdmin()) {
-            logger.debug(`Admin logged in: ${user.getEmail().getValue()}`);
-        } else {
-            logger.debug(`User logged in: ${user.getEmail().getValue()}`);
-        }
+        logger.debug(`${user.getType()} user logged in: ${user.getEmail().getValue()}`);
 
         return res.json(successResponse({
             isAdmin: user.isAdmin(),

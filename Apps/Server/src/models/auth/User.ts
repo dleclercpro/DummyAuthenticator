@@ -1,45 +1,44 @@
-import randomWords from 'random-words';
 import { APP_DB } from '../..';
 import PasswordManager from './PasswordManager';
 import UserPassword from './UserPassword';
 import UserLogin from './UserLogin';
 import UserEmail from './UserEmail';
 import UserSecret from './UserSecret';
-
-const getRandomWord = () => randomWords({ exactly: 1, join: `` });
+import { UserType } from '../../constants';
+import { getRandomWord } from '../../utils/string';
 
 interface UserArgs {
+    type: UserType,
     email: UserEmail,
     password: UserPassword,
     login: UserLogin,
     secret: UserSecret,
-    admin: boolean,
 }
 
 
 
 class User {
+    protected type: UserType;
     protected email: UserEmail;
     protected password: UserPassword;
     protected login: UserLogin;
     protected secret: UserSecret;
-    protected admin: boolean;
 
     public constructor(args: UserArgs) {
+        this.type = args.type;
         this.email = args.email;
-        this.login = args.login;
         this.password = args.password;
+        this.login = args.login;
         this.secret = args.secret;
-        this.admin = args.admin;
     }
 
     public serialize() {
         return JSON.stringify({
+            type: this.type,
             email: this.email.serialize(),
             password: this.password.serialize(),
             login: this.login.serialize(),
             secret: this.secret.serialize(),
-            admin: this.admin,
         });
     }
 
@@ -65,6 +64,10 @@ class User {
         return this.getEmail().getValue();
     }
 
+    public getType() {
+        return this.type;
+    }
+
     public getEmail() {
         return this.email;
     }
@@ -82,7 +85,7 @@ class User {
     }
 
     public isAdmin() {
-        return this.admin;
+        return this.type === UserType.Admin;
     }
 
     public async renewSecret() {
@@ -118,6 +121,7 @@ class User {
 
         // Create new user
         const user = new User({
+            type: UserType.Regular,
             email: new UserEmail({
                 value: email,
             }),
@@ -128,7 +132,6 @@ class User {
             secret: new UserSecret({
                 value: getRandomWord(),
             }),
-            admin: false,
         });
 
         // Store user in database
@@ -141,6 +144,7 @@ class User {
 
         // Create new admin user
         const user = new User({
+            type: UserType.Admin,
             email: new UserEmail({
                 value: email,
                 confirmed: true, // Admin users do not need to confirm their e-mail
@@ -152,7 +156,6 @@ class User {
             secret: new UserSecret({
                 value: getRandomWord(),
             }),
-            admin: true,
         });
 
         // Store user in database

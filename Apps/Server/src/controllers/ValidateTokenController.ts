@@ -25,7 +25,7 @@ const ValidateTokenController: RequestHandler = async (req, res, next) => {
 
         // Verify token's signature based on type
         await TokenManager.verifyToken(token, decodedToken.content.type);
-        logger.debug(`Received valid token of type: ${decodedToken.content.type}`);
+        logger.trace(`Received valid token of type: ${decodedToken.content.type}`);
 
         return res.json(successResponse(decodedToken));
 

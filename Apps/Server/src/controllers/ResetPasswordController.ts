@@ -58,7 +58,7 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         if (!user) {
             throw new ErrorUserDoesNotExist(email);
         }
-        logger.info(`Trying to reset password for user: ${email}`);
+        logger.info(`Trying to reset password for ${user.getType().toLowerCase()} user: ${email}`);
 
         // Check if password is the same as previous one: it should be different!
         if (await PasswordManager.matches(password, user.getPassword().getValue())) {
