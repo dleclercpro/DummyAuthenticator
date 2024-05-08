@@ -4,6 +4,7 @@ import User from './auth/User';
 import { REDIS_ENABLE, REDIS_OPTIONS, REDIS_DATABASE } from '../config/DatabasesConfig';
 import MemoryDatabase from './databases/MemoryDatabase';
 import RedisDatabase from './databases/RedisDatabase';
+import Admin from './auth/Admin';
 
 
 
@@ -28,7 +29,7 @@ class AppDatabase {
                 return;
             }
 
-            await User.createAdmin(email, password);
+            await Admin.create(email, password);
             logger.debug(`Default admin user created: ${email}`);
         });
     }

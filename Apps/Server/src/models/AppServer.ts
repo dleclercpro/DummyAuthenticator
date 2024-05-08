@@ -9,8 +9,6 @@ import ErrorMiddleware from '../middleware/ErrorMiddleware';
 import TimeDuration from './units/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
 import { killAfterTimeout } from '../utils/process';
-import { ADMINS } from '../config/AuthConfig';
-import User from './auth/User';
 
 
 
@@ -65,18 +63,6 @@ class AppServer {
         // Listen to stop signals
         process.on('SIGTERM', () => this.stop('SIGTERM'));
         process.on('SIGINT', () => this.stop('SIGINT'));
-
-        // Create admin users if they don't already exist
-        ADMINS.forEach(async ({ email, password }) => {
-            const admin = await User.findByEmail(email);
-            
-            if (admin) {
-                return;
-            }
-
-            await User.createAdmin(email, password);
-            logger.debug(`Default admin user created: ${email}`);
-        });
 
         // Listen to HTTP traffic on given port
         this.server!.listen(PORT, async () => {

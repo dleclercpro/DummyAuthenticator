@@ -139,30 +139,6 @@ class User {
 
         return user;
     }
-
-    public static async createAdmin(email: string, password: string) {
-
-        // Create new admin user
-        const user = new User({
-            type: UserType.Admin,
-            email: new UserEmail({
-                value: email,
-                confirmed: true, // Admin users do not need to confirm their e-mail
-            }),
-            password: new UserPassword({
-                value: await PasswordManager.hash(password),
-            }),
-            login: new UserLogin({}),
-            secret: new UserSecret({
-                value: getRandomWord(),
-            }),
-        });
-
-        // Store user in database
-        await user.save();
-
-        return user;
-    }
 }
 
 export default User;
