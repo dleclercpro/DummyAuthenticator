@@ -26,7 +26,13 @@ const useHomePageStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     secret: {
         fontWeight: 'bold',
         textAlign: 'center',
-        marginBottom: spacing(1.5 * SPACING),
+        background: '#ffffff',
+        color: '#000000',
+        boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.9)',
+        padding: `${spacing(SPACING)} ${spacing(2 * SPACING)}`,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        marginBottom: spacing(2 * SPACING),
     },
 
     buttons: {
