@@ -20,6 +20,11 @@ export interface Comparable {
     greaterThan(other: Comparable): boolean;
 }
 
+export type DatedCounter = {
+    count: number
+    last: Date | null,
+}
+
 export interface DatabaseOptions {
     host: string,
     port: number,

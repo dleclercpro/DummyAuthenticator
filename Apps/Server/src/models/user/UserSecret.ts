@@ -1,18 +1,15 @@
-type SecretReset = {
-    count: number
-    last: Date | null,
-}
+import { DatedCounter } from '../../types';
 
 type SecretArgs = {
     value: string,
-    reset?: SecretReset,
+    reset?: DatedCounter,
 }
 
 
 
 class UserSecret {
     private value: string;
-    private reset: SecretReset;
+    private reset: DatedCounter;
 
     public constructor(args: SecretArgs) {
         this.value = args.value;
@@ -27,7 +24,15 @@ class UserSecret {
     }
 
     public static deserialize(str: string) {
-        return new UserSecret(JSON.parse(str));
+        const args = JSON.parse(str);
+
+        return new UserSecret({
+            ...args,
+            reset: {
+                ...args.reset,
+                last: new Date(args.reset.last),
+            },
+        });
     }
 
     public getValue() {

@@ -7,6 +7,8 @@ export enum ServerError {
     InvalidPassword = 'INVALID_PASSWORD',
     InvalidToken = 'INVALID_TOKEN',
     ExpiredToken = 'EXPIRED_TOKEN',
+    TokenAlreadyUsed = 'TOKEN_ALREADY_USED',
+    NewerTokenIssued = 'NEWER_TOKEN_EXISTS',
     UserAlreadyExists = 'USER_ALREADY_EXISTS',
     UserDoesNotExist = 'USER_DOES_NOT_EXIST',
     NoMoreLoginAttempts = 'NO_MORE_LOGIN_ATTEMPTS',
@@ -34,6 +36,10 @@ export const translateServerError = (err: ServerError) => {
             return 'The token you tried to use is invalid.';
         case ServerError.ExpiredToken:
             return 'The token you tried to use has expired.';
+        case ServerError.NewerTokenIssued:
+            return 'A newer token was issued.';
+        case ServerError.TokenAlreadyUsed:
+            return 'This token was already used.';
         case ServerError.NoMoreLoginAttempts:
             return 'You have tried to log in without success too many times. A maximum of {{ MAX_ATTEMPTS }} login failures are allowed per hour.';
         case ServerError.UnconfirmedEmail:

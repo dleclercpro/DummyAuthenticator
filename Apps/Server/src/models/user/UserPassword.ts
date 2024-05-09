@@ -1,33 +1,46 @@
-type PasswordReset = {
-    count: number
-    last: Date | null,
-}
+import { DatedCounter } from '../../types';
 
 type PasswordArgs = {
     value: string,
-    reset?: PasswordReset,
+    request?: DatedCounter,
+    reset?: DatedCounter,
 }
 
 
 
 class UserPassword {
     private value: string;
-    private reset: PasswordReset;
+    private request: DatedCounter; // How many requests?
+    private reset: DatedCounter; // How many successful resets?
 
     public constructor(args: PasswordArgs) {
         this.value = args.value;
+        this.request = args.request ?? { count: 0, last: null };
         this.reset = args.reset ?? { count: 0, last: null };
     }
 
     public serialize() {
         return JSON.stringify({
             value: this.value,
+            request: this.request,
             reset: this.reset,
         });
     }
 
     public static deserialize(str: string) {
-        return new UserPassword(JSON.parse(str));
+        const args = JSON.parse(str);
+
+        return new UserPassword({
+            ...args,
+            request: {
+                ...args.request,
+                last: new Date(args.request.last),
+            },
+            reset: {
+                ...args.reset,
+                last: new Date(args.reset.last),
+            },
+        });
     }
 
     public getValue() {
@@ -38,6 +51,22 @@ class UserPassword {
         this.value = value;
     }
 
+    public getRequestCount() {
+        return this.request.count;
+    }
+
+    public incrementRequestCount() {
+        this.request.count += 1;
+    }
+
+    public getLastRequest() {
+        return this.request.last;
+    }
+
+    public setLastRequest(timestamp: Date) {
+        this.request.last = timestamp;
+    }
+
     public getResetCount() {
         return this.reset.count;
     }
@@ -46,16 +75,16 @@ class UserPassword {
         this.reset.count += 1;
     }
 
-    public wasAlreadyReset() {
-        return this.reset.count > 0;
-    }
-
     public getLastReset() {
         return this.reset.last;
     }
 
     public setLastReset(timestamp: Date) {
         this.reset.last = timestamp;
+    }
+
+    public wasAlreadyReset() {
+        return this.reset.count > 0;
     }
 }
 

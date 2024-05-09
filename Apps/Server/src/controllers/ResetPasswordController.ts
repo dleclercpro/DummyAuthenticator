@@ -4,8 +4,8 @@ import { HttpStatusCode } from '../types/HTTPTypes';
 import { logger } from '../utils/logger';
 import TokenManager from '../models/auth/TokenManager';
 import User from '../models/user/User';
-import { ErrorUserDoesNotExist } from '../errors/UserErrors';
-import { ErrorExpiredToken, ErrorInvalidPassword, ErrorInvalidToken, ErrorMissingToken, ErrorNewPasswordMustBeDifferent } from '../errors/ServerError';
+import { ErrorEmailNotConfirmed, ErrorUserDoesNotExist } from '../errors/UserErrors';
+import { ErrorExpiredToken, ErrorInvalidPassword, ErrorInvalidToken, ErrorMissingToken, ErrorNewPasswordMustBeDifferent, ErrorNewerTokenIssued, ErrorTokenAlreadyUsed } from '../errors/ServerError';
 import PasswordManager from '../models/auth/PasswordManager';
 import { ResetPasswordToken } from '../types/TokenTypes';
 import { ClientError, TokenType } from '../constants';
@@ -23,7 +23,7 @@ const validateQuery = async (req: Request) => {
         throw new ErrorMissingToken();
     }
 
-    return await TokenManager.verifyToken(token as string, TokenType.ResetPassword);
+    return await TokenManager.validateToken(token as string, TokenType.ResetPassword);
 }
 
 type Body = {
@@ -33,8 +33,6 @@ type Body = {
 
 
 const ResetPasswordController: RequestHandler = async (req, res, next) => {
-    const now = new Date();
-
     try {
         const { session } = req;
         const { password } = req.body as Body;
@@ -60,6 +58,11 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         }
         logger.info(`Trying to reset password for ${user.getType().toLowerCase()} user: ${email}`);
 
+        // Is e-mail confirmed?
+        if (!user.getEmail().isConfirmed()) {
+            throw new ErrorEmailNotConfirmed(user);
+        }
+
         // Check if password is the same as previous one: it should be different!
         if (await PasswordManager.matches(password, user.getPassword().getValue())) {
             throw new ErrorNewPasswordMustBeDifferent();
@@ -68,19 +71,6 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         // Ensure password is strong enough
         if (!PasswordManager.validate(password)) {
             throw new ErrorInvalidPassword();
-        }
-
-        // Make sure user hasn't attempted too many times to log in
-        const lastReset = user.getPassword().getLastReset();
-
-        // Verify token validity (if it exists)
-        if (token) {
-            const userHasResetTheirPassword = user.getPassword().wasAlreadyReset();
-            const isTokenExpired = new Date(expirationDate) <= now || userHasResetTheirPassword && new Date(creationDate) <= (lastReset as Date);
-    
-            if (isTokenExpired) {
-                throw new ErrorExpiredToken();
-            }
         }
 
         // Actually reset user's password
@@ -94,12 +84,6 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
 
     } catch (err: any) {
 
-        if (err.code === ErrorNewPasswordMustBeDifferent.code) {
-            return res
-                .status(HttpStatusCode.BAD_REQUEST)
-                .json(errorResponse(ClientError.PasswordMustBeDifferent));
-        }
-
         if (err.code === ErrorInvalidPassword.code) {
             return res
                 .status(HttpStatusCode.BAD_REQUEST)
@@ -112,6 +96,12 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
                 .json(errorResponse(ClientError.UserDoesNotExist));
         }
 
+        if (err.code === ErrorEmailNotConfirmed.code) {
+            return res
+                .status(HttpStatusCode.FORBIDDEN)
+                .json(errorResponse(ClientError.UnconfirmedEmail));
+        }
+
         if (err.code === ErrorInvalidToken.code) {
             return res
                 .status(HttpStatusCode.UNAUTHORIZED)
@@ -122,6 +112,24 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
             return res
                 .status(HttpStatusCode.UNAUTHORIZED)
                 .json(errorResponse(ClientError.ExpiredToken));
+        }
+
+        if (err.code === ErrorNewerTokenIssued.code) {
+            return res
+                .status(HttpStatusCode.UNAUTHORIZED)
+                .json(errorResponse(ClientError.NewerTokenIssued));
+        }
+
+        if (err.code === ErrorTokenAlreadyUsed.code) {
+            return res
+                .status(HttpStatusCode.UNAUTHORIZED)
+                .json(errorResponse(ClientError.TokenAlreadyUsed));
+        }
+
+        if (err.code === ErrorNewPasswordMustBeDifferent.code) {
+            return res
+                .status(HttpStatusCode.BAD_REQUEST)
+                .json(errorResponse(ClientError.PasswordMustBeDifferent));
         }
 
         next(err);

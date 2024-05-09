@@ -14,6 +14,8 @@ export enum ClientError {
   InvalidPassword = 'INVALID_PASSWORD',
   InvalidToken = 'INVALID_TOKEN',
   ExpiredToken = 'EXPIRED_TOKEN',
+  TokenAlreadyUsed = 'TOKEN_ALREADY_USED',
+  NewerTokenIssued = 'NEWER_TOKEN_EXISTS',
   UserAlreadyExists = 'USER_ALREADY_EXISTS',
   UserDoesNotExist = 'USER_DOES_NOT_EXIST',
   NoMoreLoginAttempts = 'NO_MORE_LOGIN_ATTEMPTS',

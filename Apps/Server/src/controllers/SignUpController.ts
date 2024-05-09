@@ -10,6 +10,7 @@ import { logger } from '../utils/logger';
 import User from '../models/user/User';
 import Gmailer from '../models/emails/Gmailer';
 import EmailFactory from '../models/emails/EmailFactory';
+import TokenManager from '../models/auth/TokenManager';
 
 const SignUpController: RequestHandler = async (req, res, next) => {
     let { email, password } = req.body;
@@ -39,8 +40,11 @@ const SignUpController: RequestHandler = async (req, res, next) => {
         user = await User.create(email, password);
         logger.info(`New user created: ${user.getEmail().getValue()}`);
 
+        // Generate a confirmation e-mail token
+        const token = await TokenManager.generateEmailConfirmationToken(user);
+
         // Send e-mail confirmation e-mail to new user
-        await Gmailer.send(await EmailFactory.createConfirmationEmail(user));
+        await Gmailer.send(await EmailFactory.createConfirmationEmail(user, token));
         logger.debug(`Confirmation e-mail sent to user: ${user.getEmail().getValue()}`);
 
         return res.json(successResponse());

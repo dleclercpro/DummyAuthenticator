@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
 import { errorResponse, successResponse } from '../utils/calls';
 import { HttpStatusCode } from '../types/HTTPTypes';
-import { logger } from '../utils/logger';
 import TokenManager from '../models/auth/TokenManager';
-import { ErrorInvalidToken, ErrorMissingToken } from '../errors/ServerError';
+import { ErrorExpiredToken, ErrorInvalidToken, ErrorMissingToken, ErrorNewerTokenIssued, ErrorTokenAlreadyUsed } from '../errors/ServerError';
 import { ClientError } from '../constants';
+import { logger } from '../utils/logger';
 
 type Body = {
     token: string,
@@ -14,26 +14,45 @@ type Body = {
 
 const ValidateTokenController: RequestHandler = async (req, res, next) => {
     try {
-        const { token } = req.body as Body;
+        const { token: value } = req.body as Body;
 
-        if (!token) {
+        if (!value) {
             throw new ErrorMissingToken();
         }
 
         // Decode token (without verifying signature) to check for type
-        const decodedToken = await TokenManager.decodeToken(token);
+        const decodedToken = await TokenManager.decodeToken(value);
 
         // Verify token's signature based on type
-        await TokenManager.verifyToken(token, decodedToken.content.type);
-        logger.trace(`Received valid token of type: ${decodedToken.content.type}`);
+        const token = await TokenManager.validateToken(value, decodedToken.content.type);
 
-        return res.json(successResponse(decodedToken));
+        return res.json(successResponse(token));
 
     } catch (err: any) {
+        logger.warn(err.message);
+        
         if (err.code === ErrorInvalidToken.code) {
             return res
                 .status(HttpStatusCode.UNAUTHORIZED)
                 .json(errorResponse(ClientError.InvalidToken));
+        }
+
+        if (err.code === ErrorExpiredToken.code) {
+            return res
+                .status(HttpStatusCode.UNAUTHORIZED)
+                .json(errorResponse(ClientError.ExpiredToken));
+        }
+
+        if (err.code === ErrorNewerTokenIssued.code) {
+            return res
+                .status(HttpStatusCode.UNAUTHORIZED)
+                .json(errorResponse(ClientError.NewerTokenIssued));
+        }
+
+        if (err.code === ErrorTokenAlreadyUsed.code) {
+            return res
+                .status(HttpStatusCode.UNAUTHORIZED)
+                .json(errorResponse(ClientError.TokenAlreadyUsed));
         }
 
         next(err);

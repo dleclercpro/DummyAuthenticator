@@ -1,10 +1,13 @@
 import { JWT_TOKEN_SECRETS, JWT_TOKEN_LONGEVITY } from '../../config/AuthConfig';
 import { TokenType } from '../../constants';
-import { ErrorInvalidToken } from '../../errors/ServerError';
+import { ErrorExpiredToken, ErrorInvalidToken, ErrorNewerTokenIssued, ErrorTokenAlreadyUsed } from '../../errors/ServerError';
+import { ErrorUserDoesNotExist } from '../../errors/UserErrors';
+import { TimeUnit } from '../../types/TimeTypes';
 import { ConfirmEmailToken, ResetPasswordToken, Token } from '../../types/TokenTypes';
 import { logger } from '../../utils/logger';
+import TimeDuration from '../units/TimeDuration';
 import User from '../user/User';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 
 
@@ -25,11 +28,44 @@ class TokenManager {
     return TokenManager.instance;
   }
 
+  public async validateToken(value: string, type: TokenType) {
+    const now = new Date();
+
+    const token = await this.verifyToken(value, type);
+
+    const user = await User.findByEmail(token.content.email);
+    if (!user) {
+      throw new ErrorUserDoesNotExist(token.content.email);
+    }
+
+    const lastRequest = user.getPassword().getLastRequest();
+    const lastReset = user.getPassword().getLastReset();
+
+    const isTokenExpired = new Date(token.content.expirationDate) <= now;
+    if (isTokenExpired) {
+        throw new ErrorExpiredToken();
+    }
+
+    const wasNewTokenRequested = lastRequest !== null && (new Date(token.content.creationDate) < new Date(lastRequest));
+    if (wasNewTokenRequested) {
+        throw new ErrorNewerTokenIssued();
+    }
+
+    const wasTokenUsed = lastRequest !== null && lastReset !== null && lastRequest < lastReset;
+    if (wasTokenUsed) {
+        throw new ErrorTokenAlreadyUsed();
+    }
+
+    logger.debug(`Received valid token (expiring in ${new TimeDuration(token.content.expirationDate - now.getTime(), TimeUnit.Millisecond).format()}).`);
+
+    return token;
+  }
+
   public async verifyToken(token: string, type: TokenType) {
     try {
       const secret = JWT_TOKEN_SECRETS[type];
       
-      const content = jwt.verify(token, secret) as JwtPayload;
+      const content = jwt.verify(token, secret) as Token;
 
       return { string: token, content };
       
@@ -40,7 +76,7 @@ class TokenManager {
 
   public async decodeToken(token: string) {
     try {
-      const content = jwt.decode(token) as JwtPayload;
+      const content = jwt.decode(token) as Token;
 
       return { string: token, content };
       
@@ -51,13 +87,13 @@ class TokenManager {
 
   public async generateEmailConfirmationToken(user: User) {
     return this.generateToken(user, TokenType.ConfirmEmail, {
-      email: user.getEmail().getValue(),
+
     }) as Promise<{ string: string, content: ConfirmEmailToken }>;
   }
 
   public async generateResetPasswordToken(user: User) {
     return this.generateToken(user, TokenType.ResetPassword, {
-      email: user.getEmail().getValue(),
+    
     }) as Promise<{ string: string, content: ResetPasswordToken }>;
   }
 
@@ -70,6 +106,7 @@ class TokenManager {
       validTime,
       creationDate: now.getTime(),
       expirationDate: now.getTime() + validTime,
+      email: user.getEmail().getValue(),
     };
 
     // Add token-specific content to base one (and overwrite it if necessary)

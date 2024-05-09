@@ -1,8 +1,8 @@
 import User from '../user/User';
-import TokenManager from '../auth/TokenManager';
 import ResetPasswordEmail from './ResetPasswordEmail';
 import EmailAddressConfirmationEmail from './EmailAddressConfirmationEmail';
 import Person from '../people/Person';
+import { ConfirmEmailToken, ResetPasswordToken } from '../../types/TokenTypes';
 
 
 
@@ -31,15 +31,11 @@ class EmailFactory {
     `;
   }
 
-  public async createConfirmationEmail(user: User) {
-    const token = await TokenManager.generateEmailConfirmationToken(user);
-
+  public async createConfirmationEmail(user: User, token: { string: string, content: ConfirmEmailToken }) {
     return new EmailAddressConfirmationEmail(user.getEmail().getValue(), token);
   }
 
-  public async createResetPasswordEmail(user: User) {
-    const token = await TokenManager.generateResetPasswordToken(user);
-
+  public async createResetPasswordEmail(user: User, token: { string: string, content: ResetPasswordToken }) {
     return new ResetPasswordEmail(user.getEmail().getValue(), token);
   }
 }

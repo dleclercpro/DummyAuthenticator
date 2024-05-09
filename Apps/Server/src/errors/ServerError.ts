@@ -53,8 +53,24 @@ export class ErrorExpiredToken extends ServerError {
     }
 }
 
-export class ErrorNoMoreLoginAttempts extends ServerError {
+export class ErrorTokenAlreadyUsed extends ServerError {
     public static code = -105;
+
+    constructor() {
+        super(ErrorTokenAlreadyUsed.code, `Token already used.`);
+    }
+}
+
+export class ErrorNewerTokenIssued extends ServerError {
+    public static code = -106;
+
+    constructor() {
+        super(ErrorNewerTokenIssued.code, `A newer token exists.`);
+    }
+}
+
+export class ErrorNoMoreLoginAttempts extends ServerError {
+    public static code = -107;
 
     constructor(user: string, attemptCount: number) {
         super(ErrorNoMoreLoginAttempts.code, `Number of maximum login attempts per hour reached for user '${user}': (${attemptCount}/${HOURLY_LOGIN_MAX_ATTEMPTS})`);
@@ -62,7 +78,7 @@ export class ErrorNoMoreLoginAttempts extends ServerError {
 }
 
 export class ErrorNewPasswordMustBeDifferent extends ServerError {
-    public static code = -106;
+    public static code = -108;
     
     constructor() {
         super(ErrorNewPasswordMustBeDifferent.code, `New password must be different than the previous one.`);

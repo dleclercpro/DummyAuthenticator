@@ -8,7 +8,7 @@ const useDatabase = () => {
     const flush = async () => {
         setIsFlushing(true);
 
-        await new CallFlushDatabase.default().execute()
+        return await new CallFlushDatabase.default().execute()
             .then(() => {
 
             })

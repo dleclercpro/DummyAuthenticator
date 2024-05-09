@@ -22,7 +22,7 @@ const useToken = <TokenContent> (value: string) => {
         setValidatedValue('');
         setToken(null);
 
-        new CallValidateToken.default().execute({ token: value })
+        return new CallValidateToken.default().execute({ token: value })
             .then(({ data }) => {
                 setValidatedValue(data!.string);
                 setToken(data as Token<TokenContent>);
@@ -33,9 +33,10 @@ const useToken = <TokenContent> (value: string) => {
                 setError(err);
 
                 throw new Error(err);
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
-
-        setIsLoading(false);
     };
 
     return {
