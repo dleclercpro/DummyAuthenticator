@@ -33,10 +33,13 @@ const AdminPage: React.FC<Props> = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const openDialog = () => setIsDialogOpen(true);
-    const closeDialog = () => setIsDialogOpen(false);
-    const toggleDialog = () => setIsDialogOpen(!isDialogOpen);
+    const [isFlushConfirmDialogOpen, setIsFlushConfirmDialogOpen] = useState(false);
+    const openFlushConfirmDialog = () => setIsFlushConfirmDialogOpen(true);
+    const closeFlushConfirmDialog = () => setIsFlushConfirmDialogOpen(false);
+
+    const [isSignOutConfirmDialogOpen, setIsSignOutConfirmDialogOpen] = useState(false);
+    const openSignOutConfirmDialog = () => setIsSignOutConfirmDialogOpen(true);
+    const closeSignOutConfirmDialog = () => setIsSignOutConfirmDialogOpen(false);
 
     // Fetch secret on load
     useEffect(() => {
@@ -74,7 +77,7 @@ const AdminPage: React.FC<Props> = () => {
     const handleFlushDatabase = async () => {
         setSnackbarOpen(false);
 
-        closeDialog();
+        closeFlushConfirmDialog();
 
         return db.flush()
             .catch((err) => {
@@ -96,12 +99,20 @@ const AdminPage: React.FC<Props> = () => {
     return (
         <>
             <YesNoDialog
-                open={isDialogOpen}
+                open={isFlushConfirmDialogOpen}
                 title='Flush database'
-                text='Are you sure you want to delete all database entries? This cannot be undone! You will subsequently be logged out.'
+                text='Are you sure you want to delete all database entries? This cannot be undone! You will then be logged out and redirected to the home page.'
                 handleYes={handleFlushDatabase}
-                handleNo={closeDialog}
-                handleClose={closeDialog}
+                handleNo={closeFlushConfirmDialog}
+                handleClose={closeFlushConfirmDialog}
+            />
+            <YesNoDialog
+                open={isSignOutConfirmDialogOpen}
+                title='Sign out'
+                text='Are you sure you want to sign out? You will be redirected to the home page.'
+                handleYes={handleSignOut}
+                handleNo={closeSignOutConfirmDialog}
+                handleClose={closeSignOutConfirmDialog}
             />
             
             <Paper elevation={8} className={classes.root}>
@@ -146,7 +157,7 @@ const AdminPage: React.FC<Props> = () => {
                         color='primary'
                         icon={<DatabaseIcon />}
                         loading={db.isFlushing}
-                        onClick={() => setIsDialogOpen(true)}
+                        onClick={openFlushConfirmDialog}
                     >
                         Flush database
                     </LoadingButton>
@@ -157,7 +168,7 @@ const AdminPage: React.FC<Props> = () => {
                         color='secondary'
                         icon={<LogoutIcon />}
                         loading={isSigningOut}
-                        onClick={handleSignOut}
+                        onClick={openSignOutConfirmDialog}
                     >
                         Sign out
                     </LoadingButton>
