@@ -48,7 +48,7 @@ class PasswordManager {
     return bcrypt.compare(password, encryptedPassword);
   }
 
-  public validate = (password: string) => {
+  public isStrongEnough = (password: string) => {
     let isValid = true;
     
     if (this.options.minLength) {

@@ -69,7 +69,7 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         }
 
         // Ensure password is strong enough
-        if (!PasswordManager.validate(password)) {
+        if (!PasswordManager.isStrongEnough(password)) {
             throw new ErrorInvalidPassword();
         }
 
