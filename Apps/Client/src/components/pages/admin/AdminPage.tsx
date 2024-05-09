@@ -14,6 +14,7 @@ import useSecret from '../../../hooks/useSecret';
 import Spinner from '../../Spinner';
 import LoadingButton from '../../buttons/LoadingButton';
 import useDatabase from '../../../hooks/useDatabase';
+import YesNoDialog from '../../dialogs/YesNoDialog';
 
 interface Props {
 
@@ -31,6 +32,11 @@ const AdminPage: React.FC<Props> = () => {
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const openDialog = () => setIsDialogOpen(true);
+    const closeDialog = () => setIsDialogOpen(false);
+    const toggleDialog = () => setIsDialogOpen(!isDialogOpen);
 
     // Fetch secret on load
     useEffect(() => {
@@ -51,19 +57,6 @@ const AdminPage: React.FC<Props> = () => {
         await secret.fetch(true);
     }
 
-    const handleFlushDatabase = async () => {
-        setSnackbarOpen(false);
-
-        return db.flush()
-            .catch((err) => {
-                setSnackbarMessage(err.message);
-                setSnackbarOpen(true);
-            })
-            .finally(() => {
-                setIsLogged(false);
-            });
-    }
-
     const handleSignOut = async () => {
         setSnackbarOpen(false);
         setIsSigningOut(true);
@@ -78,6 +71,21 @@ const AdminPage: React.FC<Props> = () => {
             });
     }
 
+    const handleFlushDatabase = async () => {
+        setSnackbarOpen(false);
+
+        closeDialog();
+
+        return db.flush()
+            .catch((err) => {
+                setSnackbarMessage(err.message);
+                setSnackbarOpen(true);
+            })
+            .finally(() => {
+                setIsLogged(false);
+            });
+    }
+
     // No secret yet: wait
     if (!secret.value) {
         return (
@@ -86,72 +94,83 @@ const AdminPage: React.FC<Props> = () => {
     }
 
     return (
-        <Paper elevation={8} className={classes.root}>
-            <Typography variant='h1' className={classes.title}>
-                Administration
-            </Typography>
-            
-            <Typography className={classes.text}>
-                Hello, <strong>[{userEmail}]</strong>. You are logged in as an administrator. Here is your secret:
-            </Typography>
-
-            <Typography className={classes.secret}>
-                {secret.value}
-            </Typography>
-
-            <div className={classes.buttons}>
-                <LoadingButton
-                    className={classes.button}
-                    variant='contained'
-                    color='primary'
-                    icon={<RefreshIcon />}
-                    loading={secret.isLoading}
-                    onClick={handleRenewSecret}
-                >
-                    Renew secret
-                </LoadingButton>
-
-                <Button
-                    className={classes.button}
-                    variant='contained'
-                    color='primary'
-                    component={Link}
-                    to={getURL(Page.ResetPassword)}
-                    startIcon={<PasswordIcon />}
-                >
-                    Reset password
-                </Button>
-
-                <LoadingButton
-                    className={classes.button}
-                    variant='contained'
-                    color='primary'
-                    icon={<DatabaseIcon />}
-                    loading={db.isFlushing}
-                    onClick={handleFlushDatabase}
-                >
-                    Flush database
-                </LoadingButton>
-                
-                <LoadingButton
-                    className={classes.button}
-                    variant='outlined'
-                    color='secondary'
-                    icon={<LogoutIcon />}
-                    loading={isSigningOut}
-                    onClick={handleSignOut}
-                >
-                    Sign out
-                </LoadingButton>
-            </div>
-
-            <Snackbar
-                open={snackbarOpen}
-                message={snackbarMessage}
-                severity={Severity.Error}
-                onClose={() => setSnackbarOpen(false)}
+        <>
+            <YesNoDialog
+                open={isDialogOpen}
+                title='Flush database'
+                text='Are you sure you want to delete all database entries? This cannot be undone! You will subsequently be logged out.'
+                handleYes={handleFlushDatabase}
+                handleNo={closeDialog}
+                handleClose={closeDialog}
             />
-        </Paper>
+            
+            <Paper elevation={8} className={classes.root}>
+                <Typography variant='h1' className={classes.title}>
+                    Administration
+                </Typography>
+                
+                <Typography className={classes.text}>
+                    Hello, <strong>[{userEmail}]</strong>. You are logged in as an administrator. Here is your secret:
+                </Typography>
+
+                <Typography className={classes.secret}>
+                    {secret.value}
+                </Typography>
+
+                <div className={classes.buttons}>
+                    <LoadingButton
+                        className={classes.button}
+                        variant='contained'
+                        color='primary'
+                        icon={<RefreshIcon />}
+                        loading={secret.isLoading}
+                        onClick={handleRenewSecret}
+                    >
+                        Renew secret
+                    </LoadingButton>
+
+                    <Button
+                        className={classes.button}
+                        variant='contained'
+                        color='primary'
+                        component={Link}
+                        to={getURL(Page.ResetPassword)}
+                        startIcon={<PasswordIcon />}
+                    >
+                        Reset password
+                    </Button>
+
+                    <LoadingButton
+                        className={classes.button}
+                        variant='contained'
+                        color='primary'
+                        icon={<DatabaseIcon />}
+                        loading={db.isFlushing}
+                        onClick={() => setIsDialogOpen(true)}
+                    >
+                        Flush database
+                    </LoadingButton>
+                    
+                    <LoadingButton
+                        className={classes.button}
+                        variant='outlined'
+                        color='secondary'
+                        icon={<LogoutIcon />}
+                        loading={isSigningOut}
+                        onClick={handleSignOut}
+                    >
+                        Sign out
+                    </LoadingButton>
+                </div>
+
+                <Snackbar
+                    open={snackbarOpen}
+                    message={snackbarMessage}
+                    severity={Severity.Error}
+                    onClose={() => setSnackbarOpen(false)}
+                />
+            </Paper>
+        </>
     );
 }
 
