@@ -1,7 +1,7 @@
 import { Button, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
-import useHomeStyles from './HomeStyles';
+import useHomePageStyles from './HomePageStyles';
 import Snackbar from '../../Snackbar';
 import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -17,8 +17,8 @@ interface Props {
 
 }
 
-const Home: React.FC<Props> = () => {
-    const { classes } = useHomeStyles();
+const HomePage: React.FC<Props> = () => {
+    const { classes } = useHomePageStyles();
 
     const { userEmail, isAdmin, signOut } = useAuth();
     const secret = useSecret();
@@ -131,4 +131,4 @@ const Home: React.FC<Props> = () => {
     );
 }
 
-export default Home;
+export default HomePage;

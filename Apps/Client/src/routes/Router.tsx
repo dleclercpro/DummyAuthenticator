@@ -1,15 +1,15 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import NoMatch from '../components/pages/no-match/NoMatch';
-import Home from '../components/pages/home/Home';
-import SignIn from '../components/pages/sign-in/SignIn';
-import SignUp from '../components/pages/sign-up/SignUp';
+import NoMatchPage from '../components/pages/no-match/NoMatchPage';
+import HomePage from '../components/pages/home/HomePage';
+import SignInPage from '../components/pages/sign-in/SignInPage';
+import SignUpPage from '../components/pages/sign-up/SignUpPage';
 import AuthenticatedRoute from './AuthenticatedRoute';
 import UnauthenticatedRoute from './UnauthenticatedRoute';
-import ForgotPassword from '../components/pages/forgot-password/ForgotPassword';
-import ResetPassword from '../components/pages/reset-password/ResetPassword';
-import ConfirmEmail from '../components/pages/confirm-email/ConfirmEmail';
-import Admin from '../components/pages/admin/Admin';
+import ForgotPasswordPage from '../components/pages/forgot-password/ForgotPasswordPage';
+import ResetPasswordPage from '../components/pages/reset-password/ResetPasswordPage';
+import ConfirmEmailPage from '../components/pages/confirm-email/ConfirmEmailPage';
+import AdminPage from '../components/pages/admin/AdminPage';
 
 export enum Page {
     Home = '',
@@ -50,45 +50,45 @@ const Router: React.FC<Props> = () => {
         <Routes>
             <Route path='/' element={
                 <AuthenticatedRoute>
-                    <Home />
+                    <HomePage />
                 </AuthenticatedRoute>
             } />
 
             <Route path='/admin' element={
                 <AuthenticatedRoute shouldBeAdmin>
-                    <Admin />
+                    <AdminPage />
                 </AuthenticatedRoute>
             } />
 
             <Route path='/sign-in' element={
                 <UnauthenticatedRoute>
-                    <SignIn />
+                    <SignInPage />
                 </UnauthenticatedRoute>
             } />
             
             <Route path='/sign-up' element={
                 <UnauthenticatedRoute>
-                    <SignUp />
+                    <SignUpPage />
                 </UnauthenticatedRoute>
             } />
 
             <Route path='/confirm-email' element={
                 <UnauthenticatedRoute>
-                    <ConfirmEmail />
+                    <ConfirmEmailPage />
                 </UnauthenticatedRoute>
             } />
 
             <Route path='/forgot-password' element={
                 <UnauthenticatedRoute>
-                    <ForgotPassword />
+                    <ForgotPasswordPage />
                 </UnauthenticatedRoute>
             } />
 
             <Route path='/reset-password' element={
-                <ResetPassword />
+                <ResetPasswordPage />
             } />
 
-            <Route path='*' element={<NoMatch />} />
+            <Route path='*' element={<NoMatchPage />} />
         </Routes>
     );
 }

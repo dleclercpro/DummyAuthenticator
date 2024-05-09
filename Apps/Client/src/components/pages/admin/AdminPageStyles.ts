@@ -2,7 +2,7 @@ import { Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { BUTTON_HEIGHT, SPACING } from '../../../styles';
 
-const useHomeStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
+const useAdminPageStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
@@ -44,4 +44,4 @@ const useHomeStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     },
 }));
 
-export default useHomeStyles;
+export default useAdminPageStyles;

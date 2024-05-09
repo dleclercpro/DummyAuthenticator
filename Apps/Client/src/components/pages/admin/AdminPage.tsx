@@ -1,7 +1,7 @@
 import { Button, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
-import useAdminStyles from './AdminStyles';
+import useAdminPageStyles from './AdminPageStyles';
 import Snackbar from '../../Snackbar';
 import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -19,8 +19,8 @@ interface Props {
 
 }
 
-const Admin: React.FC<Props> = () => {
-    const { classes } = useAdminStyles();
+const AdminPage: React.FC<Props> = () => {
+    const { classes } = useAdminPageStyles();
 
     const { userEmail, setIsLogged, signOut } = useAuth();
 
@@ -155,4 +155,4 @@ const Admin: React.FC<Props> = () => {
     );
 }
 
-export default Admin;
+export default AdminPage;

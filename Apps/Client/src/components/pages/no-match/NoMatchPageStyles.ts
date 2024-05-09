@@ -2,12 +2,12 @@ import { Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { BUTTON_HEIGHT, SPACING } from '../../../styles';
 
-const useAdminStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
+const useNoMatchPageStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
-        maxWidth: 420,
+        maxWidth: 320,
         padding: spacing(3),
 
         [breakpoints.down('sm')]: {
@@ -15,18 +15,19 @@ const useAdminStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
         },
     },
 
+    icon: {
+        width: spacing(10),
+        height: spacing(10),
+        margin: 'auto',
+        marginBottom: spacing(SPACING),
+    },
+
     title: {
         marginBottom: spacing(SPACING),
     },
 
     text: {
-        marginBottom: spacing(1.5 * SPACING),
-    },
-
-    secret: {
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: spacing(1.5 * SPACING),
+        marginBottom: spacing(SPACING),
     },
 
     buttons: {
@@ -37,11 +38,7 @@ const useAdminStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     button: {
         width: '100%',
         height: spacing(BUTTON_HEIGHT),
-
-        '&:not(:last-child)': {
-            marginBottom: spacing(1),
-        },
     },
 }));
 
-export default useAdminStyles;
+export default useNoMatchPageStyles;

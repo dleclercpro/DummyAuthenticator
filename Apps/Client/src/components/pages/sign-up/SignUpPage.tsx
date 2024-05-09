@@ -1,25 +1,25 @@
-import { Button, Switch, FormControlLabel, Paper, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import { Button, Paper, Typography } from '@mui/material';
+import { useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
-import useAuthStyles from '../AuthStyles';
+import useAuthPageStyles from '../AuthPageStyles';
 import Snackbar from '../../Snackbar';
 import { Link, useNavigate } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
 import EmailField from '../../fields/EmailField';
 import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
-import LoginIcon from '@mui/icons-material/Login';
-import KeyIcon from '@mui/icons-material/Key';
+import BackIcon from '@mui/icons-material/ArrowBack';
+import CreateIcon from '@mui/icons-material/Create';
 import useAuth from '../../../hooks/useAuth';
 
 interface Props {
 
 }
 
-const SignIn: React.FC<Props> = () => {
-    const { classes } = useAuthStyles();
+const SignUpPage: React.FC<Props> = () => {
+    const { classes } = useAuthPageStyles();
 
-    const { signIn } = useAuth();
+    const { signUp } = useAuth();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
@@ -27,7 +27,6 @@ const SignIn: React.FC<Props> = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [staySignedIn, setStaySignedIn] = useState(true);
 
     const [snackbarOpen, setSnackbarOpen] = useState(!!error);
     const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -42,19 +41,15 @@ const SignIn: React.FC<Props> = () => {
         setError('');
     }
 
-    const handleStaySignedInChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setStaySignedIn(e.target.checked);
-    }
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         setLoading(true);
         setSnackbarOpen(false);
 
-        return signIn(email, password, staySignedIn)
-            .then((user: { email: string, isAdmin: boolean }) => {
-                navigate(getURL(user.isAdmin ? Page.Admin : Page.Home));
+        return signUp(email, password)
+            .then(() => {
+                navigate(getURL(Page.Home));
             })
             .catch((err: any) => {
                 setError(err.message);
@@ -73,17 +68,12 @@ const SignIn: React.FC<Props> = () => {
                 onSubmit={handleSubmit}
             >
                 <Typography variant='h1' className={classes.title}>
-                    Welcome back
+                    Welcome
                 </Typography>
 
-                <Button
-                    className={classes.switchButton}
-                    component={Link}
-                    to={getURL(Page.SignUp)}
-                    color='secondary'
-                >
-                    Not registered yet?
-                </Button>
+                <Typography className={classes.text}>
+                    Please choose a username and a password to create your account:
+                </Typography>
 
                 <fieldset className={classes.fields}>
                     <EmailField
@@ -105,32 +95,24 @@ const SignIn: React.FC<Props> = () => {
 
                 <div className={classes.buttons}>
                     <div className='top'>
-                        <FormControlLabel
-                            className={classes.staySignedInSwitch}
-                            control={<Switch checked={staySignedIn} onChange={handleStaySignedInChange} name='stay-signed-in' />}
-                            label='Stay signed in?'
-                        />
-
-                        <LoadingButton
-                            className={classes.submitButton}
-                            type='submit'
-                            icon={<LoginIcon />}
-                            loading={loading}
-                            error={!!error}
-                        >
-                            Sign in
-                        </LoadingButton>
-                    </div>
-                    <div className='bottom'>
                         <Button
                             className={classes.linkButton}
                             component={Link}
-                            to={getURL(Page.ForgotPassword)}
+                            to={getURL(Page.SignIn)}
                             color='secondary'
-                            startIcon={<KeyIcon />}
+                            startIcon={<BackIcon />}
                         >
-                            Forgot your password?
+                            Back
                         </Button>
+                        <LoadingButton
+                            className={classes.submitButton}
+                            type='submit'
+                            icon={<CreateIcon />}
+                            loading={loading}
+                            error={!!error}
+                        >
+                            Sign up
+                        </LoadingButton>
                     </div>
                 </div>
             </form>
@@ -145,4 +127,4 @@ const SignIn: React.FC<Props> = () => {
     );
 }
 
-export default SignIn;
+export default SignUpPage;

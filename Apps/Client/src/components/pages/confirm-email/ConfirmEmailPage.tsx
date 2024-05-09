@@ -1,6 +1,6 @@
 import { Button, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import useAuthStyles from '../AuthStyles';
+import useAuthPageStyles from '../AuthPageStyles';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import { Page, getURL } from '../../../routes/Router';
@@ -14,8 +14,8 @@ interface Props {
 
 }
 
-const ConfirmEmail: React.FC<Props> = () => {
-    const { classes } = useAuthStyles();
+const ConfirmEmailPage: React.FC<Props> = () => {
+    const { classes } = useAuthPageStyles();
     
     const location = useLocation();
     const navigate = useNavigate();
@@ -105,4 +105,4 @@ const ConfirmEmail: React.FC<Props> = () => {
     );
 }
 
-export default ConfirmEmail;
+export default ConfirmEmailPage;

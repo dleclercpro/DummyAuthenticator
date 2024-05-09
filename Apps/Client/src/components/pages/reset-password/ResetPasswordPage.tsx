@@ -1,7 +1,7 @@
 import { Button, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
-import useAuthStyles from '../AuthStyles';
+import useAuthPageStyles from '../AuthPageStyles';
 import Snackbar from '../../Snackbar';
 import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
@@ -20,8 +20,8 @@ interface Props {
 
 }
 
-const ResetPassword: React.FC<Props> = () => {
-    const { classes } = useAuthStyles();
+const ResetPasswordPage: React.FC<Props> = () => {
+    const { classes } = useAuthPageStyles();
     
     const location = useLocation();
     const navigate = useNavigate();
@@ -190,4 +190,4 @@ const ResetPassword: React.FC<Props> = () => {
     );
 }
 
-export default ResetPassword;
+export default ResetPasswordPage;
