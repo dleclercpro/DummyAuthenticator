@@ -63,6 +63,18 @@ class AppDatabase {
     public async flush() {
         return this.db.flush();
     }
+
+    public async getAllKeys() {
+        return this.db.getAllKeys();
+    }
+
+    public async getAllValues() {
+        return this.db.getAllValues();
+    }
+
+    public async getKeysByPattern(pattern: string) {
+        return this.db.getKeysByPattern(pattern);
+    }
 }
 
 export default AppDatabase;

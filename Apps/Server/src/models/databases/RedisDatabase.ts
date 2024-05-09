@@ -134,35 +134,28 @@ class RedisDatabase implements IKeyValueDatabase<string> {
         return maxBackoff;
     }
 
-    private getPrefixedKey(key: string) {
-        return this.name ? `${this.name}:${key}` : key;
-    }
-
     public async has(key: string) {
         return await this.get(key) !== null;
     }
 
     public async get(key: string) {
-        return await this.client.get(this.getPrefixedKey(key));
+        return await this.client.get(key);
     }
 
     public async set(key: string, value: string) {
-        const prefixedKey = this.getPrefixedKey(key);
-
-        await this.client.set(prefixedKey, value);
+        await this.client.set(key, value);
     }
 
     public async delete(key: string) {
-        const prefixedKey = this.getPrefixedKey(key);
-        const prevValue = await this.client.get(prefixedKey);
-        
+        const prevValue = await this.client.get(key);
+
         if (prevValue) {
-            await this.client.del(prefixedKey);
+            await this.client.del(key);
         }
     }
 
     public async getAllKeys() {
-        return await this.client.keys(this.getPrefixedKey('*'));
+        return await this.client.keys('*');
     }
 
     public async getAllValues() {
@@ -173,21 +166,7 @@ class RedisDatabase implements IKeyValueDatabase<string> {
     }
 
     public async getKeysByPattern(pattern: string) {
-        let cursor = 0;
-        let keys: string[] = [];
-
-        do {
-            const reply = await this.client.scan(cursor, {
-                MATCH: this.getPrefixedKey(pattern),
-                COUNT: 100,
-            });
-
-            cursor = reply.cursor;
-            keys.push(...reply.keys);
-
-          } while (cursor !== 0);
-    
-        return keys;
+        return this.client.keys(pattern);
     }
 
     public async flush() {

@@ -1,3 +1,4 @@
+import { ErrorNotImplemented } from '../../errors/ServerError';
 import { IKeyValueDatabase } from '../../types';
 import { logger } from '../../utils/logger';
 
@@ -45,10 +46,7 @@ class MemoryDatabase<R> implements IKeyValueDatabase<R> {
     }
 
     public async getKeysByPattern(pattern: string) {
-        const keys = await this.getAllKeys();
-
-        return keys
-            .filter((key: string) => key.startsWith(pattern));
+        throw new ErrorNotImplemented();
     }
 
     public async flush() {

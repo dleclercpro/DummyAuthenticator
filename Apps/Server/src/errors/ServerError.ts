@@ -13,6 +13,14 @@ export abstract class ServerError extends Error {
 
 
 // Generic errors
+export class ErrorNotImplemented extends ServerError {
+    public static code = -1;
+    
+    constructor() {
+        super(ErrorNotImplemented.code, `Not implemented!`);
+    }
+}
+
 export class ErrorInvalidEmail extends ServerError {
     public static code = -100;
     
