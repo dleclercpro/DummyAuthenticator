@@ -37,7 +37,7 @@ const ForgotPasswordController: RequestHandler = async (req, res, next) => {
         if (!user) {
             throw new ErrorUserDoesNotExist(email);
         }
-        logger.debug(`User '${user.getEmail().getValue()}' wants to reset their password...`);
+        logger.debug(`${user.getType()} user '${user.getEmail().getValue()}' wants to reset their password...`);
 
         // Send user e-mail to reset their password
         await Gmailer.send(await EmailFactory.createResetPasswordEmail(user));

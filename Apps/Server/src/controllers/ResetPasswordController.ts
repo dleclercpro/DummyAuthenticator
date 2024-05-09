@@ -88,7 +88,7 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
 
         // Store changes to DB
         await user.save();
-        logger.debug(`User '${user.getEmail().getValue()}' has successfully reset their password.`);
+        logger.debug(`${user.getType()} user '${user.getEmail().getValue()}' has successfully reset their password.`);
 
         return res.json(successResponse());
 

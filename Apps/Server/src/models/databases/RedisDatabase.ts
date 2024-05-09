@@ -60,7 +60,7 @@ class RedisDatabase implements IKeyValueDatabase<string> {
     }
 
     public async start() {
-        logger.debug(`Starting Redis database '${this.index}'.`);
+        logger.debug(`Using Redis database '${this.index}'.`);
 
         this.listen();
 

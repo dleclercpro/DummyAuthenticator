@@ -1,13 +1,15 @@
-import { CLIENT_ROOT } from '../../config/AppConfig';
+import { APP_AUTHOR, CLIENT_ROOT } from '../../config/AppConfig';
 import { GMAIL_USER } from '../../config/AuthConfig';
 import { TimeUnit } from '../../types/TimeTypes';
 import { ResetPasswordToken } from '../../types/TokenTypes';
+import Person from '../people/Person';
 import TimeDuration from '../units/TimeDuration';
 import Email from './Email';
+import EmailFactory from './EmailFactory';
 
 class ResetPasswordEmail extends Email {
 
-  public constructor(to: string, token: { string: string, content: ResetPasswordToken }) {
+  public constructor(to: string, token: { string: string, content: ResetPasswordToken }, author: Person = APP_AUTHOR) {
     const link = `${CLIENT_ROOT}/reset-password?token=${token.string}`;
 
     const from = `Dummy Authenticator <${GMAIL_USER}>`;
@@ -31,10 +33,7 @@ class ResetPasswordEmail extends Email {
         Cheers!
       </p>
       <p>
-        David Leclerc<br />
-        Senior Software Engineer<br />
-        Berlin, GERMANY<br />
-        d.leclerc.pro@gmail.com
+        ${EmailFactory.createHTMLSignature(author)}
       </p>
     `,});
   }

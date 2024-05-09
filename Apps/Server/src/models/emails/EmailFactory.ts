@@ -2,6 +2,7 @@ import User from '../user/User';
 import TokenManager from '../auth/TokenManager';
 import ResetPasswordEmail from './ResetPasswordEmail';
 import EmailAddressConfirmationEmail from './EmailAddressConfirmationEmail';
+import Person from '../people/Person';
 
 
 
@@ -18,6 +19,16 @@ class EmailFactory {
       EmailFactory.instance = new EmailFactory();
     }
     return EmailFactory.instance;
+  }
+
+  public createHTMLSignature(person: Person) {
+    return `
+      ${person.getFirstName()} ${person.getLastName()}<br />
+      ${person.getOccupation() ? `${person.getOccupation()}<br />` : ''}
+      ${person.getAddress().getCity()}, ${person.getAddress().getCountry().toUpperCase()}<br />
+      ${person.getPhone()}<br />
+      ${person.getEmail()}
+    `;
   }
 
   public async createConfirmationEmail(user: User) {
