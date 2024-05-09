@@ -154,7 +154,7 @@ const AdminPage: React.FC<Props> = () => {
                     <LoadingButton
                         className={classes.button}
                         variant='contained'
-                        color='primary'
+                        color='error'
                         icon={<DatabaseIcon />}
                         loading={db.isFlushing}
                         onClick={openFlushConfirmDialog}

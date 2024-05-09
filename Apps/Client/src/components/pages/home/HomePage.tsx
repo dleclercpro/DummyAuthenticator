@@ -106,8 +106,7 @@ const HomePage: React.FC<Props> = () => {
                 <div className={classes.buttons}>
                     <LoadingButton
                         className={classes.button}
-                        variant='outlined'
-                        color='secondary'
+                        variant='contained'
                         icon={<RefreshIcon />}
                         loading={secret.isLoading}
                         onClick={handleRenewSecret}
@@ -120,7 +119,6 @@ const HomePage: React.FC<Props> = () => {
                         variant='contained'
                         component={Link}
                         to={getURL(Page.ResetPassword)}
-                        color='secondary'
                         startIcon={<PasswordIcon />}
                     >
                         Reset password
@@ -129,6 +127,8 @@ const HomePage: React.FC<Props> = () => {
                     <LoadingButton
                         className={classes.button}
                         icon={<LogoutIcon />}
+                        variant='outlined'
+                        color='secondary'
                         loading={isSigningOut}
                         onClick={openSignOutConfirmDialog}
                     >

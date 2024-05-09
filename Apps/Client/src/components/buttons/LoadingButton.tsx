@@ -9,7 +9,7 @@ interface Props {
     className?: string,
     type?: 'button' | 'submit',
     variant?: 'contained' | 'outlined' | 'text',
-    color?: 'primary' | 'secondary',
+    color?: 'primary' | 'secondary' | 'error',
     icon?: ReactNode,
     loading: boolean,
     error?: boolean,
