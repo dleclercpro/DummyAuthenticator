@@ -38,6 +38,7 @@ class TokenManager {
       throw new ErrorUserDoesNotExist(token.content.email);
     }
 
+    // FIXME: this only works for the password reset token!
     const lastRequest = user.getPassword().getLastRequest();
     const lastReset = user.getPassword().getLastReset();
 
