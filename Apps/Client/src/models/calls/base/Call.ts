@@ -71,7 +71,7 @@ class Call<RequestData = void, ResponseData = void, ErrorResponseData = void> {
     }
 
     async execute(payload?: RequestData) {
-        let err = '';
+        let error = '';
 
         console.log(`Executing API call '${this.name}': ${this.url}`);
 
@@ -83,44 +83,39 @@ class Call<RequestData = void, ResponseData = void, ErrorResponseData = void> {
 
         // Execute call
         const response = await fetch(this.url, this.params)
-            .then(async (r) => {
-                const res = { status: r.status, statusText: r.statusText };
-
-                // Try to parse JSON and return it with rest of response
-                try {
-                    return { ...res, json: await r.json() as ServerResponse<ResponseData | ErrorResponseData> };
-                } catch {
-                    return { ...res, json: null };
-                }
-            })
             .catch((err) => {
-                console.error(err);
-
-                // There was some issue contacting the server: is it running?
-                err = 'FETCH_ERROR';
+                error = `NO_SERVER_CONNECTION`;
             });
 
-        // There was valid JSON data in the response
-        if (response && response.json) {
-            const { code, error } = response.json;
+        // Handle server response
+        if (response) {
+            const data: ServerResponse<ResponseData | ErrorResponseData> = await response
+                .json()
+                .catch((err) => {
+                    error = `INVALID_JSON`;
+                });
 
-            // There was an error
-            if (response.status >= 400 && error) {
-                return Promise.reject(response.json);
-            }
+            // There was valid JSON data in the response
+            if (data) {
+                const { code, error } = data;
 
-            // Everything went fine
-            if (response.status < 400 && Number.isInteger(code) && code >= 0) {
-                return Promise.resolve(response.json);
+                // There was an error
+                if (response.status >= 400 && error) {
+                    return Promise.reject(data);
+                }
+
+                // Everything went fine
+                if (response.status < 400 && Number.isInteger(code) && code >= 0) {
+                    return Promise.resolve(data);
+                }
             }
         }
 
         // There were other issues
-        err = err !== '' ? err : `UNEXPECTED_ERROR`;
-        console.error(`Error in call '${this.name}': ${err} [${response ? response.status : '?'}]`);
+        console.error(`Error in call '${this.name}': ${error} [${response ? response.status : '?'}]`);
 
         // Something went wrong, but we let the processing happen further down the line
-        throw new Error(err);
+        throw new Error(error);
     }
 }
 

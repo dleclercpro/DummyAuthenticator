@@ -29,7 +29,7 @@ const App: React.FC<Props> = () => {
                 {ping.isDone && ping.error && (
                     <>
                         <ErrorIcon color='error' className={classes.icon} />
-                        <p>Could not ping server: <strong>{ping.error}</strong></p>
+                        <p>Ping unsuccessful: <strong>{ping.error}</strong></p>
                     </>
                 )}
             </div>
