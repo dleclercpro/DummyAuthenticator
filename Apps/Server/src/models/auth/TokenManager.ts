@@ -3,7 +3,7 @@ import { TokenType } from '../../constants';
 import { ErrorExpiredToken, ErrorInvalidToken, ErrorNewerTokenIssued, ErrorTokenAlreadyUsed } from '../../errors/ServerError';
 import { ErrorUserDoesNotExist } from '../../errors/UserErrors';
 import { TimeUnit } from '../../types/TimeTypes';
-import { ConfirmEmailToken, ResetPasswordToken, Token } from '../../types/TokenTypes';
+import { ConfirmEmailToken, ResetPasswordToken, TokenContent } from '../../types/TokenTypes';
 import { logger } from '../../utils/logger';
 import TimeDuration from '../units/TimeDuration';
 import User from '../user/User';
@@ -65,7 +65,7 @@ class TokenManager {
     try {
       const secret = JWT_TOKEN_SECRETS[type];
       
-      const content = jwt.verify(token, secret) as Token;
+      const content = jwt.verify(token, secret) as TokenContent;
 
       return { string: token, content };
       
@@ -76,7 +76,7 @@ class TokenManager {
 
   public async decodeToken(token: string) {
     try {
-      const content = jwt.decode(token) as Token;
+      const content = jwt.decode(token) as TokenContent;
 
       return { string: token, content };
       
@@ -88,20 +88,20 @@ class TokenManager {
   public async generateEmailConfirmationToken(user: User) {
     return this.generateToken(user, TokenType.ConfirmEmail, {
 
-    }) as Promise<{ string: string, content: ConfirmEmailToken }>;
+    }) as Promise<ConfirmEmailToken>;
   }
 
   public async generateResetPasswordToken(user: User) {
     return this.generateToken(user, TokenType.ResetPassword, {
     
-    }) as Promise<{ string: string, content: ResetPasswordToken }>;
+    }) as Promise<ResetPasswordToken>;
   }
 
   private async generateToken(user: User, type: TokenType, optsContent: object = {}) {
     const now = new Date();
     const validTime = JWT_TOKEN_LONGEVITY.toMs().getAmount();
 
-    const baseContent: Token = {
+    const baseContent: TokenContent = {
       type,
       validTime,
       creationDate: now.getTime(),

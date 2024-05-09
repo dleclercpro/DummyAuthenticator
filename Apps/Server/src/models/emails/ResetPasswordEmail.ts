@@ -9,7 +9,7 @@ import EmailFactory from './EmailFactory';
 
 class ResetPasswordEmail extends Email {
 
-  public constructor(to: string, token: { string: string, content: ResetPasswordToken }, author: Person = APP_AUTHOR) {
+  public constructor(to: string, token: ResetPasswordToken, author: Person = APP_AUTHOR) {
     const link = `${CLIENT_ROOT}/reset-password?token=${token.string}`;
 
     const from = `Dummy Authenticator <${GMAIL_USER}>`;

@@ -9,7 +9,7 @@ import EmailFactory from './EmailFactory';
 
 class EmailAddressConfirmationEmail extends Email {
 
-  public constructor(to: string, token: { string: string, content: ConfirmEmailToken }, author: Person = APP_AUTHOR) {
+  public constructor(to: string, token: ConfirmEmailToken, author: Person = APP_AUTHOR) {
     const link = `${CLIENT_ROOT}/confirm-email?token=${token.string}`;
 
     const from = `Dummy Authenticator <${GMAIL_USER}>`;

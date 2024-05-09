@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import * as CallValidateToken from '../models/calls/auth/CallValidateToken';
 import { translateServerError } from '../errors/ServerErrors';
+import { Token } from '../types/TokenTypes';
 
-type Token<TokenContent> = { string: string, content: TokenContent };
-
-const useToken = <TokenContent> (value: string) => {    
+const useToken = <T extends Token> (value: string) => {    
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
     const [unvalidatedValue, setUnvalidatedValue] = useState(value);
     const [validatedValue, setValidatedValue] = useState('');
 
-    const [token, setToken] = useState<Token<TokenContent> | null>(null);
+    const [token, setToken] = useState<T | null>(null);
 
 
     
@@ -25,7 +24,7 @@ const useToken = <TokenContent> (value: string) => {
         return new CallValidateToken.default().execute({ token: value })
             .then(({ data }) => {
                 setValidatedValue(data!.string);
-                setToken(data as Token<TokenContent>);
+                setToken(data as T);
             })
             .catch(({ code, error, data }) => {
                 const err = translateServerError(error);

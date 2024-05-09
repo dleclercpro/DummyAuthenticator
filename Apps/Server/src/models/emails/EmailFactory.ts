@@ -31,11 +31,11 @@ class EmailFactory {
     `;
   }
 
-  public async createConfirmationEmail(user: User, token: { string: string, content: ConfirmEmailToken }) {
+  public async createConfirmationEmail(user: User, token: ConfirmEmailToken) {
     return new EmailAddressConfirmationEmail(user.getEmail().getValue(), token);
   }
 
-  public async createResetPasswordEmail(user: User, token: { string: string, content: ResetPasswordToken }) {
+  public async createResetPasswordEmail(user: User, token: ResetPasswordToken) {
     return new ResetPasswordEmail(user.getEmail().getValue(), token);
   }
 }

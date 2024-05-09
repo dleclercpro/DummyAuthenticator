@@ -23,7 +23,7 @@ const validateQuery = async (req: Request) => {
         throw new ErrorMissingToken();
     }
 
-    return await TokenManager.validateToken(token as string, TokenType.ResetPassword);
+    return await TokenManager.validateToken(token as string, TokenType.ResetPassword) as ResetPasswordToken;
 }
 
 type Body = {
@@ -41,7 +41,7 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         let creationDate = 0;
         let expirationDate = 0;
 
-        const token = await validateQuery(req) as { string: string, content: ResetPasswordToken };
+        const token = await validateQuery(req);
 
         if (token) {
             email = token.content.email;
