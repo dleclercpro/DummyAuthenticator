@@ -2,7 +2,7 @@ import { createContext, ReactElement, useContext, useState } from 'react';
 import { ServerError, translateServerError } from '../errors/ServerErrors';
 import * as CallSignIn from '../models/calls/auth/CallSignIn';
 import * as CallSignOut from '../models/calls/auth/CallSignOut';
-import * as CallPing from '../models/calls/user/CallPing';
+import * as CallPing from '../models/calls/auth/CallPing';
 import * as CallResetPassword from '../models/calls/auth/CallResetPassword';
 import * as CallForgotPassword from '../models/calls/auth/CallForgotPassword';
 import * as CallConfirmEmail from '../models/calls/auth/CallConfirmEmail';
@@ -20,12 +20,13 @@ interface IPingContext {
 
 interface IAuthContext {
     ping: IPingContext,
+    userEmail: string,
     isLogged: boolean,
     isAdmin: boolean,
     setIsLogged: (isLogged: boolean) => void,
     setIsAdmin: (isAdmin: boolean) => void,
     signUp: (email: string, password: string) => Promise<void>,
-    signIn: (email: string, password: string, staySignedIn: boolean) => Promise<boolean>,
+    signIn: (email: string, password: string, staySignedIn: boolean) => Promise<{ email: string, isAdmin: boolean }>,
     signOut: () => Promise<void>,
     confirmEmail: (token: string) => Promise<void>,
     forgotPassword: (email: string) => Promise<void>,
@@ -59,6 +60,8 @@ export default function AuthContextConsumer() {
 
 
 const useAuth = () => {
+    const [userEmail, setUserEmail] = useState('');
+
     const [isLogged, setIsLogged] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
 
@@ -83,14 +86,15 @@ const useAuth = () => {
         try {
             const { data } = await new CallPing.default().execute()
 
-            const admin = (data as CallPing.ResponseData).isAdmin;
+            const user = (data as CallPing.ResponseData);
 
-            setIsAdmin(admin);
+            setUserEmail(user.email);
+            setIsAdmin(user.isAdmin);
             setIsLogged(true);
 
             ping.setError('');
 
-            return admin;
+            return user;
         } catch (err: any) {
             setIsLogged(false);
             setIsAdmin(false);
@@ -102,7 +106,7 @@ const useAuth = () => {
 
             ping.setError(err.message);
 
-            return false;
+            return { email: '', isAdmin: false };
         } finally {
             ping.setIsLoading(false);
             ping.setIsDone(true);
@@ -140,12 +144,13 @@ const useAuth = () => {
                 throw new Error(translateServerError(error));
             });
 
-        const admin = (data as CallSignIn.ResponseData).isAdmin;
+        const user = (data as CallSignIn.ResponseData);
 
-        setIsAdmin(admin);
+        setUserEmail(user.email);
+        setIsAdmin(user.isAdmin);
         setIsLogged(true);
 
-        return admin;
+        return user;
     }
 
     const signOut = async () => {
@@ -218,6 +223,7 @@ const useAuth = () => {
 
     return {
         ping,
+        userEmail,
         isLogged,
         isAdmin,
         setIsLogged,

@@ -22,7 +22,7 @@ interface Props {
 const Admin: React.FC<Props> = () => {
     const { classes } = useAdminStyles();
 
-    const { setIsLogged, signOut } = useAuth();
+    const { userEmail, setIsLogged, signOut } = useAuth();
 
     const secret = useSecret();
     const db = useDatabase();
@@ -92,7 +92,7 @@ const Admin: React.FC<Props> = () => {
             </Typography>
             
             <Typography className={classes.text}>
-                You are logged in as an administrator. Here is your secret:
+                Hello, <strong>[{userEmail}]</strong>. You are logged in as an administrator. Here is your secret:
             </Typography>
 
             <Typography className={classes.secret}>

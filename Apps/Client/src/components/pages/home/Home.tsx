@@ -20,7 +20,7 @@ interface Props {
 const Home: React.FC<Props> = () => {
     const { classes } = useHomeStyles();
 
-    const { isAdmin, signOut } = useAuth();
+    const { userEmail, isAdmin, signOut } = useAuth();
     const secret = useSecret();
     
     const navigate = useNavigate();
@@ -81,7 +81,7 @@ const Home: React.FC<Props> = () => {
             </Typography>
 
             <Typography className={classes.text}>
-                Hello, <strong>[{isAdmin ? 'ADMIN' : 'USER'}]</strong>. Here is your secret:
+                Hello, <strong>[{userEmail}]</strong>. Here is your secret:
             </Typography>
 
             <Typography className={classes.secret}>

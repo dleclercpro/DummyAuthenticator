@@ -53,8 +53,8 @@ const SignIn: React.FC<Props> = () => {
         setSnackbarOpen(false);
 
         return signIn(email, password, staySignedIn)
-            .then((isAdmin: boolean) => {
-                navigate(getURL(isAdmin ? Page.Admin : Page.Home));
+            .then((user: { email: string, isAdmin: boolean }) => {
+                navigate(getURL(user.isAdmin ? Page.Admin : Page.Home));
             })
             .catch((err: any) => {
                 setError(err.message);

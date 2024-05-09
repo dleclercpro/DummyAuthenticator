@@ -76,6 +76,7 @@ const SignInController: RequestHandler = async (req, res, next) => {
         logger.debug(`${user.getType()} user logged in: ${user.getEmail().getValue()}`);
 
         return res.json(successResponse({
+            email: user.getEmail().getValue(),
             isAdmin: user.isAdmin(),
         }));
 

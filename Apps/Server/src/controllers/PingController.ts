@@ -6,6 +6,7 @@ const PingController: RequestHandler = async (req, res, next) => {
         const { session } = req;
 
         return res.json(successResponse({
+            email: session.getEmail(),
             isAdmin: session.isAdmin(),
         }));
 
