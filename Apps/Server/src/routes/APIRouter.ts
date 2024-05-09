@@ -35,7 +35,7 @@ APIRouter.delete('/database', [AuthMiddleware], FlushDatabaseController);
 APIRouter.put('/token', [], ValidateTokenController);
 
 // Secret
-APIRouter.get('/secret', [AuthMiddleware], GetSecretController);
+APIRouter.post('/secret', [AuthMiddleware], GetSecretController);
 
 
 

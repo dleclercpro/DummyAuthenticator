@@ -8,8 +8,15 @@ import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { logger } from '../utils/logger';
 import SecretManager from '../models/auth/SecretManager';
 
+type Body = {
+    renew: boolean,
+};
+
+
+
 const GetSecretController: RequestHandler = async (req, res, next) => {
     const { session } = req;
+    const { renew } = req.body as Body;
 
     try {
         const user = await User.findByEmail(session.getEmail());
@@ -22,16 +29,18 @@ const GetSecretController: RequestHandler = async (req, res, next) => {
         await sleep(new TimeDuration(1, TimeUnit.Second));
 
         // Get secret
-        const secret = user.getSecret().getValue();
+        let secret = user.getSecret();
 
         // Re-new user secret
-        logger.trace(`Renewing user's secret: ${user.getEmail().getValue()}`);
-        SecretManager.renew(user.getSecret());
+        if (renew) {
+            logger.trace(`Renewing user's secret: ${user.getEmail().getValue()}`);
+            secret = await SecretManager.renew(secret);
+    
+            // Store it in database
+            await user.save();
+        }
 
-        // Store it in database
-        await user.save();
-
-        return res.json(successResponse(secret));
+        return res.json(successResponse(secret.getValue()));
 
     } catch (err: any) {
         next(err);

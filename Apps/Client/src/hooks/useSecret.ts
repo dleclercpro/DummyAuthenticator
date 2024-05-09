@@ -3,15 +3,15 @@ import * as CallGetSecret from '../models/calls/user/CallGetSecret';
 
 const useSecret = () => {    
     const [isLoading, setIsLoading] = useState(false);
-    const [value, setValue] = useState('...');
+    const [value, setValue] = useState('');
     const [error, setError] = useState('');
 
-    const renew = async () => {
+    const fetch = async (renew: boolean = false) => {
         setIsLoading(true);
         setValue('...');
 
         await new CallGetSecret.default()
-            .execute()
+            .execute({ renew })
             .then(({ data }) => {
                 setValue(data as CallGetSecret.ResponseData);
                 setError('');
@@ -28,7 +28,7 @@ const useSecret = () => {
         isLoading,
         value,
         error,
-        renew,
+        fetch,
     };
 }
 

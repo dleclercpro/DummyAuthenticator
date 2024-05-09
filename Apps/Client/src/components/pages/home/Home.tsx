@@ -39,7 +39,7 @@ const Home: React.FC<Props> = () => {
 
     // Fetch secret on load
     useEffect(() => {
-        secret.renew();
+        secret.fetch();
     }, []);
 
     // Update snackbar on new error
@@ -53,7 +53,7 @@ const Home: React.FC<Props> = () => {
     const handleRenewSecret = async () => {
         setSnackbarOpen(false);
 
-        await secret.renew();
+        await secret.fetch(true);
     }
 
     const handleSignOut = async () => {

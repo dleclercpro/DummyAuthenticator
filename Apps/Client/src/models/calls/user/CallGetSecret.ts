@@ -1,8 +1,12 @@
-import CallGET from '../base/CallGET';
+import CallPOST from '../base/CallPOST';
+
+export type Data = {
+    renew: boolean,
+};
 
 export type ResponseData = string;
 
-export default class CallGetSecret extends CallGET<void, ResponseData> {
+export default class CallGetSecret extends CallPOST<Data, ResponseData> {
 
     constructor() {
         super(`/secret`);
