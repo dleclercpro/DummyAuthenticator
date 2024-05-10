@@ -5,6 +5,7 @@ import { REDIS_ENABLE, REDIS_OPTIONS, REDIS_DATABASE } from '../config/Databases
 import MemoryDatabase from './databases/MemoryDatabase';
 import RedisDatabase from './databases/RedisDatabase';
 import Admin from './user/Admin';
+import BlacklistedToken from './auth/BlacklistedToken';
 
 
 

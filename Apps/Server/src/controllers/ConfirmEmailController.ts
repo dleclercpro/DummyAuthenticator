@@ -6,7 +6,6 @@ import TokenManager from '../models/auth/TokenManager';
 import User from '../models/user/User';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { ErrorExpiredToken, ErrorInvalidToken, ErrorMissingToken, ErrorNewerTokenIssued, ErrorTokenAlreadyUsed } from '../errors/ServerError';
-import { ConfirmEmailToken } from '../types/TokenTypes';
 import { ClientError, TokenType } from '../constants';
 
 const validateQuery = async (req: Request) => {
@@ -16,7 +15,7 @@ const validateQuery = async (req: Request) => {
         throw new ErrorMissingToken();
     }
 
-    return await TokenManager.validateToken(token as string, TokenType.ConfirmEmail) as ConfirmEmailToken;
+    return await TokenManager.validateToken(token as string, TokenType.ConfirmEmail);
 }
 
 
@@ -34,13 +33,15 @@ const ConfirmEmailController: RequestHandler = async (req, res, next) => {
             throw new ErrorUserDoesNotExist(email);
         }
 
-
         // Confirm user's e-mail address
         user.getEmail().confirm();
 
         // Store changes to DB
         await user.save();
         logger.debug(`${user.getType()} user '${user.getEmail().getValue()}' has confirmed their e-mail address.`);
+
+        // Blacklist token, as it has now been used
+        await TokenManager.blacklistToken(token);
 
         return res.json(successResponse());
 

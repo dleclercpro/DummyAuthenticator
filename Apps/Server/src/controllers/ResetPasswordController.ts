@@ -80,6 +80,11 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         await user.save();
         logger.debug(`${user.getType()} user '${user.getEmail().getValue()}' has successfully reset their password.`);
 
+        // Blacklist token, as it has now been used
+        if (token) {
+            await TokenManager.blacklistToken(token);
+        }
+
         return res.json(successResponse());
 
     } catch (err: any) {

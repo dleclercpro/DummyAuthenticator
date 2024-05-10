@@ -48,7 +48,6 @@ const ResetPasswordPage: React.FC<Props> = () => {
         
         token.validate()
             .catch(() => {
-                console.log('Test');
                 // Invalid token: bring user back home
                 navigate(getURL(Page.Home));
             });

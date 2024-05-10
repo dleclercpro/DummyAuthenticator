@@ -1,13 +1,16 @@
+import crypto from 'crypto';
 import { JWT_TOKEN_SECRETS, JWT_TOKEN_LONGEVITY } from '../../config/AuthConfig';
 import { TokenType } from '../../constants';
 import { ErrorExpiredToken, ErrorInvalidToken, ErrorNewerTokenIssued, ErrorTokenAlreadyUsed } from '../../errors/ServerError';
 import { ErrorUserDoesNotExist } from '../../errors/UserErrors';
 import { TimeUnit } from '../../types/TimeTypes';
-import { ConfirmEmailToken, ResetPasswordToken, TokenContent } from '../../types/TokenTypes';
+import { ConfirmEmailToken, ResetPasswordToken, Token, TokenContent } from '../../types/TokenTypes';
 import { logger } from '../../utils/logger';
 import TimeDuration from '../units/TimeDuration';
 import User from '../user/User';
 import jwt from 'jsonwebtoken';
+import BlacklistedToken from './BlacklistedToken';
+import { hash } from 'bcrypt';
 
 
 
@@ -28,39 +31,38 @@ class TokenManager {
     return TokenManager.instance;
   }
 
+
+
   public async validateToken(value: string, type: TokenType) {
     const now = new Date();
 
     const token = await this.verifyToken(value, type);
-
+    
     const user = await User.findByEmail(token.content.email);
     if (!user) {
       throw new ErrorUserDoesNotExist(token.content.email);
     }
 
-    // FIXME: this only works for the password reset token!
-    const lastRequest = user.getPassword().getLastRequest();
-    const lastReset = user.getPassword().getLastReset();
+    if (await this.isTokenBlacklisted(token)) {
+      throw new ErrorTokenAlreadyUsed();
+    }
 
     const isTokenExpired = new Date(token.content.expirationDate) <= now;
     if (isTokenExpired) {
         throw new ErrorExpiredToken();
     }
 
-    const wasNewTokenRequested = lastRequest !== null && (new Date(token.content.creationDate) < new Date(lastRequest));
+    // TODO
+    const wasNewTokenRequested = false;
     if (wasNewTokenRequested) {
         throw new ErrorNewerTokenIssued();
     }
 
-    const wasTokenUsed = lastRequest !== null && lastReset !== null && lastRequest < lastReset;
-    if (wasTokenUsed) {
-        throw new ErrorTokenAlreadyUsed();
-    }
-
     logger.debug(`Received valid token (expiring in ${new TimeDuration(token.content.expirationDate - now.getTime(), TimeUnit.Millisecond).format()}).`);
-
     return token;
   }
+
+
 
   public async verifyToken(token: string, type: TokenType) {
     try {
@@ -86,6 +88,10 @@ class TokenManager {
     }
   }
 
+  public async generateTokenId(value: string) {
+    return crypto.createHash('sha256').update(value).digest('hex');
+  }
+
   public async generateEmailConfirmationToken(user: User) {
     return this.generateToken(user, TokenType.ConfirmEmail, {
 
@@ -98,28 +104,45 @@ class TokenManager {
     }) as Promise<ResetPasswordToken>;
   }
 
-  private async generateToken(user: User, type: TokenType, optsContent: object = {}) {
+  private async generateToken(user: User, type: TokenType, extraContent: object = {}) {
     const now = new Date();
     const validTime = JWT_TOKEN_LONGEVITY.toMs().getAmount();
-
-    const baseContent: TokenContent = {
+    
+    const content = {
       type,
       validTime,
       creationDate: now.getTime(),
       expirationDate: now.getTime() + validTime,
       email: user.getEmail().getValue(),
+
+      // Add additional content to token
+      ...extraContent,
     };
 
-    // Add token-specific content to base one (and overwrite it if necessary)
-    const content = {
-      ...baseContent,
-      ...optsContent,
-    };
-
-    const token = await jwt.sign(content, this.secrets[type]);
+    // We sign and generate the token's string value
+    const value = await jwt.sign(content, this.secrets[type]);
     logger.debug(`Generated '${type}' token for user '${user.getEmail().getValue()}'.`);
 
-    return { string: token, content: content };
+    return { string: value, content: content };
+  }
+
+  public async isTokenBlacklisted(token: Token) {
+    const id = await this.generateTokenId(token.string);
+    const blacklistedToken = await BlacklistedToken.findById(id);
+
+    return !!blacklistedToken;
+  }
+
+  public async blacklistToken(token: Token) {
+    const { type } = token.content;
+    
+    // We use a hashed version of the token's string value as its ID
+    const id = await this.generateTokenId(token.string);
+
+    const blacklistedToken = await BlacklistedToken.create(id, type, token.string, token.content);
+    logger.debug(`Blacklisted a '${type}' token.`);
+
+    return blacklistedToken;
   }
 }
 

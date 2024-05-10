@@ -11,6 +11,9 @@ import LoadingButton from '../../buttons/LoadingButton';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import CreateIcon from '@mui/icons-material/Create';
 import useAuth from '../../../hooks/useAuth';
+import { sleep } from '../../../utils/time';
+import TimeDuration from '../../../models/TimeDuration';
+import { TimeUnit } from '../../../types/TimeTypes';
 
 interface Props {
 
@@ -48,15 +51,24 @@ const SignUpPage: React.FC<Props> = () => {
         setSnackbarOpen(false);
 
         return signUp(email, password)
-            .then(() => {
+            .then(async () => {
+                setError('');
+                
+                setSnackbarMessage('You have successfully signed up!');
+                setSnackbarOpen(true);
+
+                await sleep(new TimeDuration(5, TimeUnit.Second));
+
                 navigate(getURL(Page.Home));
             })
             .catch((err: any) => {
                 setError(err.message);
-                setLoading(false);
 
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }
 
@@ -120,7 +132,7 @@ const SignUpPage: React.FC<Props> = () => {
             <Snackbar
                 open={snackbarOpen}
                 message={snackbarMessage}
-                severity={Severity.Error}
+                severity={error ? Severity.Error : Severity.Success}
                 onClose={() => setSnackbarOpen(false)}
             />
         </Paper>
