@@ -45,12 +45,12 @@ const ForgotPasswordPage: React.FC<Props> = () => {
         setLoading(true);
 
         return forgotPassword(email)
-            .then(() => {
+            .then(async () => {
                 setError(false);
                 setSnackbarMessage('Please check your e-mail to recover your password!');
                 setSnackbarOpen(true);
 
-                return sleep(new TimeDuration(5, TimeUnit.Second));
+                await sleep(new TimeDuration(5, TimeUnit.Second));
             })
             .then(() => {
                 navigate(getURL(Page.Home));

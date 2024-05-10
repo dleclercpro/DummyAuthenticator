@@ -4,6 +4,7 @@ import { translateServerError } from '../errors/ServerErrors';
 import { Token } from '../types/TokenTypes';
 
 const useToken = <T extends Token> (value: string) => {    
+    const [isValidated, setIsValidated] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -15,6 +16,7 @@ const useToken = <T extends Token> (value: string) => {
 
     
     const validate = async () => {
+        setIsValidated(false);
         setIsLoading(true);
 
         setUnvalidatedValue(unvalidatedValue);
@@ -35,10 +37,12 @@ const useToken = <T extends Token> (value: string) => {
             })
             .finally(() => {
                 setIsLoading(false);
+                setIsValidated(true);
             });
     };
 
     return {
+        isValidated,
         isLoading,
         unvalidatedValue,
         validatedValue,

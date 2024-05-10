@@ -42,17 +42,16 @@ const ResetPasswordPage: React.FC<Props> = () => {
 
     // Validate token
     useEffect(() => {
-        if (!token.unvalidatedValue || isLogged) {
+        if (isLogged) {
             return;
         }
-        
+
         token.validate()
-            .catch(() => {
-                // Invalid token: bring user back home
+            .finally(() => {
                 navigate(getURL(Page.Home));
             });
 
-    }, [token.unvalidatedValue, isLogged]);
+    }, []);
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
@@ -93,7 +92,7 @@ const ResetPasswordPage: React.FC<Props> = () => {
                 // Log out (in case user is logged in) after resetting password
                 setIsLogged(false);
 
-                // Go back to home page
+                // Take user to home page after resetting password
                 navigate(getURL(Page.Home));
             })
             .catch((err: any) => {

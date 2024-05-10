@@ -30,20 +30,16 @@ const ConfirmEmailPage: React.FC<Props> = () => {
 
     // Validate token
     useEffect(() => {
-        if (!token.unvalidatedValue) return;
-
         token.validate()
             .catch(() => {
                 // Invalid token: bring user back home
                 navigate(getURL(Page.Home));
             });
 
-    }, [token.unvalidatedValue]);
+    }, []);
 
     // Confirm e-mail address once token has been validated
     useEffect(() => {
-        if (token.validatedValue === '') return;
-
         setLoading(true);
 
         confirmEmail(token.validatedValue)
@@ -57,7 +53,7 @@ const ConfirmEmailPage: React.FC<Props> = () => {
                 setLoading(false);
             });
 
-    }, [token.validatedValue]);
+    }, []);
 
     /* Token not yet validated by server */
     if (token.validatedValue === null) {
