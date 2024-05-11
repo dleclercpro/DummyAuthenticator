@@ -97,6 +97,10 @@ class User {
         this.tokens.push(token);
     }
 
+    public setTokens(tokens: Token[]) {
+        this.tokens = tokens;
+    }
+
     public isAdmin() {
         return false;
     }

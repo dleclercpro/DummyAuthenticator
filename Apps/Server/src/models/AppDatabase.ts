@@ -5,7 +5,11 @@ import { REDIS_ENABLE, REDIS_OPTIONS, REDIS_DATABASE } from '../config/Databases
 import MemoryDatabase from './databases/MemoryDatabase';
 import RedisDatabase from './databases/RedisDatabase';
 import Admin from './user/Admin';
-import BlacklistedToken from './auth/BlacklistedToken';
+import { Token } from '../types/TokenTypes';
+import { LoginAttempt } from './user/UserLogin';
+import { computeDate, getMidnightInUTC } from '../utils/time';
+import TimeDuration from './units/TimeDuration';
+import { TimeUnit } from '../types/TimeTypes';
 
 
 
@@ -33,6 +37,12 @@ class AppDatabase {
             await Admin.create(email, password);
             logger.debug(`Default admin user created: ${email}`);
         });
+
+        // Remove login attempts older than a given amount of time (e.g. 1h)
+        await this.removeOldLoginAttempts();
+
+        // Remove expired tokens
+        await this.removeExpiredTokens();
     }
 
     public async start() {
@@ -75,6 +85,52 @@ class AppDatabase {
 
     public async getKeysByPattern(pattern: string) {
         return this.db.getKeysByPattern(pattern);
+    }
+
+    protected async getAllUsers() {
+        const userKeys = await this.getKeysByPattern('user:*');
+
+        if (!userKeys) {
+            return [];
+        }
+
+        const userStrings = await Promise.all(
+            userKeys.map(async (key: string) => this.get(key))
+        );
+
+        const users = userStrings
+            .filter((userString) => userString !== null)
+            .map((userString) => User.deserialize(userString as string));
+
+        return users;
+    }
+
+    protected async removeOldLoginAttempts(startingFrom: Date = new Date()) {
+        const users = await this.getAllUsers();
+
+        const oneHourAgo = computeDate(startingFrom, new TimeDuration(1, TimeUnit.Hour));
+
+        return Promise.all(users.map(async (user: User) => {
+            const recentAttempts = user.getLogin().getAttempts()
+                .filter((attempt: LoginAttempt) => oneHourAgo <= new Date(attempt.timestamp));
+
+            user.getLogin().setAttempts(recentAttempts);
+
+            await user.save();
+        }));
+    }
+
+    protected async removeExpiredTokens(startingFrom: Date = new Date()) {
+        const users = await this.getAllUsers();
+
+        return Promise.all(users.map(async (user: User) => {
+            const nonExpiredTokens = user.getTokens()
+                .filter((token: Token) => startingFrom < new Date(token.content.expirationDate));
+
+            user.setTokens(nonExpiredTokens);
+
+            await user.save();
+        }));
     }
 }
 

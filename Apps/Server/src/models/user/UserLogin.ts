@@ -5,12 +5,12 @@ export enum LoginAttemptType {
     Failure = 'failure',
 }
 
-type LoginAttempt = {
+export type LoginAttempt = {
     type: LoginAttemptType,
     timestamp: Date,
 }
 
-type LoginArgs = {
+export type LoginArgs = {
     attempts?: LoginAttempt[],
 }
 
