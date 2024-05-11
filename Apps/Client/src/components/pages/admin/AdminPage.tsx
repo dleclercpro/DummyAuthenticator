@@ -7,6 +7,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PasswordIcon from '@mui/icons-material/Key';
 import DatabaseIcon from '@mui/icons-material/Storage';
+import DeleteIcon from '@mui/icons-material/Delete';
 import useAuth from '../../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
@@ -33,9 +34,13 @@ const AdminPage: React.FC<Props> = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    const [isFlushConfirmDialogOpen, setIsFlushConfirmDialogOpen] = useState(false);
-    const openFlushConfirmDialog = () => setIsFlushConfirmDialogOpen(true);
-    const closeFlushConfirmDialog = () => setIsFlushConfirmDialogOpen(false);
+    const [isFlushDatabaseConfirmDialogOpen, setIsFlushDatabaseConfirmDialogOpen] = useState(false);
+    const openFlushDatabaseConfirmDialog = () => setIsFlushDatabaseConfirmDialogOpen(true);
+    const closeFlushDatabaseConfirmDialog = () => setIsFlushDatabaseConfirmDialogOpen(false);
+
+    const [isDeleteAccountConfirmDialogOpen, setIsDeleteAccountConfirmDialogOpen] = useState(false);
+    const openDeleteAccountConfirmDialog = () => setIsDeleteAccountConfirmDialogOpen(true);
+    const closeDeleteAccountConfirmDialog = () => setIsDeleteAccountConfirmDialogOpen(false);
 
     const [isSignOutConfirmDialogOpen, setIsSignOutConfirmDialogOpen] = useState(false);
     const openSignOutConfirmDialog = () => setIsSignOutConfirmDialogOpen(true);
@@ -74,10 +79,25 @@ const AdminPage: React.FC<Props> = () => {
             });
     }
 
+    const handleDeleteAccount = async () => {
+        setSnackbarOpen(false);
+
+        closeDeleteAccountConfirmDialog();
+
+        return db.deleteUser(userEmail)
+            .catch((err) => {
+                setSnackbarMessage(err.message);
+                setSnackbarOpen(true);
+            })
+            .finally(() => {
+                setIsLogged(false);
+            });
+    }
+
     const handleFlushDatabase = async () => {
         setSnackbarOpen(false);
 
-        closeFlushConfirmDialog();
+        closeFlushDatabaseConfirmDialog();
 
         return db.flush()
             .catch((err) => {
@@ -99,12 +119,20 @@ const AdminPage: React.FC<Props> = () => {
     return (
         <>
             <YesNoDialog
-                open={isFlushConfirmDialogOpen}
+                open={isFlushDatabaseConfirmDialogOpen}
                 title='Flush database'
                 text='Are you sure you want to delete all database entries? This cannot be undone! You will then be logged out and redirected to the home page.'
                 handleYes={handleFlushDatabase}
-                handleNo={closeFlushConfirmDialog}
-                handleClose={closeFlushConfirmDialog}
+                handleNo={closeFlushDatabaseConfirmDialog}
+                handleClose={closeFlushDatabaseConfirmDialog}
+            />
+            <YesNoDialog
+                open={isDeleteAccountConfirmDialogOpen}
+                title='Delete account'
+                text='Are you sure you want to delete your account? This cannot be undone! You will then be logged out and redirected to the home page.'
+                handleYes={handleDeleteAccount}
+                handleNo={closeDeleteAccountConfirmDialog}
+                handleClose={closeDeleteAccountConfirmDialog}
             />
             <YesNoDialog
                 open={isSignOutConfirmDialogOpen}
@@ -155,9 +183,20 @@ const AdminPage: React.FC<Props> = () => {
                         className={classes.button}
                         variant='contained'
                         color='error'
+                        icon={<DeleteIcon />}
+                        loading={db.isDeletingUser}
+                        onClick={openDeleteAccountConfirmDialog}
+                    >
+                        Delete account
+                    </LoadingButton>
+
+                    <LoadingButton
+                        className={classes.button}
+                        variant='contained'
+                        color='error'
                         icon={<DatabaseIcon />}
                         loading={db.isFlushing}
-                        onClick={openFlushConfirmDialog}
+                        onClick={openFlushDatabaseConfirmDialog}
                     >
                         Flush database
                     </LoadingButton>

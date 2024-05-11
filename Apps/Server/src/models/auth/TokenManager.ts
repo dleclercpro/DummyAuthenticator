@@ -4,13 +4,12 @@ import { TokenType } from '../../constants';
 import { ErrorExpiredToken, ErrorInvalidToken, ErrorNewerTokenIssued, ErrorTokenAlreadyUsed } from '../../errors/ServerError';
 import { ErrorUserDoesNotExist } from '../../errors/UserErrors';
 import { TimeUnit } from '../../types/TimeTypes';
-import { ConfirmEmailToken, ResetPasswordToken, Token, TokenContent } from '../../types/TokenTypes';
+import { Token, TokenContent } from '../../types/TokenTypes';
 import { logger } from '../../utils/logger';
 import TimeDuration from '../units/TimeDuration';
 import User from '../user/User';
 import jwt from 'jsonwebtoken';
 import BlacklistedToken from './BlacklistedToken';
-import { hash } from 'bcrypt';
 
 
 

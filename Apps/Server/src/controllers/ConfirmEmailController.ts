@@ -5,15 +5,11 @@ import { logger } from '../utils/logger';
 import TokenManager from '../models/auth/TokenManager';
 import User from '../models/user/User';
 import { ErrorUserDoesNotExist } from '../errors/UserErrors';
-import { ErrorExpiredToken, ErrorInvalidToken, ErrorMissingToken, ErrorNewerTokenIssued, ErrorTokenAlreadyUsed } from '../errors/ServerError';
+import { ErrorExpiredToken, ErrorInvalidToken, ErrorNewerTokenIssued, ErrorTokenAlreadyUsed } from '../errors/ServerError';
 import { ClientError, TokenType } from '../constants';
 
 const validateQuery = async (req: Request) => {
     const { token } = req.query;
-
-    if (!token) {
-        throw new ErrorMissingToken();
-    }
 
     return await TokenManager.validateToken(token as string, TokenType.ConfirmEmail);
 }

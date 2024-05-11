@@ -40,6 +40,10 @@ const ConfirmEmailPage: React.FC<Props> = () => {
 
     // Confirm e-mail address once token has been validated
     useEffect(() => {
+        if (!token.isValidated) {
+            return;
+        }
+
         setLoading(true);
 
         confirmEmail(token.validatedValue)
@@ -81,7 +85,8 @@ const ConfirmEmailPage: React.FC<Props> = () => {
                     <Typography className={classes.text}>
                         {loading && 'Please wait...'}
                         {!loading && !error && `Thanks for confirming your e-mail address!`}
-                        {!loading && !!error && `Could not confirm your e-mail address: ${error}`}
+                        {!loading && !!error && `Could not confirm your e-mail address: `}
+                        <strong>{error}</strong>
                     </Typography>
                 </div>
 

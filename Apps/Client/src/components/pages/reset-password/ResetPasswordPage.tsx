@@ -42,7 +42,7 @@ const ResetPasswordPage: React.FC<Props> = () => {
 
     // Validate token
     useEffect(() => {
-        if (isLogged) {
+        if (!token.isValidated || isLogged) {
             return;
         }
 

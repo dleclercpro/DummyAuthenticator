@@ -102,7 +102,7 @@ class User {
     }
 
     public isAdmin() {
-        return false;
+        return this.type === UserType.Admin;
     }
 
     public async save() {

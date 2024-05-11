@@ -5,7 +5,7 @@ import { logger } from '../utils/logger';
 import TokenManager from '../models/auth/TokenManager';
 import User from '../models/user/User';
 import { ErrorEmailNotConfirmed, ErrorUserDoesNotExist } from '../errors/UserErrors';
-import { ErrorExpiredToken, ErrorInvalidPassword, ErrorInvalidToken, ErrorMissingToken, ErrorNewPasswordMustBeDifferent, ErrorNewerTokenIssued, ErrorTokenAlreadyUsed } from '../errors/ServerError';
+import { ErrorExpiredToken, ErrorInvalidPassword, ErrorInvalidToken, ErrorNewPasswordMustBeDifferent, ErrorNewerTokenIssued, ErrorTokenAlreadyUsed } from '../errors/ServerError';
 import PasswordManager from '../models/auth/PasswordManager';
 import { ResetPasswordToken } from '../types/TokenTypes';
 import { ClientError, TokenType } from '../constants';
@@ -17,10 +17,6 @@ const validateQuery = async (req: Request) => {
     // No need for token when user logged in
     if (session) {
         return;
-    }
-
-    if (!token) {
-        throw new ErrorMissingToken();
     }
 
     return await TokenManager.validateToken(token as string, TokenType.ResetPassword) as ResetPasswordToken;
