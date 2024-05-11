@@ -25,6 +25,10 @@ class Admin extends User {
         });
     }
 
+    public isAdmin() {
+        return true;
+    }
+
     public static async create(email: string, password: string) {
 
         // Create new admin user

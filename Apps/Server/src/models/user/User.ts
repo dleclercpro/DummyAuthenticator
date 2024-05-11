@@ -6,13 +6,15 @@ import UserEmail from './UserEmail';
 import UserSecret from './UserSecret';
 import { UserType } from '../../constants';
 import { getRandomWord } from '../../utils/string';
+import { Token } from '../../types/TokenTypes';
 
-interface UserArgs {
+export interface UserArgs {
     type: UserType,
     email: UserEmail,
     password: UserPassword,
     login: UserLogin,
     secret: UserSecret,
+    tokens?: Token[],
 }
 
 
@@ -23,6 +25,7 @@ class User {
     protected password: UserPassword;
     protected login: UserLogin;
     protected secret: UserSecret;
+    protected tokens: Token[];
 
     public constructor(args: UserArgs) {
         this.type = args.type;
@@ -30,6 +33,7 @@ class User {
         this.password = args.password;
         this.login = args.login;
         this.secret = args.secret;
+        this.tokens = args.tokens ?? [];
     }
 
     public serialize() {
@@ -39,6 +43,7 @@ class User {
             password: this.password.serialize(),
             login: this.login.serialize(),
             secret: this.secret.serialize(),
+            tokens: this.tokens,
         });
     }
 
@@ -84,8 +89,16 @@ class User {
         return this.secret;
     }
 
+    public getTokens() {
+        return this.tokens;
+    }
+
+    public addToken(token: Token) {
+        this.tokens.push(token);
+    }
+
     public isAdmin() {
-        return this.type === UserType.Admin;
+        return false;
     }
 
     public async save() {

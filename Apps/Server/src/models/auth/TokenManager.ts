@@ -36,25 +36,37 @@ class TokenManager {
   public async validateToken(value: string, type: TokenType) {
     const now = new Date();
 
+    // Compare token signature with the expected one
     const token = await this.verifyToken(value, type);
     
+    // There should always be a user e-mail in the token's content
     const user = await User.findByEmail(token.content.email);
     if (!user) {
       throw new ErrorUserDoesNotExist(token.content.email);
     }
 
+    // Ensure token hasn't already been used
     if (await this.isTokenBlacklisted(token)) {
       throw new ErrorTokenAlreadyUsed();
     }
 
+    // Ensure token is still valid
     const isTokenExpired = new Date(token.content.expirationDate) <= now;
     if (isTokenExpired) {
         throw new ErrorExpiredToken();
     }
 
-    // TODO
-    const wasNewTokenRequested = false;
-    if (wasNewTokenRequested) {
+    // Check whether there is another token of the same type that's been
+    // issued more recently
+    const existsNewerToken = !!user.getTokens()
+      .find((otherToken: Token) => {
+        return (
+          otherToken.content.type === token.content.type &&
+          new Date(token.content.creationDate) < new Date(otherToken.content.creationDate)
+        );
+      });
+
+    if (existsNewerToken) {
         throw new ErrorNewerTokenIssued();
     }
 
@@ -93,15 +105,15 @@ class TokenManager {
   }
 
   public async generateEmailConfirmationToken(user: User) {
-    return this.generateToken(user, TokenType.ConfirmEmail, {
+    const token = await this.generateToken(user, TokenType.ConfirmEmail);
 
-    }) as Promise<ConfirmEmailToken>;
+    return token;
   }
 
   public async generateResetPasswordToken(user: User) {
-    return this.generateToken(user, TokenType.ResetPassword, {
-    
-    }) as Promise<ResetPasswordToken>;
+    const token = await this.generateToken(user, TokenType.ResetPassword);
+
+    return token;
   }
 
   private async generateToken(user: User, type: TokenType, extraContent: object = {}) {
@@ -120,10 +132,17 @@ class TokenManager {
     };
 
     // We sign and generate the token's string value
-    const value = await jwt.sign(content, this.secrets[type]);
+    const token = {
+      string: await jwt.sign(content, this.secrets[type]),
+      content,
+    };
     logger.debug(`Generated '${type}' token for user '${user.getEmail().getValue()}'.`);
 
-    return { string: value, content: content };
+    // Store token in user data
+    user.addToken(token);
+    await user.save();
+
+    return token;
   }
 
   public async isTokenBlacklisted(token: Token) {
