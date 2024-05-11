@@ -40,7 +40,7 @@ const ConfirmEmailPage: React.FC<Props> = () => {
 
     // Confirm e-mail address once token has been validated
     useEffect(() => {
-        if (!token.isValidated) {
+        if (!token.validatedValue) {
             return;
         }
 
@@ -57,7 +57,7 @@ const ConfirmEmailPage: React.FC<Props> = () => {
                 setLoading(false);
             });
 
-    }, []);
+    }, [token.validatedValue]);
 
     /* Token not yet validated by server */
     if (token.validatedValue === null) {
