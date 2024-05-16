@@ -2,7 +2,7 @@ import { Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { BUTTON_HEIGHT, SPACING } from '../../styles';
 
-const useAuthPageStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
+const useAuthPageStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme) => ({
     root: {
         width: '100%',
         maxWidth: 600,
@@ -71,6 +71,17 @@ const useAuthPageStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
                 marginRight: 0,
                 marginBottom: spacing(SPACING / 2),
             },
+        },
+    },
+
+    input: {
+
+        // Hack to remove ugly auto-filled background in Chrome
+        '&:-webkit-autofill': {
+            WebkitBoxShadow: `0 0 0 1000px ${palette.background.default} inset !important`,
+            WebkitTextFillColor: palette.text.primary,
+            transitionDelay: '9999s',
+            transitionProperty: 'background-color, color',
         },
     },
 

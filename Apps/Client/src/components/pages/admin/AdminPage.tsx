@@ -8,6 +8,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import PasswordIcon from '@mui/icons-material/Key';
 import DatabaseIcon from '@mui/icons-material/Storage';
 import PeopleIcon from '@mui/icons-material/People';
+import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
 import StopServerIcon from '@mui/icons-material/Dangerous';
 import useAuth from '../../../hooks/useAuth';
@@ -247,6 +248,17 @@ const AdminPage: React.FC<Props> = () => {
                         startIcon={<PeopleIcon />}
                     >
                         List all users
+                    </Button>
+
+                    <Button
+                        className={classes.button}
+                        variant='contained'
+                        color='primary'
+                        component={Link}
+                        to={getURL(Page.Search)}
+                        startIcon={<SearchIcon />}
+                    >
+                        Search users
                     </Button>
 
                     <LoadingButton

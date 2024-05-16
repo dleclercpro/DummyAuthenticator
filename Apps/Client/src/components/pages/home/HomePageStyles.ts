@@ -35,6 +35,10 @@ const useHomePageStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
         marginBottom: spacing(2 * SPACING),
     },
 
+    fields: {
+        display: 'flex',
+    },
+
     buttons: {
         display: 'flex',
         flexDirection: 'column',

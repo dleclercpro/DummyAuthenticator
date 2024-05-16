@@ -28,6 +28,7 @@ const App: React.FC<Props> = () => {
     useEffect(() => {
         const tryConnection = async (attempts: number) => {
             if (ping.isOnline) {
+                console.log(`Connected to server.`);
                 setIsDone(true);
                 return;
             }

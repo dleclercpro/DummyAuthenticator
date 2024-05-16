@@ -11,6 +11,7 @@ import ResetPasswordPage from '../components/pages/reset-password/ResetPasswordP
 import ConfirmEmailPage from '../components/pages/confirm-email/ConfirmEmailPage';
 import AdminPage from '../components/pages/admin/AdminPage';
 import UsersPage from '../components/pages/users/UsersPage';
+import SearchPage from '../components/pages/search/SearchPage';
 
 export enum Page {
     Home = '',
@@ -20,6 +21,7 @@ export enum Page {
     ForgotPassword = 'forgot-password',
     ResetPassword = 'reset-password',
     Users = 'users',
+    Search = 'search',
 }
 
 export const getURL = (page: Page) => {
@@ -32,6 +34,7 @@ export const getURL = (page: Page) => {
 
         // Authentication pages
         case Page.Admin:
+        case Page.Search:
         case Page.SignIn:
         case Page.SignUp:
         case Page.ForgotPassword:
@@ -60,6 +63,12 @@ const Router: React.FC<Props> = () => {
             <Route path='/admin' element={
                 <AuthenticatedRoute shouldBeAdmin>
                     <AdminPage />
+                </AuthenticatedRoute>
+            } />
+
+            <Route path='/search' element={
+                <AuthenticatedRoute shouldBeAdmin>
+                    <SearchPage />
                 </AuthenticatedRoute>
             } />
 
