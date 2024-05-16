@@ -5,7 +5,15 @@ export interface Data {
     password: string,
 }
 
-export default class CallSignUp extends CallPOST<Data, void> {
+export type ResponseData = {
+
+};
+
+export type ErrorResponseData = {
+
+};
+
+export default class CallSignUp extends CallPOST<Data, ResponseData, ErrorResponseData> {
 
     constructor() {
         super(`/sign-up`);

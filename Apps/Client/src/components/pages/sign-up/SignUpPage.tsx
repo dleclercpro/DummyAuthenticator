@@ -113,6 +113,7 @@ const SignUpPage: React.FC<Props> = () => {
                             to={getURL(Page.SignIn)}
                             color='secondary'
                             startIcon={<BackIcon />}
+                            disabled={loading}
                         >
                             Back
                         </Button>

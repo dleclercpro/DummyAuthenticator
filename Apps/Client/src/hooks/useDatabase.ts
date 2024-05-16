@@ -28,7 +28,7 @@ const useDatabase = () => {
     const deleteUser = async (email: string) => {
         setIsDeletingUser(true);
 
-        return await new CallDeleteUser.default().execute()
+        return await new CallDeleteUser.default().execute({ email })
             .then(() => {
 
             })

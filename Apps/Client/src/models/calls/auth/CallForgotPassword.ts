@@ -4,7 +4,15 @@ export interface Data {
     email: string,
 }
 
-export default class CallForgotPassword extends CallPOST<Data, void> {
+export type ResponseData = {
+
+};
+
+export type ErrorResponseData = {
+
+};
+
+export default class CallForgotPassword extends CallPOST<Data, ResponseData, ErrorResponseData> {
 
     constructor() {
         super(`/forgot-password`);

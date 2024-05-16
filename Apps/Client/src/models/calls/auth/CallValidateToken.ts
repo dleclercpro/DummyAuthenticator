@@ -9,7 +9,11 @@ export interface ResponseData {
     content: object,
 }
 
-export default class CallValidateToken extends CallPUT<Data, ResponseData> {
+export type ErrorResponseData = {
+
+};
+
+export default class CallValidateToken extends CallPUT<Data, ResponseData, ErrorResponseData> {
 
     constructor() {
         super(`/token`);

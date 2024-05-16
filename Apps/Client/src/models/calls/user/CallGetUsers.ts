@@ -13,7 +13,7 @@ export interface ErrorResponseData {
 
 }
 
-export default class CallGetUsers extends CallGET<Data, ResponseData> {
+export default class CallGetUsers extends CallGET<Data, ResponseData, ErrorResponseData> {
 
     constructor() {
         super(`/users`);

@@ -4,7 +4,15 @@ export interface Data {
     password: string,
 }
 
-export default class CallResetPassword extends CallPOST<Data, void> {
+export type ResponseData = {
+
+};
+
+export type ErrorResponseData = {
+
+};
+
+export default class CallResetPassword extends CallPOST<Data, ResponseData, ErrorResponseData> {
 
     constructor(token?: string) {
         const url = `/reset-password`;

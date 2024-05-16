@@ -13,7 +13,7 @@ export interface ErrorResponseData {
 
 }
 
-export default class CallPing extends CallGET<void, ResponseData> {
+export default class CallPing extends CallGET<Data, ResponseData, ErrorResponseData> {
 
     constructor() {
         super(`/ping`);

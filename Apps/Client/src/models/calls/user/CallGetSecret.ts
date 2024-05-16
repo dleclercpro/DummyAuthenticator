@@ -6,7 +6,11 @@ export type Data = {
 
 export type ResponseData = string;
 
-export default class CallGetSecret extends CallPOST<Data, ResponseData> {
+export type ErrorResponseData = {
+
+};
+
+export default class CallGetSecret extends CallPOST<Data, ResponseData, ErrorResponseData> {
 
     constructor() {
         super(`/secret`);

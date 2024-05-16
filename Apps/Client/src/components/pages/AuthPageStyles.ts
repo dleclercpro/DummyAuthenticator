@@ -36,6 +36,10 @@ const useAuthPageStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
         marginBottom: spacing(1 * SPACING),
     },
 
+    table: {
+        marginBottom: spacing(SPACING),
+    },
+
     fields: {
         border: 0,
         padding: 0,
@@ -87,6 +91,10 @@ const useAuthPageStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
             display: 'flex',
             justifyContent: 'space-between',
         },
+    },
+
+    button: {
+        width: '100%',
     },
 
     linkButton: {

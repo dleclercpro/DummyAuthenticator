@@ -25,7 +25,7 @@ const useToken = <T extends Token> (value: string) => {
 
         return new CallValidateToken.default().execute({ token: value })
             .then(({ data }) => {
-                setValidatedValue(data!.string);
+                setValidatedValue((data as CallValidateToken.ResponseData).string);
                 setToken(data as T);
             })
             .catch(({ code, error, data }) => {
