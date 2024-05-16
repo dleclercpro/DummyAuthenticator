@@ -23,8 +23,16 @@ const useAppStyles = makeStyles()(({ palette, spacing }: Theme) => ({
         height: spacing(6),
         marginRight: spacing(SPACING),
     },
+    status: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+    statusIcon: {
+
+    },
     version: {
         fontWeight: 'bold',
+        marginLeft: spacing(SPACING / 2),
     },
 }));
 

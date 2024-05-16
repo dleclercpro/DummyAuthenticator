@@ -11,11 +11,12 @@ import * as CallSignUp from '../models/calls/auth/CallSignUp';
 interface IPingContext {
     isLoading: boolean,
     isDone: boolean,
+    isOnline: boolean,
     error: string,
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setIsDone: React.Dispatch<React.SetStateAction<boolean>>,
     setError: React.Dispatch<React.SetStateAction<string>>,
-    execute: () => void,
+    execute: () => Promise<React.SetStateAction<CallPing.ResponseData>>,
 }
 
 interface IAuthContext {
@@ -64,27 +65,20 @@ const useAuth = () => {
 
     const [isLogged, setIsLogged] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isServerOnline, setIsServerOnline] = useState(false);
 
     const [pingIsLoading, setPingIsLoading] = useState(false);
     const [pingIsDone, setPingIsDone] = useState(false);
     const [pingError, setPingError] = useState('');
 
-    const ping = {
-        isLoading: pingIsLoading,
-        isDone: pingIsDone,
-        error: pingError,
-        setIsLoading: setPingIsLoading,
-        setIsDone: setPingIsDone,
-        setError: setPingError,
-        execute: () => {},
-    };
-
     const pingExecute = async () => {
-        ping.setIsDone(false);
-        ping.setIsLoading(true);
+        setPingIsDone(false);
+        setPingIsLoading(true);
 
         try {
-            const { data } = await new CallPing.default().execute()
+            const { data } = await new CallPing.default().execute();
+
+            setIsServerOnline(true);
 
             const user = (data as CallPing.ResponseData);
 
@@ -92,28 +86,34 @@ const useAuth = () => {
             setIsAdmin(user.isAdmin);
             setIsLogged(true);
 
-            ping.setError('');
+            setPingError('');
 
             return user;
         } catch (err: any) {
+            setIsServerOnline(err.message !== 'NO_SERVER_CONNECTION');
+
             setIsLogged(false);
             setIsAdmin(false);
 
-            // Invalid credentials error is normal when user not logged in: ignore error
-            if (err.error === ServerError.InvalidCredentials) {
-                return false;
-            }
-
-            ping.setError(err.message);
+            setPingError(err.message);
 
             return { email: '', isAdmin: false };
         } finally {
-            ping.setIsLoading(false);
-            ping.setIsDone(true);
+            setPingIsLoading(false);
+            setPingIsDone(true);
         }
     }
 
-    ping.execute = pingExecute;
+    const ping = {
+        isLoading: pingIsLoading,
+        isDone: pingIsDone,
+        isOnline: isServerOnline,
+        error: pingError,
+        setIsLoading: setPingIsLoading,
+        setIsDone: setPingIsDone,
+        setError: setPingError,
+        execute: pingExecute,
+    };
 
 
 

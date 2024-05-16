@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import useAppStyles from './AppStyles';
 import Router from '../routes/Router';
 import { Container } from '@mui/system';
 import useAuth from '../hooks/useAuth';
 import Spinner from './Spinner';
 import ErrorIcon from '@mui/icons-material/WarningSharp';
-import { VERSION } from '../config/Config';
+import { SERVER_RETRY_CONN_MAX_ATTEMPTS, VERSION } from '../config/Config';
+import { getExponentialBackoff } from '../utils/time';
 
 interface Props {
 
@@ -16,23 +17,49 @@ const App: React.FC<Props> = () => {
 
     const { ping } = useAuth();
 
-    // Try to connect to server on application start
-    useEffect(() => {
-        ping.execute();
-    }, []);
+    const [connectionAttempts, setConnectionAttempts] = useState(0);
 
-    if (ping.isLoading || ping.error) {
+    // Try connecting to server until a response is received
+    useEffect(() => {
+        const tryConnection = async (attempts: number) => {
+            if (ping.isOnline) {
+                return;
+            }
+
+            if (attempts > SERVER_RETRY_CONN_MAX_ATTEMPTS) {
+                console.error(`Impossible to connect to server!`);
+                return;
+            }
+
+            await ping.execute();
+
+            setTimeout(() => {
+                setConnectionAttempts(attempts + 1);
+    
+            }, getExponentialBackoff(attempts).toMs().getAmount());
+        };
+
+        tryConnection(connectionAttempts);
+
+    }, [connectionAttempts]);
+
+
+
+    if (ping.isLoading) {
         return (
             <div className={classes.container}>
                 {ping.isLoading && (
                     <Spinner size='large' />
                 )}
-                {ping.isDone && ping.error && (
-                    <>
-                        <ErrorIcon color='error' className={classes.icon} />
-                        <p>Ping unsuccessful: <strong>{ping.error}</strong></p>
-                    </>
-                )}
+            </div>
+        );
+    }
+
+    if (ping.isDone && ping.error && connectionAttempts > SERVER_RETRY_CONN_MAX_ATTEMPTS) {
+        return (
+            <div className={classes.container}>
+                <ErrorIcon color='error' className={classes.icon} />
+                <p>Ping unsuccessful: <strong>{ping.error}</strong></p>
             </div>
         );
     }
@@ -40,7 +67,10 @@ const App: React.FC<Props> = () => {
     return (
         <Container className={classes.root} maxWidth='lg'>
             <Router />
-            <p className={classes.version}>{VERSION}</p>
+            <div className={classes.status}>
+                <strong className={classes.statusIcon}>{ping.isOnline ? '🟢' : '🔴'}</strong>
+                <p className={classes.version}>{VERSION}</p>
+            </div>
         </Container>
     );
 }

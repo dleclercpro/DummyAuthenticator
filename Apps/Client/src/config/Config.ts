@@ -11,6 +11,9 @@ export const AUTHOR = PACKAGE.author;
 export const SERVER_ROOT = DEBUG ? `http://localhost:8000` : ``;
 export const API_ROOT = `${SERVER_ROOT}/api`;
 
+// Server
+export const SERVER_RETRY_CONN_MAX_ATTEMPTS = 10;
+
 // Auth
 export const DISABLE_AUTH = false;
 
