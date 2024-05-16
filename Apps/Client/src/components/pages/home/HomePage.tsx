@@ -15,6 +15,8 @@ import Spinner from '../../Spinner';
 import LoadingButton from '../../buttons/LoadingButton';
 import YesNoDialog from '../../dialogs/YesNoDialog';
 import useDatabase from '../../../hooks/useDatabase';
+import PeopleIcon from '@mui/icons-material/People';
+import SearchIcon from '@mui/icons-material/Search';
 
 interface Props {
 
@@ -152,6 +154,28 @@ const HomePage: React.FC<Props> = () => {
                         startIcon={<PasswordIcon />}
                     >
                         Reset password
+                    </Button>
+
+                    <Button
+                        className={classes.button}
+                        variant='contained'
+                        color='primary'
+                        component={Link}
+                        to={getURL(Page.Users)}
+                        startIcon={<PeopleIcon />}
+                    >
+                        List all users
+                    </Button>
+
+                    <Button
+                        className={classes.button}
+                        variant='contained'
+                        color='primary'
+                        component={Link}
+                        to={getURL(Page.Search)}
+                        startIcon={<SearchIcon />}
+                    >
+                        Search users
                     </Button>
 
                     <LoadingButton

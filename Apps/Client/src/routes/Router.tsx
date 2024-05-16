@@ -66,12 +66,6 @@ const Router: React.FC<Props> = () => {
                 </AuthenticatedRoute>
             } />
 
-            <Route path='/search' element={
-                <AuthenticatedRoute shouldBeAdmin>
-                    <SearchPage />
-                </AuthenticatedRoute>
-            } />
-
             <Route path='/sign-in' element={
                 <UnauthenticatedRoute>
                     <SignInPage />
@@ -101,8 +95,14 @@ const Router: React.FC<Props> = () => {
             } />
 
             <Route path='/users' element={
-            <AuthenticatedRoute shouldBeAdmin>
+                <AuthenticatedRoute>
                     <UsersPage />
+                </AuthenticatedRoute>
+            } />
+
+            <Route path='/search' element={
+                <AuthenticatedRoute>
+                    <SearchPage />
                 </AuthenticatedRoute>
             } />
 

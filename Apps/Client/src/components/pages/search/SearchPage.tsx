@@ -11,6 +11,7 @@ import { Page, getURL } from '../../../routes/Router';
 import { Link } from 'react-router-dom';
 import useDatabase from '../../../hooks/useDatabase';
 import YesNoDialog from '../../dialogs/YesNoDialog';
+import useAuth from '../../../hooks/useAuth';
 
 interface Props {
 
@@ -24,6 +25,7 @@ const SearchPage: React.FC<Props> = () => {
 
     const [isSearching, setIsSearching] = useState(false);
 
+    const { isAdmin } = useAuth();
     const [userEmail, setUserEmail] = useState('');
 
     const [value, setValue] = useState('');
@@ -127,7 +129,7 @@ const SearchPage: React.FC<Props> = () => {
                     {admins.length > 0 && (
                         <>
                             <Typography className={classes.text}>
-                                Admin users that match your search criteria:
+                                <strong>Admin users</strong> that match your search criteria:
                             </Typography>
 
                             <table className={classes.table}>
@@ -135,22 +137,24 @@ const SearchPage: React.FC<Props> = () => {
                                     <tr>
                                         <td>
                                             <Typography>
-                                                <strong>{`${email.value} ${email.confirmed ? '✅' : '❌'}`}</strong>
+                                                {`${email.value} ${email.confirmed ? '✅' : '❌'}`}
                                             </Typography>
                                         </td>
-                                        <td>
-                                            <LoadingButton
-                                                className={classes.button}
-                                                variant='contained'
-                                                color='error'
-                                                icon={<DeleteIcon />}
-                                                loading={isDeletingUser && email.value === userEmail}
-                                                disabled
-                                                onClick={() => openDeleteUserConfirmDialog(email.value)}
-                                            >
-                                                Delete
-                                            </LoadingButton>
-                                        </td>
+                                        {isAdmin && (
+                                            <td>
+                                                <LoadingButton
+                                                    className={classes.button}
+                                                    variant='contained'
+                                                    color='error'
+                                                    icon={<DeleteIcon />}
+                                                    loading={isDeletingUser && email.value === userEmail}
+                                                    disabled
+                                                    onClick={() => openDeleteUserConfirmDialog(email.value)}
+                                                >
+                                                    Delete
+                                                </LoadingButton>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))}
                             </table>
@@ -160,7 +164,7 @@ const SearchPage: React.FC<Props> = () => {
                     {users.length > 0 && (
                         <>
                             <Typography className={classes.text}>
-                                Regular users that match your search criteria:
+                                <strong>Regular users</strong> that match your search criteria:
                             </Typography>
 
                             <table className={classes.table}>
@@ -168,21 +172,23 @@ const SearchPage: React.FC<Props> = () => {
                                     <tr>
                                         <td>
                                             <Typography>
-                                                <strong>{`${email.value} ${email.confirmed ? '✅' : '❌'}`}</strong>
+                                                {`${email.value} ${email.confirmed ? '✅' : '❌'}`}
                                             </Typography>
                                         </td>
-                                        <td>
-                                            <LoadingButton
-                                                className={classes.button}
-                                                variant='contained'
-                                                color='error'
-                                                icon={<DeleteIcon />}
-                                                loading={isDeletingUser && email.value === userEmail}
-                                                onClick={() => openDeleteUserConfirmDialog(email.value)}
-                                            >
-                                                Delete
-                                            </LoadingButton>
-                                        </td>
+                                        {isAdmin && (
+                                            <td>
+                                                <LoadingButton
+                                                    className={classes.button}
+                                                    variant='contained'
+                                                    color='error'
+                                                    icon={<DeleteIcon />}
+                                                    loading={isDeletingUser && email.value === userEmail}
+                                                    onClick={() => openDeleteUserConfirmDialog(email.value)}
+                                                >
+                                                    Delete
+                                                </LoadingButton>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))}
                             </table>

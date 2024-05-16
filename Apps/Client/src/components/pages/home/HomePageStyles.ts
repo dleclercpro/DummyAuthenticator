@@ -7,7 +7,7 @@ const useHomePageStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
-        maxWidth: 420,
+        maxWidth: 620,
         padding: spacing(3),
 
         [breakpoints.down('sm')]: {
@@ -40,17 +40,26 @@ const useHomePageStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     },
 
     buttons: {
-        display: 'flex',
-        flexDirection: 'column',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: spacing(1),
+
+        [breakpoints.down('sm')]: {
+            gridTemplateColumns: spacing(1),
+        },
+
+        '& > :last-child': {
+            gridColumn: 'span 2',
+
+            [breakpoints.down('sm')]: {
+                gridColumn: 'span 1',
+            },
+        },
     },
 
     button: {
         width: '100%',
         height: spacing(BUTTON_HEIGHT),
-
-        '&:not(:last-child)': {
-            marginBottom: spacing(1),
-        },
     },
 }));
 

@@ -8,6 +8,7 @@ import BackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LoadingButton from '../../buttons/LoadingButton';
 import YesNoDialog from '../../dialogs/YesNoDialog';
+import useAuth from '../../../hooks/useAuth';
 
 interface Props {
 
@@ -18,6 +19,7 @@ const UsersPage: React.FC<Props> = () => {
     
     const [version, setVersion] = useState(0);
 
+    const { isAdmin } = useAuth();
     const [userEmail, setUserEmail] = useState('');
 
     const [isDeleteUserConfirmDialogOpen, setIsDeleteUserConfirmDialogOpen] = useState(false);
@@ -70,7 +72,7 @@ const UsersPage: React.FC<Props> = () => {
                     </Typography>
 
                     <Typography className={classes.text}>
-                        Here is the list of admin users:
+                        Here is the list of <strong>admin users</strong>:
                     </Typography>
 
                     <table className={classes.table}>
@@ -78,22 +80,24 @@ const UsersPage: React.FC<Props> = () => {
                             <tr>
                                 <td>
                                     <Typography>
-                                        <strong>{`${email.value} ${email.confirmed ? '✅' : '❌'}`}</strong>
+                                        {`${email.value} ${email.confirmed ? '✅' : '❌'}`}
                                     </Typography>
                                 </td>
-                                <td>
-                                    <LoadingButton
-                                        className={classes.button}
-                                        variant='contained'
-                                        color='error'
-                                        icon={<DeleteIcon />}
-                                        loading={isDeletingUser && email.value === userEmail}
-                                        disabled
-                                        onClick={() => openDeleteUserConfirmDialog(email.value)}
-                                    >
-                                        Delete
-                                    </LoadingButton>
-                                </td>
+                                {isAdmin && (
+                                    <td>
+                                        <LoadingButton
+                                            className={classes.button}
+                                            variant='contained'
+                                            color='error'
+                                            icon={<DeleteIcon />}
+                                            loading={isDeletingUser && email.value === userEmail}
+                                            disabled
+                                            onClick={() => openDeleteUserConfirmDialog(email.value)}
+                                        >
+                                            Delete
+                                        </LoadingButton>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </table>
@@ -101,7 +105,7 @@ const UsersPage: React.FC<Props> = () => {
                     {users.length > 0 && (
                         <>
                             <Typography className={classes.text}>
-                                Here is the list of regular users:
+                                Here is the list of <strong>regular users</strong>:
                             </Typography>
 
                             <table className={classes.table}>
@@ -109,21 +113,23 @@ const UsersPage: React.FC<Props> = () => {
                                     <tr>
                                         <td>
                                             <Typography>
-                                                <strong>{`${email.value} ${email.confirmed ? '✅' : '❌'}`}</strong>
+                                                {`${email.value} ${email.confirmed ? '✅' : '❌'}`}
                                             </Typography>
                                         </td>
-                                        <td>
-                                            <LoadingButton
-                                                className={classes.button}
-                                                variant='contained'
-                                                color='error'
-                                                icon={<DeleteIcon />}
-                                                loading={isDeletingUser && email.value === userEmail}
-                                                onClick={() => openDeleteUserConfirmDialog(email.value)}
-                                            >
-                                                Delete
-                                            </LoadingButton>
-                                        </td>
+                                        {isAdmin && (
+                                            <td>
+                                                <LoadingButton
+                                                    className={classes.button}
+                                                    variant='contained'
+                                                    color='error'
+                                                    icon={<DeleteIcon />}
+                                                    loading={isDeletingUser && email.value === userEmail}
+                                                    onClick={() => openDeleteUserConfirmDialog(email.value)}
+                                                >
+                                                    Delete
+                                                </LoadingButton>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))}
                             </table>

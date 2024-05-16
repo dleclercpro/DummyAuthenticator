@@ -18,9 +18,9 @@ const GetUsersController: RequestHandler = async (req, res, next) => {
             throw new ErrorUserDoesNotExist(email);
         }
 
-        if (!session.isAdmin()) {
-            throw new ErrorUserMustBeAdmin();
-        }
+        // if (!session.isAdmin()) {
+        //     throw new ErrorUserMustBeAdmin();
+        // }
 
         const users = await User.getAll();
         const regularUsers = users
