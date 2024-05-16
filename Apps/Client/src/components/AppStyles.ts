@@ -23,6 +23,9 @@ const useAppStyles = makeStyles()(({ palette, spacing }: Theme) => ({
         height: spacing(6),
         marginRight: spacing(SPACING),
     },
+    version: {
+        fontWeight: 'bold',
+    },
 }));
 
 export default useAppStyles;

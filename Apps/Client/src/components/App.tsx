@@ -5,6 +5,7 @@ import { Container } from '@mui/system';
 import useAuth from '../hooks/useAuth';
 import Spinner from './Spinner';
 import ErrorIcon from '@mui/icons-material/WarningSharp';
+import { VERSION } from '../config/Config';
 
 interface Props {
 
@@ -39,6 +40,7 @@ const App: React.FC<Props> = () => {
     return (
         <Container className={classes.root} maxWidth='lg'>
             <Router />
+            <p className={classes.version}>{VERSION}</p>
         </Container>
     );
 }
