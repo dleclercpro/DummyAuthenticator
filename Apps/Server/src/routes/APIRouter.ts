@@ -11,6 +11,7 @@ import ValidateTokenController from '../controllers/ValidateTokenController';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import FlushDatabaseController from '../controllers/FlushDatabaseController';
 import DeleteUserController from '../controllers/DeleteUserController';
+import GetUsersController from '../controllers/GetUsersController';
 
 
 
@@ -32,6 +33,7 @@ APIRouter.get('/ping', [AuthMiddleware], PingController);
 
 // Administration
 APIRouter.delete('/database', [AuthMiddleware], FlushDatabaseController);
+APIRouter.get('/users', [AuthMiddleware], GetUsersController);
 
 // Tokens
 APIRouter.put('/token', [], ValidateTokenController);

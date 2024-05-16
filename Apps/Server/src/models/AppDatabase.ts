@@ -35,7 +35,7 @@ class AppDatabase {
             }
 
             await Admin.create(email, password);
-            logger.debug(`Default admin user created: ${email}`);
+            logger.trace(`Default admin user created: ${email}`);
         });
 
         // Remove login attempts older than a given amount of time (e.g. 1h)
@@ -84,7 +84,13 @@ class AppDatabase {
     }
 
     public async getKeysByPattern(pattern: string) {
-        return this.db.getKeysByPattern(pattern);
+        const keys = await this.db.getKeysByPattern(pattern);
+
+        if (!keys) {
+            return [];
+        }
+
+        return keys;
     }
 
     protected async getAllUsers() {

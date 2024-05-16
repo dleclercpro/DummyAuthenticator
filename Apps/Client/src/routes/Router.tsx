@@ -10,6 +10,7 @@ import ForgotPasswordPage from '../components/pages/forgot-password/ForgotPasswo
 import ResetPasswordPage from '../components/pages/reset-password/ResetPasswordPage';
 import ConfirmEmailPage from '../components/pages/confirm-email/ConfirmEmailPage';
 import AdminPage from '../components/pages/admin/AdminPage';
+import UsersPage from '../components/pages/users/UsersPage';
 
 export enum Page {
     Home = '',
@@ -18,6 +19,7 @@ export enum Page {
     SignUp = 'sign-up',
     ForgotPassword = 'forgot-password',
     ResetPassword = 'reset-password',
+    Users = 'users',
 }
 
 export const getURL = (page: Page) => {
@@ -34,6 +36,7 @@ export const getURL = (page: Page) => {
         case Page.SignUp:
         case Page.ForgotPassword:
         case Page.ResetPassword:
+        case Page.Users:
             url = `/${page}`;
             break;
     }
@@ -86,6 +89,12 @@ const Router: React.FC<Props> = () => {
 
             <Route path='/reset-password' element={
                 <ResetPasswordPage />
+            } />
+
+            <Route path='/users' element={
+            <AuthenticatedRoute shouldBeAdmin>
+                    <UsersPage />
+                </AuthenticatedRoute>
             } />
 
             <Route path='*' element={<NoMatchPage />} />

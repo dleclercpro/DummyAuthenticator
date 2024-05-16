@@ -21,6 +21,7 @@ class Admin extends User {
     public constructor(args: AdminArgs) {
         super({
             type: UserType.Admin,
+            username: args.email.getValue(),
             ...args,
         });
     }

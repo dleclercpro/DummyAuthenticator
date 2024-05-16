@@ -10,6 +10,7 @@ import { Token } from '../../types/TokenTypes';
 
 export interface UserArgs {
     type: UserType,
+    username: string,
     email: UserEmail,
     password: UserPassword,
     login: UserLogin,
@@ -21,6 +22,7 @@ export interface UserArgs {
 
 class User {
     protected type: UserType;
+    protected username: string;
     protected email: UserEmail;
     protected password: UserPassword;
     protected login: UserLogin;
@@ -29,6 +31,7 @@ class User {
 
     public constructor(args: UserArgs) {
         this.type = args.type;
+        this.username = args.username;
         this.email = args.email;
         this.password = args.password;
         this.login = args.login;
@@ -39,6 +42,7 @@ class User {
     public serialize() {
         return JSON.stringify({
             type: this.type,
+            username: this.username,
             email: this.email.serialize(),
             password: this.password.serialize(),
             login: this.login.serialize(),
@@ -52,6 +56,7 @@ class User {
 
         const user = new User({
             ...args,
+            username: args.email,
             email: UserEmail.deserialize(args.email),
             password: UserPassword.deserialize(args.password),
             login: UserLogin.deserialize(args.login),
@@ -71,6 +76,10 @@ class User {
 
     public getType() {
         return this.type;
+    }
+
+    public getUsername() {
+        return this.username;
     }
 
     public getEmail() {
@@ -113,6 +122,22 @@ class User {
         await APP_DB.delete(`user:${this.email.getValue()}`);
     }
 
+    public static async getAll(): Promise<User[]> {
+        const userKeys: string[] | null = await APP_DB.getKeysByPattern('user:*');
+    
+        if (!userKeys) {
+            return [];
+        }
+    
+        const users: (string | null)[] = await Promise.all(
+            userKeys.map((userKey: string) => APP_DB.get(userKey))
+        );
+    
+        return users
+            .filter((user): user is string => user !== null) // Type guard to filter out nulls
+            .map((user: string) => User.deserialize(user));
+    }
+
     // STATIC METHODS
     public static async findByEmail(email: string) {
         const userAsString = await APP_DB.get(`user:${email}`);
@@ -127,6 +152,7 @@ class User {
         // Create new user
         const user = new User({
             type: UserType.Regular,
+            username: email, // Initialize user's username with their e-mail
             email: new UserEmail({
                 value: email,
             }),

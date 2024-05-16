@@ -7,6 +7,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PasswordIcon from '@mui/icons-material/Key';
 import DatabaseIcon from '@mui/icons-material/Storage';
+import PeopleIcon from '@mui/icons-material/People';
 import DeleteIcon from '@mui/icons-material/Delete';
 import useAuth from '../../../hooks/useAuth';
 import { Link } from 'react-router-dom';
@@ -177,6 +178,17 @@ const AdminPage: React.FC<Props> = () => {
                         startIcon={<PasswordIcon />}
                     >
                         Reset password
+                    </Button>
+
+                    <Button
+                        className={classes.button}
+                        variant='contained'
+                        color='primary'
+                        component={Link}
+                        to={getURL(Page.Users)}
+                        startIcon={<PeopleIcon />}
+                    >
+                        List users
                     </Button>
 
                     <LoadingButton
