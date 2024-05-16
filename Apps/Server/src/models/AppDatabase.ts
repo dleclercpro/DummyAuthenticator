@@ -65,6 +65,8 @@ class AppDatabase {
 
     public async stop() {
         if (!this.db) throw new Error('MISSING_DATABASE');
+
+        await this.db.stop();
     }
 
     public async has(key: string) {

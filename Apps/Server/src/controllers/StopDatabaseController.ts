@@ -3,28 +3,28 @@ import { errorResponse, successResponse } from '../utils/calls';
 import { ErrorUserMustBeAdmin } from '../errors/UserErrors';
 import { logger } from '../utils/logger';
 import { HttpStatusCode, HttpStatusMessage } from '../types/HTTPTypes';
-import { APP_SERVER } from '..';
+import { APP_DB } from '..';
 
-const StopServerController: RequestHandler = async (req, res, next) => {
+const StopDatabaseController: RequestHandler = async (req, res, next) => {
     const { session } = req;
 
     try {
-        logger.debug(`Admin user '${session.getEmail()}' is trying to stop server.`);
+        logger.debug(`Admin user '${session.getEmail()}' is trying to stop database.`);
 
         // Cannot stop server unless user is an admin
         if (!session.isAdmin) {
             throw new ErrorUserMustBeAdmin();
         }
 
-        logger.debug(`Stopping app server...`);
-        await APP_SERVER.stop();
+        logger.debug(`Stopping app database...`);
+        await APP_DB.stop();
 
         res.json(successResponse());
 
         return 
 
     } catch (err: any) {
-        logger.warn(`Failed server stopping attempt for admin user: ${session.getEmail()}`);
+        logger.warn(`Failed database stopping attempt for admin user: ${session.getEmail()}`);
         logger.warn(err.message);
 
         if (err.code === ErrorUserMustBeAdmin.code) {
@@ -37,4 +37,4 @@ const StopServerController: RequestHandler = async (req, res, next) => {
     }
 }
 
-export default StopServerController;
+export default StopDatabaseController;

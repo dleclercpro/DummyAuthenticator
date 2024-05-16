@@ -80,7 +80,7 @@ const SignInController: RequestHandler = async (req, res, next) => {
             isAdmin: user.isAdmin(),
         }));
 
-    } catch (err: any) {
+    } catch (err: any) { 
         logger.warn(`Failed login attempt for user: ${email}`);
         logger.warn(err.message);
 

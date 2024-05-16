@@ -2,7 +2,7 @@ import pino from 'pino';
 import { PROD } from '../config/AppConfig';
 
 const DEFAULT_OPTIONS = {
-    level: 'debug',
+    level: 'trace',
     transport: {
         target: 'pino-pretty',
         options: {

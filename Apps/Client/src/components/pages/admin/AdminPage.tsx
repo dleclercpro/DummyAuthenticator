@@ -9,7 +9,7 @@ import PasswordIcon from '@mui/icons-material/Key';
 import DatabaseIcon from '@mui/icons-material/Storage';
 import PeopleIcon from '@mui/icons-material/People';
 import DeleteIcon from '@mui/icons-material/Delete';
-import StopServerIcon from '@mui/icons-material/TouchApp';
+import StopServerIcon from '@mui/icons-material/Dangerous';
 import useAuth from '../../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
@@ -54,6 +54,10 @@ const AdminPage: React.FC<Props> = () => {
     const openStoppingServerConfirmDialog = () => setIsStoppingServerConfirmDialogOpen(true);
     const closeStoppingServerConfirmDialog = () => setIsStoppingServerConfirmDialogOpen(false);
 
+    const [isStoppingDatabaseConfirmDialogOpen, setIsStoppingDatabaseConfirmDialogOpen] = useState(false);
+    const openStoppingDatabaseConfirmDialog = () => setIsStoppingDatabaseConfirmDialogOpen(true);
+    const closeStoppingDatabaseConfirmDialog = () => setIsStoppingDatabaseConfirmDialogOpen(false);
+
     // Fetch secret on load
     useEffect(() => {
         secret.fetch();
@@ -93,6 +97,21 @@ const AdminPage: React.FC<Props> = () => {
         closeStoppingServerConfirmDialog();
 
         return server.stop()
+            .catch((err) => {
+                setSnackbarMessage(err.message);
+                setSnackbarOpen(true);
+            })
+            .finally(() => {
+                setIsLogged(false);
+            });
+    }
+
+    const handleStopDatabase = async () => {
+        setSnackbarOpen(false);
+
+        closeStoppingDatabaseConfirmDialog();
+
+        return db.stop()
             .catch((err) => {
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
@@ -174,6 +193,14 @@ const AdminPage: React.FC<Props> = () => {
                 handleNo={closeStoppingServerConfirmDialog}
                 handleClose={closeStoppingServerConfirmDialog}
             />
+            <YesNoDialog
+                open={isStoppingDatabaseConfirmDialogOpen}
+                title='Stop server'
+                text='Are you sure you want to stop the database? This cannot be undone!'
+                handleYes={handleStopDatabase}
+                handleNo={closeStoppingDatabaseConfirmDialog}
+                handleClose={closeStoppingDatabaseConfirmDialog}
+            />
             
             <Paper elevation={8} className={classes.root}>
                 <Typography variant='h1' className={classes.title}>
@@ -242,6 +269,17 @@ const AdminPage: React.FC<Props> = () => {
                         onClick={openFlushDatabaseConfirmDialog}
                     >
                         Flush database
+                    </LoadingButton>
+
+                    <LoadingButton
+                        className={classes.button}
+                        variant='contained'
+                        color='error'
+                        icon={<StopServerIcon />}
+                        loading={db.isStopping}
+                        onClick={openStoppingDatabaseConfirmDialog}
+                    >
+                        Stop database
                     </LoadingButton>
 
                     <LoadingButton

@@ -12,9 +12,9 @@ export interface ErrorResponseData {
 
 }
 
-export default class CallStopServer extends CallPUT<Data, ResponseData, ErrorResponseData> {
+export default class CallStopDatabase extends CallPUT<Data, ResponseData, ErrorResponseData> {
 
     constructor() {
-        super(`/server/stop`);
+        super(`/database/stop`);
     }
 }
