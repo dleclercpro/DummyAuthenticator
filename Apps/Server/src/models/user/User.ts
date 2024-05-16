@@ -147,7 +147,7 @@ class User {
         }
     }
 
-    public static async create(email: string, password: string) {
+    public static async create(email: string, password: string, isDefault: boolean = false) {
 
         // Create new user
         const user = new User({
@@ -155,6 +155,7 @@ class User {
             username: email, // Initialize user's username with their e-mail
             email: new UserEmail({
                 value: email,
+                confirmed: isDefault, // Default users do not need to confirm their e-mail
             }),
             password: new UserPassword({
                 value: await PasswordManager.hash(password),

@@ -39,9 +39,9 @@ const AdminPage: React.FC<Props> = () => {
     const openFlushDatabaseConfirmDialog = () => setIsFlushDatabaseConfirmDialogOpen(true);
     const closeFlushDatabaseConfirmDialog = () => setIsFlushDatabaseConfirmDialogOpen(false);
 
-    const [isDeleteAccountConfirmDialogOpen, setIsDeleteAccountConfirmDialogOpen] = useState(false);
-    const openDeleteAccountConfirmDialog = () => setIsDeleteAccountConfirmDialogOpen(true);
-    const closeDeleteAccountConfirmDialog = () => setIsDeleteAccountConfirmDialogOpen(false);
+    const [isDeleteUserConfirmDialogOpen, setIsDeleteUserConfirmDialogOpen] = useState(false);
+    const openDeleteUserConfirmDialog = () => setIsDeleteUserConfirmDialogOpen(true);
+    const closeDeleteUserConfirmDialog = () => setIsDeleteUserConfirmDialogOpen(false);
 
     const [isSignOutConfirmDialogOpen, setIsSignOutConfirmDialogOpen] = useState(false);
     const openSignOutConfirmDialog = () => setIsSignOutConfirmDialogOpen(true);
@@ -80,10 +80,10 @@ const AdminPage: React.FC<Props> = () => {
             });
     }
 
-    const handleDeleteAccount = async () => {
+    const handleDeleteUser = async () => {
         setSnackbarOpen(false);
 
-        closeDeleteAccountConfirmDialog();
+        closeDeleteUserConfirmDialog();
 
         return db.deleteUser(userEmail)
             .catch((err) => {
@@ -128,12 +128,12 @@ const AdminPage: React.FC<Props> = () => {
                 handleClose={closeFlushDatabaseConfirmDialog}
             />
             <YesNoDialog
-                open={isDeleteAccountConfirmDialogOpen}
+                open={isDeleteUserConfirmDialogOpen}
                 title='Delete account'
-                text='Are you sure you want to delete your account? This cannot be undone! You will then be logged out and redirected to the home page.'
-                handleYes={handleDeleteAccount}
-                handleNo={closeDeleteAccountConfirmDialog}
-                handleClose={closeDeleteAccountConfirmDialog}
+                text={`Are you sure you want to delete user '${userEmail}'? This cannot be undone!`}
+                handleYes={handleDeleteUser}
+                handleNo={closeDeleteUserConfirmDialog}
+                handleClose={closeDeleteUserConfirmDialog}
             />
             <YesNoDialog
                 open={isSignOutConfirmDialogOpen}
@@ -197,7 +197,7 @@ const AdminPage: React.FC<Props> = () => {
                         color='error'
                         icon={<DeleteIcon />}
                         loading={db.isDeletingUser}
-                        onClick={openDeleteAccountConfirmDialog}
+                        onClick={openDeleteUserConfirmDialog}
                     >
                         Delete account
                     </LoadingButton>

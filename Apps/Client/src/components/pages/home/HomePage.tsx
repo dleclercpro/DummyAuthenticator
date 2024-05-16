@@ -6,6 +6,7 @@ import Snackbar from '../../Snackbar';
 import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PasswordIcon from '@mui/icons-material/Key';
+import DeleteIcon from '@mui/icons-material/Delete';
 import useAuth from '../../../hooks/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
@@ -13,6 +14,7 @@ import useSecret from '../../../hooks/useSecret';
 import Spinner from '../../Spinner';
 import LoadingButton from '../../buttons/LoadingButton';
 import YesNoDialog from '../../dialogs/YesNoDialog';
+import useDatabase from '../../../hooks/useDatabase';
 
 interface Props {
 
@@ -21,9 +23,9 @@ interface Props {
 const HomePage: React.FC<Props> = () => {
     const { classes } = useHomePageStyles();
 
-    const { userEmail, isAdmin, signOut } = useAuth();
+    const { userEmail, isAdmin, setIsLogged, signOut } = useAuth();
     const secret = useSecret();
-    
+
     const navigate = useNavigate();
 
     const [isSigningOut, setIsSigningOut] = useState(false);
@@ -34,6 +36,17 @@ const HomePage: React.FC<Props> = () => {
     const [isSignOutConfirmDialogOpen, setIsSignOutConfirmDialogOpen] = useState(false);
     const openSignOutConfirmDialog = () => setIsSignOutConfirmDialogOpen(true);
     const closeSignOutConfirmDialog = () => setIsSignOutConfirmDialogOpen(false);
+
+    const [isDeleteUserConfirmDialogOpen, setIsDeleteUserConfirmDialogOpen] = useState(false);
+
+    const openDeleteUserConfirmDialog = () => {
+        setIsDeleteUserConfirmDialogOpen(true);
+    }
+    const closeDeleteUserConfirmDialog = () => {
+        setIsDeleteUserConfirmDialogOpen(false);
+    }
+
+    const { isDeletingUser, deleteUser } = useDatabase();
 
     // Redirect admin
     useEffect(() => {
@@ -72,6 +85,15 @@ const HomePage: React.FC<Props> = () => {
             });
     }
 
+    const handleDeleteUser = async () => {
+        setIsDeleteUserConfirmDialogOpen(false);
+
+        return deleteUser(userEmail)
+            .finally(() => {
+                setIsLogged(false);
+            });
+    }
+
     // No secret yet: wait
     if (!secret.value) {
         return (
@@ -88,6 +110,14 @@ const HomePage: React.FC<Props> = () => {
                 handleYes={handleSignOut}
                 handleNo={closeSignOutConfirmDialog}
                 handleClose={closeSignOutConfirmDialog}
+            />
+            <YesNoDialog
+                open={isDeleteUserConfirmDialogOpen}
+                title='Delete account'
+                text='Are you sure you want to delete your account? This cannot be undone! You will then be logged out and redirected to the home page.'
+                handleYes={handleDeleteUser}
+                handleNo={closeDeleteUserConfirmDialog}
+                handleClose={closeDeleteUserConfirmDialog}
             />
 
             <Paper elevation={8} className={classes.root}>
@@ -123,6 +153,17 @@ const HomePage: React.FC<Props> = () => {
                     >
                         Reset password
                     </Button>
+
+                    <LoadingButton
+                        className={classes.button}
+                        variant='contained'
+                        color='error'
+                        icon={<DeleteIcon />}
+                        loading={isDeletingUser}
+                        onClick={openDeleteUserConfirmDialog}
+                    >
+                        Delete account
+                    </LoadingButton>
                     
                     <LoadingButton
                         className={classes.button}

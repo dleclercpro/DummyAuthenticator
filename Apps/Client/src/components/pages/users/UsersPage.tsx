@@ -46,7 +46,7 @@ const UsersPage: React.FC<Props> = () => {
 
     }, [version]);
 
-    if (!users || !admins) {
+    if (!admins || !users) {
         return null;
     }
 
@@ -74,17 +74,28 @@ const UsersPage: React.FC<Props> = () => {
                     </Typography>
 
                     <table className={classes.table}>
-                        <tbody>
-                            {admins.map((admin) => (
-                                <tr>
-                                    <td>
-                                        <Typography>
-                                            <strong>{admin}</strong>
-                                        </Typography>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
+                        {admins.map((email) => (
+                            <tr>
+                                <td>
+                                    <Typography>
+                                        <strong>{email}</strong>
+                                    </Typography>
+                                </td>
+                                <td>
+                                    <LoadingButton
+                                        className={classes.button}
+                                        variant='contained'
+                                        color='error'
+                                        icon={<DeleteIcon />}
+                                        loading={isDeletingUser && email === userEmail}
+                                        disabled
+                                        onClick={() => openDeleteUserConfirmDialog(email)}
+                                    >
+                                        Delete
+                                    </LoadingButton>
+                                </td>
+                            </tr>
+                        ))}
                     </table>
                     
                     {users.length > 0 && (
