@@ -9,6 +9,7 @@ import PasswordIcon from '@mui/icons-material/Key';
 import DatabaseIcon from '@mui/icons-material/Storage';
 import PeopleIcon from '@mui/icons-material/People';
 import DeleteIcon from '@mui/icons-material/Delete';
+import StopServerIcon from '@mui/icons-material/TouchApp';
 import useAuth from '../../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
@@ -17,6 +18,7 @@ import Spinner from '../../Spinner';
 import LoadingButton from '../../buttons/LoadingButton';
 import useDatabase from '../../../hooks/useDatabase';
 import YesNoDialog from '../../dialogs/YesNoDialog';
+import useServer from '../../../hooks/useServer';
 
 interface Props {
 
@@ -25,9 +27,10 @@ interface Props {
 const AdminPage: React.FC<Props> = () => {
     const { classes } = useHomePageStyles();
 
-    const { userEmail, setIsLogged, signOut } = useAuth();
+    const { userEmail, setIsLogged, ping, signOut } = useAuth();
 
     const secret = useSecret();
+    const server = useServer();
     const db = useDatabase();
 
     const [isSigningOut, setIsSigningOut] = useState(false);
@@ -46,6 +49,10 @@ const AdminPage: React.FC<Props> = () => {
     const [isSignOutConfirmDialogOpen, setIsSignOutConfirmDialogOpen] = useState(false);
     const openSignOutConfirmDialog = () => setIsSignOutConfirmDialogOpen(true);
     const closeSignOutConfirmDialog = () => setIsSignOutConfirmDialogOpen(false);
+
+    const [isStoppingServerConfirmDialogOpen, setIsStoppingServerConfirmDialogOpen] = useState(false);
+    const openStoppingServerConfirmDialog = () => setIsStoppingServerConfirmDialogOpen(true);
+    const closeStoppingServerConfirmDialog = () => setIsStoppingServerConfirmDialogOpen(false);
 
     // Fetch secret on load
     useEffect(() => {
@@ -79,6 +86,22 @@ const AdminPage: React.FC<Props> = () => {
                 setIsSigningOut(false);
             });
     }
+
+    const handleStopServer = async () => {
+        setSnackbarOpen(false);
+
+        closeStoppingServerConfirmDialog();
+
+        return server.stop()
+            .catch((err) => {
+                setSnackbarMessage(err.message);
+                setSnackbarOpen(true);
+            })
+            .finally(() => {
+                setIsLogged(false);
+            });
+    }
+
 
     const handleDeleteUser = async () => {
         setSnackbarOpen(false);
@@ -142,6 +165,14 @@ const AdminPage: React.FC<Props> = () => {
                 handleYes={handleSignOut}
                 handleNo={closeSignOutConfirmDialog}
                 handleClose={closeSignOutConfirmDialog}
+            />
+            <YesNoDialog
+                open={isStoppingServerConfirmDialogOpen}
+                title='Stop server'
+                text='Are you sure you want to stop the server? This cannot be undone!'
+                handleYes={handleStopServer}
+                handleNo={closeStoppingServerConfirmDialog}
+                handleClose={closeStoppingServerConfirmDialog}
             />
             
             <Paper elevation={8} className={classes.root}>
@@ -211,6 +242,17 @@ const AdminPage: React.FC<Props> = () => {
                         onClick={openFlushDatabaseConfirmDialog}
                     >
                         Flush database
+                    </LoadingButton>
+
+                    <LoadingButton
+                        className={classes.button}
+                        variant='contained'
+                        color='error'
+                        icon={<StopServerIcon />}
+                        loading={server.isStopping}
+                        onClick={openStoppingServerConfirmDialog}
+                    >
+                        Stop server
                     </LoadingButton>
                     
                     <LoadingButton

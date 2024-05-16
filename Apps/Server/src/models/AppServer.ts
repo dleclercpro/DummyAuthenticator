@@ -9,6 +9,7 @@ import ErrorMiddleware from '../middleware/ErrorMiddleware';
 import TimeDuration from './units/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
 import { killAfterTimeout } from '../utils/process';
+import { Socket } from 'net';
 
 
 
@@ -16,6 +17,7 @@ import { killAfterTimeout } from '../utils/process';
 class AppServer {
     private app?: express.Express;
     private server?: http.Server;
+    private connections: Set<Socket> = new Set();
 
     public async setup(router: Router) {
         this.app = express();
@@ -64,13 +66,19 @@ class AppServer {
         process.on('SIGTERM', () => this.stop('SIGTERM'));
         process.on('SIGINT', () => this.stop('SIGINT'));
 
+        // Track active connections
+        this.server.on('connection', (conn) => {
+            this.connections.add(conn);
+            conn.on('close', () => this.connections.delete(conn));
+        });
+
         // Listen to HTTP traffic on given port
         this.server!.listen(PORT, async () => {
             logger.debug(`Server listening on ${PROD ? 'container' : 'local'} port: ${PORT}`);
         });
     }
 
-    public async stop(signal: string = '', timeout: TimeDuration = new TimeDuration(2, TimeUnit.Second)) {
+    public async stop(signal: string = '', timeout: TimeDuration = new TimeDuration(30, TimeUnit.Second)) {
         if (!this.server) throw new Error('MISSING_SERVER');
 
         if (signal) {
@@ -78,10 +86,14 @@ class AppServer {
         }
 
         // Force server shutdown after timeout
-        await Promise.race([killAfterTimeout(timeout), async () => {
+        await Promise.race([killAfterTimeout(timeout), (async () => {
             
             // Shut down gracefully
             await new Promise<void>((resolve, reject) => {
+                logger.debug(`Closing active ${this.connections.size} connections...`);
+                this.connections.forEach(conn => conn.destroy());
+
+                logger.debug(`Shutting down server...`);
                 this.server!.close((err) => {
                     if (err) {
                         logger.warn(`Could not shut down server gracefully: ${err}`);
@@ -94,8 +106,10 @@ class AppServer {
             });
 
             // Exit process
+            logger.debug(`Exiting process...`);
             process.exit(0);
-        }]);
+
+        })()]);
     }
 }
 

@@ -12,6 +12,7 @@ import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import FlushDatabaseController from '../controllers/FlushDatabaseController';
 import DeleteUserController from '../controllers/DeleteUserController';
 import GetUsersController from '../controllers/GetUsersController';
+import StopServerController from '../controllers/StopServerController';
 
 
 
@@ -33,6 +34,7 @@ APIRouter.get('/ping', [AuthMiddleware], PingController);
 
 // Administration
 APIRouter.delete('/database', [AuthMiddleware], FlushDatabaseController);
+APIRouter.delete('/server', [AuthMiddleware], StopServerController);
 APIRouter.get('/users', [AuthMiddleware], GetUsersController);
 
 // Tokens
