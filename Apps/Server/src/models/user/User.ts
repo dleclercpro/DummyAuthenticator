@@ -7,6 +7,7 @@ import UserSecret from './UserSecret';
 import { UserType } from '../../constants';
 import { getRandomWord } from '../../utils/string';
 import { Token } from '../../types/TokenTypes';
+import { logger } from '../../utils/logger';
 
 export interface UserArgs {
     type: UserType,
@@ -145,6 +146,22 @@ class User {
         if (userAsString) {
             return User.deserialize(userAsString);
         }
+    }
+
+    public static async find(email: string, type: UserType = UserType.Regular) {
+        const userKeys = await APP_DB.getKeysByPattern(`user:*`);
+        const resultUserKeys = userKeys.filter((user: string) => user.includes(email));
+
+        const resultUsers = await Promise.all(
+            resultUserKeys
+                .map(async (key: string) => {
+                    const userAsString = await APP_DB.get(key);
+
+                    return User.deserialize(userAsString!);
+                })
+        );
+
+        return resultUsers.filter((user: User) => user.getType() === type);
     }
 
     public static async create(email: string, password: string, isDefault: boolean = false) {

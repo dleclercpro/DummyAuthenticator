@@ -14,6 +14,7 @@ import DeleteUserController from '../controllers/DeleteUserController';
 import GetUsersController from '../controllers/GetUsersController';
 import StopServerController from '../controllers/StopServerController';
 import StopDatabaseController from '../controllers/StopDatabaseController';
+import SearchUsersController from '../controllers/SearchUsersController';
 
 
 
@@ -38,6 +39,7 @@ APIRouter.put('/server/stop', [AuthMiddleware], StopServerController);
 APIRouter.put('/database/stop', [AuthMiddleware], StopDatabaseController);
 APIRouter.delete('/database', [AuthMiddleware], FlushDatabaseController);
 APIRouter.get('/users', [AuthMiddleware], GetUsersController);
+APIRouter.put('/users', [AuthMiddleware], SearchUsersController);
 
 // Tokens
 APIRouter.put('/token', [], ValidateTokenController);

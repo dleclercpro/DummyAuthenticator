@@ -10,6 +10,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Page, getURL } from '../../../routes/Router';
 import { Link } from 'react-router-dom';
 import useDatabase from '../../../hooks/useDatabase';
+import YesNoDialog from '../../dialogs/YesNoDialog';
 
 interface Props {
 
@@ -33,9 +34,11 @@ const SearchPage: React.FC<Props> = () => {
     const [isDeleteUserConfirmDialogOpen, setIsDeleteUserConfirmDialogOpen] = useState(false);
 
     const openDeleteUserConfirmDialog = (email: string) => {
+        setUserEmail(email);
         setIsDeleteUserConfirmDialogOpen(true);
     }
     const closeDeleteUserConfirmDialog = () => {
+        setUserEmail('');
         setIsDeleteUserConfirmDialogOpen(false);
     }
 
@@ -47,7 +50,7 @@ const SearchPage: React.FC<Props> = () => {
         setVersion(version + 1);
     }
 
-    const { users, admins, isDeletingUser, deleteUser } = useDatabase();
+    const { users, admins, isDeletingUser, searchUsers, deleteUser } = useDatabase();
 
     useEffect(() => {
 
@@ -58,55 +61,73 @@ const SearchPage: React.FC<Props> = () => {
         setError(false);
     }
 
-    const handleSearchUser = () => {
+    const handleSearchUsers = async () => {
         setIsSearching(true);
+
+        await searchUsers(value);
 
         setIsSearching(false);
     }
 
     return (
         <>
+            <YesNoDialog
+                open={isDeleteUserConfirmDialogOpen}
+                title='Delete user'
+                text={`Are you sure you want to delete user '${userEmail}'?`}
+                handleYes={handleDeleteUser}
+                handleNo={closeDeleteUserConfirmDialog}
+                handleClose={closeDeleteUserConfirmDialog}
+            />
+            
             <Paper elevation={8} className={classes.root}>
                 <Typography variant='h1' className={classes.title}>
                     Search
                 </Typography>
-                
-                <Typography className={classes.text}>
-                    Search for users in the database:
-                </Typography>
 
-                <div className={classes.fields}>
-                    <TextField
-                        id='search-page-search-field'
-                        className={classes.field}
-                        inputProps={{ className: classes.input }}
-                        type='text'
-                        label='Who are you looking for?'
-                        value={value}
-                        error={!!error}
-                        disabled={isSearching}
-                        onChange={handleSearchFieldChange}
-                    />
-                </div>
+                <form
+                    className={classes.form}
+                    autoComplete='off'
+                    onSubmit={handleSearchUsers}
+                >
+                    <Typography className={classes.text}>
+                        Search for users in the database:
+                    </Typography>
 
-                <div className={classes.buttons}>
-                    <LoadingButton
-                        className={classes.button}
-                        variant='contained'
-                        color='primary'
-                        icon={<SearchIcon />}
-                        loading={isSearching}
-                        onClick={handleSearchUser}
-                    >
-                        Search
-                    </LoadingButton>
-                </div>
+                    <div className={classes.fields}>
+                        <TextField
+                            id='search-page-search-field'
+                            className={classes.field}
+                            inputProps={{ className: classes.input }}
+                            type='text'
+                            label='Who are you looking for?'
+                            value={value}
+                            error={!!error}
+                            disabled={isSearching}
+                            onChange={handleSearchFieldChange}
+                        />
+                    </div>
+
+                    <div className={classes.buttons}>
+                        <LoadingButton
+                            className={classes.button}
+                            variant='contained'
+                            color='primary'
+                            type='submit'
+                            icon={<SearchIcon />}
+                            loading={isSearching}
+                            onClick={handleSearchUsers}
+                        >
+                            Search
+                        </LoadingButton>
+                    </div>
+                </form>
 
                 <div className={`${classes.form} users`}>
                     {admins.length > 0 && (
                         <>
                             <Typography className={classes.text}>
-                                Here is the list of admin users:
+                                Admin users that match your search criteria:
                             </Typography>
 
                             <table className={classes.table}>
@@ -139,7 +160,7 @@ const SearchPage: React.FC<Props> = () => {
                     {users.length > 0 && (
                         <>
                             <Typography className={classes.text}>
-                                Here is the list of regular users:
+                                Regular users that match your search criteria:
                             </Typography>
 
                             <table className={classes.table}>

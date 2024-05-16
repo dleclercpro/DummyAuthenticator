@@ -132,18 +132,18 @@ const UsersPage: React.FC<Props> = () => {
                 </div>
 
                 <div className={classes.buttons}>
-                        <div className='top'>
-                            <Button
-                                className={classes.linkButton}
-                                component={Link}
-                                to={getURL(Page.Home)}
-                                color='secondary'
-                                startIcon={<BackIcon />}
-                            >
-                                Back
-                            </Button>
-                        </div>
+                    <div className='top'>
+                        <Button
+                            className={classes.linkButton}
+                            component={Link}
+                            to={getURL(Page.Home)}
+                            color='secondary'
+                            startIcon={<BackIcon />}
+                        >
+                            Back
+                        </Button>
                     </div>
+                </div>
             </Paper>
         </>
     );

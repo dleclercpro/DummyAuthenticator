@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import * as CallDeleteUser from '../models/calls/user/CallDeleteUser';
 import * as CallFlushDatabase from '../models/calls/admin/CallFlushDatabase';
-import * as CallGetUsers from '../models/calls/user/CallGetUsers';
 import * as CallStopDatabase from '../models/calls/admin/CallStopDatabase';
+import * as CallDeleteUser from '../models/calls/user/CallDeleteUser';
+import * as CallGetUsers from '../models/calls/user/CallGetUsers';
+import * as CallSearchUsers from '../models/calls/user/CallSearchUsers';
 import { translateServerError } from '../errors/ServerErrors';
 
 const useDatabase = () => {    
@@ -72,6 +73,20 @@ const useDatabase = () => {
             });
     }
 
+    const searchUsers = async (searchText: string) => {
+        return await new CallSearchUsers.default()
+            .execute({ searchText })
+            .then(({ data }) => {
+                const { users, admins } = data as CallSearchUsers.ResponseData;
+
+                setUsers(users);
+                setAdmins(admins);
+            })
+            .catch(({ code, error, data }) => {
+                throw new Error(translateServerError(error));
+            });
+    }
+
     return {
         isStopping,
         isFlushing,
@@ -82,6 +97,7 @@ const useDatabase = () => {
         flush,
         deleteUser,
         getUsers,
+        searchUsers,
     };
 }
 

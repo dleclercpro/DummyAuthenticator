@@ -26,6 +26,10 @@ class Admin extends User {
         });
     }
 
+    public static async find(email: string) {
+        return await User.find(email, UserType.Admin);
+    }
+
     public static async create(email: string, password: string) {
 
         // Create new admin user
