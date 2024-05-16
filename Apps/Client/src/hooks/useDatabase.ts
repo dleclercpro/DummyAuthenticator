@@ -7,8 +7,9 @@ import { translateServerError } from '../errors/ServerErrors';
 const useDatabase = () => {    
     const [isFlushing, setIsFlushing] = useState(false);
     const [isDeletingUser, setIsDeletingUser] = useState(false);
-    const [users, setUsers] = useState<string[]>([]);
-    const [admins, setAdmins] = useState<string[]>([]);
+
+    const [users, setUsers] = useState<{ value: string, confirmed: boolean }[]>([]);
+    const [admins, setAdmins] = useState<{ value: string, confirmed: boolean }[]>([]);
 
     const flush = async () => {
         setIsFlushing(true);

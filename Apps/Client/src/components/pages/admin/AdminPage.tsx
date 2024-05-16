@@ -188,7 +188,7 @@ const AdminPage: React.FC<Props> = () => {
                         to={getURL(Page.Users)}
                         startIcon={<PeopleIcon />}
                     >
-                        List users
+                        List all users
                     </Button>
 
                     <LoadingButton

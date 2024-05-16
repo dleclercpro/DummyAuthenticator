@@ -24,15 +24,15 @@ const GetUsersController: RequestHandler = async (req, res, next) => {
 
         const users = await User.getAll();
         const regularUsers = users
-            .filter((user) => user?.getType() === UserType.Regular);
+            .filter((user) => user.getType() === UserType.Regular);
         const adminUsers = users
-            .filter((user) => user?.getType() === UserType.Admin);
+            .filter((user) => user.getType() === UserType.Admin);
 
         return res.json(successResponse({
             users: regularUsers
-                .map((user) => user?.getEmail().getValue()),
+                .map((user) => (user.getEmail())),
             admins: adminUsers
-                .map((user) => user?.getEmail().getValue()),
+                .map((user) => (user.getEmail())),
         }));
 
     } catch (err: any) {

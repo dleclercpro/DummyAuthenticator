@@ -78,7 +78,7 @@ const UsersPage: React.FC<Props> = () => {
                             <tr>
                                 <td>
                                     <Typography>
-                                        <strong>{email}</strong>
+                                        <strong>{`${email.value} ${email.confirmed ? '✅' : '❌'}`}</strong>
                                     </Typography>
                                 </td>
                                 <td>
@@ -87,9 +87,9 @@ const UsersPage: React.FC<Props> = () => {
                                         variant='contained'
                                         color='error'
                                         icon={<DeleteIcon />}
-                                        loading={isDeletingUser && email === userEmail}
+                                        loading={isDeletingUser && email.value === userEmail}
                                         disabled
-                                        onClick={() => openDeleteUserConfirmDialog(email)}
+                                        onClick={() => openDeleteUserConfirmDialog(email.value)}
                                     >
                                         Delete
                                     </LoadingButton>
@@ -109,7 +109,7 @@ const UsersPage: React.FC<Props> = () => {
                                     <tr>
                                         <td>
                                             <Typography>
-                                                <strong>{email}</strong>
+                                                <strong>{`${email.value} ${email.confirmed ? '✅' : '❌'}`}</strong>
                                             </Typography>
                                         </td>
                                         <td>
@@ -118,8 +118,8 @@ const UsersPage: React.FC<Props> = () => {
                                                 variant='contained'
                                                 color='error'
                                                 icon={<DeleteIcon />}
-                                                loading={isDeletingUser && email === userEmail}
-                                                onClick={() => openDeleteUserConfirmDialog(email)}
+                                                loading={isDeletingUser && email.value === userEmail}
+                                                onClick={() => openDeleteUserConfirmDialog(email.value)}
                                             >
                                                 Delete
                                             </LoadingButton>

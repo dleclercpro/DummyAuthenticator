@@ -5,8 +5,8 @@ export interface Data {
 }
 
 export type ResponseData = {
-    users: string[],
-    admins: string[],
+    users: { value: string, confirmed: boolean }[],
+    admins: { value: string, confirmed: boolean }[],
 };
 
 export interface ErrorResponseData {

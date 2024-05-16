@@ -46,7 +46,7 @@ class AppDatabase {
                 return;
             }
 
-            await User.create(email, password, true);
+            await User.create(email, password, false);
             logger.trace(`Default regular user created: ${email}`);
         });
 
