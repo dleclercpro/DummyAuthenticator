@@ -143,30 +143,32 @@ const SearchPage: React.FC<Props> = () => {
                             </Typography>
 
                             <table className={classes.table}>
-                                {admins.map((email) => (
-                                    <tr>
-                                        <td>
-                                            <Typography>
-                                                {`${email.value} ${email.confirmed ? '✅' : '❌'}`}
-                                            </Typography>
-                                        </td>
-                                        {isAdmin && (
+                                <tbody>
+                                    {admins.map((email) => (
+                                        <tr key={`admin-${email.value}`}>
                                             <td>
-                                                <LoadingButton
-                                                    className={classes.button}
-                                                    variant='contained'
-                                                    color='error'
-                                                    icon={<DeleteIcon />}
-                                                    loading={isDeletingUser && email.value === userEmail}
-                                                    disabled
-                                                    onClick={() => openDeleteUserConfirmDialog(email.value)}
-                                                >
-                                                    Delete
-                                                </LoadingButton>
+                                                <Typography>
+                                                    {`${email.value} ${email.confirmed ? '✅' : '❌'}`}
+                                                </Typography>
                                             </td>
-                                        )}
-                                    </tr>
-                                ))}
+                                            {isAdmin && (
+                                                <td>
+                                                    <LoadingButton
+                                                        className={classes.button}
+                                                        variant='contained'
+                                                        color='error'
+                                                        icon={<DeleteIcon />}
+                                                        loading={isDeletingUser && email.value === userEmail}
+                                                        disabled
+                                                        onClick={() => openDeleteUserConfirmDialog(email.value)}
+                                                    >
+                                                        Delete
+                                                    </LoadingButton>
+                                                </td>
+                                            )}
+                                        </tr>
+                                    ))}
+                                </tbody>
                             </table>
                         </>
                     )}
@@ -178,29 +180,31 @@ const SearchPage: React.FC<Props> = () => {
                             </Typography>
 
                             <table className={classes.table}>
-                                {users.map((email) => (
-                                    <tr>
-                                        <td>
-                                            <Typography>
-                                                {`${email.value} ${email.confirmed ? '✅' : '❌'}`}
-                                            </Typography>
-                                        </td>
-                                        {isAdmin && (
+                                <tbody>
+                                    {users.map((email) => (
+                                        <tr key={`user-${email.value}`}>
                                             <td>
-                                                <LoadingButton
-                                                    className={classes.button}
-                                                    variant='contained'
-                                                    color='error'
-                                                    icon={<DeleteIcon />}
-                                                    loading={isDeletingUser && email.value === userEmail}
-                                                    onClick={() => openDeleteUserConfirmDialog(email.value)}
-                                                >
-                                                    Delete
-                                                </LoadingButton>
+                                                <Typography>
+                                                    {`${email.value} ${email.confirmed ? '✅' : '❌'}`}
+                                                </Typography>
                                             </td>
-                                        )}
-                                    </tr>
-                                ))}
+                                            {isAdmin && (
+                                                <td>
+                                                    <LoadingButton
+                                                        className={classes.button}
+                                                        variant='contained'
+                                                        color='error'
+                                                        icon={<DeleteIcon />}
+                                                        loading={isDeletingUser && email.value === userEmail}
+                                                        onClick={() => openDeleteUserConfirmDialog(email.value)}
+                                                    >
+                                                        Delete
+                                                    </LoadingButton>
+                                                </td>
+                                            )}
+                                        </tr>
+                                    ))}
+                                </tbody>
                             </table>
                         </>
                     )}
