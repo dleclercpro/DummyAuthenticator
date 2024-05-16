@@ -11,7 +11,15 @@ const useAppStyles = makeStyles()(({ palette, spacing }: Theme) => ({
         width: '100%',
         minHeight: '100%',
     },
-    container: {
+    spinnerContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        height: '100%',
+    },
+    errorContainer: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -22,6 +30,11 @@ const useAppStyles = makeStyles()(({ palette, spacing }: Theme) => ({
         width: spacing(6),
         height: spacing(6),
         marginRight: spacing(SPACING),
+    },
+    spinner: {
+        '&:not(:last-child)': {
+            marginBottom: spacing(SPACING),
+        },
     },
     status: {
         display: 'flex',

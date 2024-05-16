@@ -4,10 +4,12 @@ import useSpinnerStyles from './SpinnerStyles';
 type Size = 'small' | 'medium' | 'large';
 
 interface Props {
+    className?: string;
     size?: Size,
 }
 
 const Spinner: React.FC<Props> = (props) => {
+    const { className } = props;
     const { classes } = useSpinnerStyles();
 
     let { size } = props;
@@ -38,7 +40,7 @@ const Spinner: React.FC<Props> = (props) => {
 
     return (
         <CircularProgress
-            className={classes.root}
+            className={`${classes.root} ${className}`}
             size={getSize(size)}
             thickness={getThickness(size)}
             color='inherit'

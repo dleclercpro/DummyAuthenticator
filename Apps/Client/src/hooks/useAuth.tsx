@@ -65,7 +65,7 @@ const useAuth = () => {
 
     const [isLogged, setIsLogged] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
-    const [isServerOnline, setIsServerOnline] = useState(false);
+    const [isOnline, setIsOnline] = useState(false);
 
     const [pingIsLoading, setPingIsLoading] = useState(false);
     const [pingIsDone, setPingIsDone] = useState(false);
@@ -78,24 +78,23 @@ const useAuth = () => {
         try {
             const { data } = await new CallPing.default().execute();
 
-            setIsServerOnline(true);
-
             const user = (data as CallPing.ResponseData);
 
             setUserEmail(user.email);
             setIsAdmin(user.isAdmin);
             setIsLogged(true);
-
             setPingError('');
+
+            setIsOnline(true);
 
             return user;
         } catch (err: any) {
-            setIsServerOnline(err.message !== 'NO_SERVER_CONNECTION');
-
             setIsLogged(false);
+            setUserEmail('');
             setIsAdmin(false);
-
             setPingError(err.message);
+
+            setIsOnline(err.message !== 'NO_SERVER_CONNECTION');
 
             return { email: '', isAdmin: false };
         } finally {
@@ -105,9 +104,9 @@ const useAuth = () => {
     }
 
     const ping = {
+        isOnline,
         isLoading: pingIsLoading,
         isDone: pingIsDone,
-        isOnline: isServerOnline,
         error: pingError,
         setIsLoading: setPingIsLoading,
         setIsDone: setPingIsDone,

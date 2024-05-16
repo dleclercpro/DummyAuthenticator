@@ -1,3 +1,4 @@
+import { SERVER_RETRY_CONN_MAX_BACKOFF } from '../config/Config';
 import TimeDuration from '../models/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
 
@@ -7,8 +8,8 @@ export const sleep = async (duration: TimeDuration) => {
     await new Promise(resolve => setTimeout(resolve, ms));
 };
 
-export const getExponentialBackoff = (attempts: number, maxBackoff: TimeDuration = new TimeDuration(10, TimeUnit.Second)) => {
-    const exponentialBackoff = new TimeDuration(Math.pow(2, attempts), TimeUnit.Second);
+export const getExponentialBackoff = (attempts: number, base: number = 2, maxBackoff: TimeDuration = SERVER_RETRY_CONN_MAX_BACKOFF) => {
+    const exponentialBackoff = new TimeDuration(Math.pow(base, attempts), TimeUnit.Second);
 
     // Backoff exponentially
     if (exponentialBackoff.smallerThan(maxBackoff)) {

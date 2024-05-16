@@ -6,7 +6,10 @@ import useAuth from '../hooks/useAuth';
 import Spinner from './Spinner';
 import ErrorIcon from '@mui/icons-material/WarningSharp';
 import { SERVER_RETRY_CONN_MAX_ATTEMPTS, VERSION } from '../config/Config';
-import { getExponentialBackoff } from '../utils/time';
+import { getExponentialBackoff, sleep } from '../utils/time';
+import { Typography } from '@mui/material';
+import TimeDuration from '../models/TimeDuration';
+import { TimeUnit } from '../types/TimeTypes';
 
 interface Props {
 
@@ -17,47 +20,57 @@ const App: React.FC<Props> = () => {
 
     const { ping } = useAuth();
 
-    const [connectionAttempts, setConnectionAttempts] = useState(0);
+    const [attempts, setAttempts] = useState(0);
+    const [backoff, setBackoff] = useState<TimeDuration>(new TimeDuration(0, TimeUnit.Second));
+    const [isDone, setIsDone] = useState(false);
 
     // Try connecting to server until a response is received
     useEffect(() => {
         const tryConnection = async (attempts: number) => {
             if (ping.isOnline) {
+                setIsDone(true);
                 return;
             }
-
-            if (attempts > SERVER_RETRY_CONN_MAX_ATTEMPTS) {
+            if (attempts + 1 > SERVER_RETRY_CONN_MAX_ATTEMPTS) {
                 console.error(`Impossible to connect to server!`);
+                setIsDone(true);
                 return;
             }
-
+            if (attempts > 0) {
+                await sleep(backoff);
+            }
+            
             await ping.execute();
 
-            setTimeout(() => {
-                setConnectionAttempts(attempts + 1);
-    
-            }, getExponentialBackoff(attempts).toMs().getAmount());
+            setBackoff(getExponentialBackoff(attempts));
+            setAttempts(attempts + 1);
         };
 
-        tryConnection(connectionAttempts);
+        tryConnection(attempts);
 
-    }, [connectionAttempts]);
+    }, [attempts]);
 
+    let currentStatus = `[${attempts + 1}/${SERVER_RETRY_CONN_MAX_ATTEMPTS}]`;
+    if (!backoff.isZero()) {
+        currentStatus = `Wait for ${backoff.format()}... ${currentStatus}`;
+    }
 
-
-    if (ping.isLoading) {
+    if (!isDone) {
         return (
-            <div className={classes.container}>
-                {ping.isLoading && (
-                    <Spinner size='large' />
+            <div className={classes.spinnerContainer}>                    
+                <Spinner className={classes.spinner} size='large' />
+                {backoff && (
+                    <Typography>
+                        <strong>Trying to connect to server.</strong> {currentStatus}
+                    </Typography>
                 )}
             </div>
         );
     }
 
-    if (ping.isDone && ping.error && connectionAttempts > SERVER_RETRY_CONN_MAX_ATTEMPTS) {
+    if (isDone && ping.error) {
         return (
-            <div className={classes.container}>
+            <div className={classes.errorContainer}>
                 <ErrorIcon color='error' className={classes.icon} />
                 <p>Ping unsuccessful: <strong>{ping.error}</strong></p>
             </div>
