@@ -1,5 +1,5 @@
 import { logger } from '../utils/logger';
-import { ADMINS } from '../config/AuthConfig';
+import { ADMINS, USERS } from '../config/AuthConfig';
 import User from './user/User';
 import { REDIS_ENABLE, REDIS_OPTIONS, REDIS_DATABASE } from '../config/DatabasesConfig';
 import MemoryDatabase from './databases/MemoryDatabase';
@@ -7,7 +7,7 @@ import RedisDatabase from './databases/RedisDatabase';
 import Admin from './user/Admin';
 import { Token } from '../types/TokenTypes';
 import { LoginAttempt } from './user/UserLogin';
-import { computeDate, getMidnightInUTC } from '../utils/time';
+import { computeDate } from '../utils/time';
 import TimeDuration from './units/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
 
@@ -36,6 +36,18 @@ class AppDatabase {
 
             await Admin.create(email, password);
             logger.trace(`Default admin user created: ${email}`);
+        });
+
+        // Create regular users if they don't already exist
+        USERS.forEach(async ({ email, password }) => {
+            const user = await User.findByEmail(email);
+            
+            if (user) {
+                return;
+            }
+
+            await User.create(email, password);
+            logger.trace(`Default regular user created: ${email}`);
         });
 
         // Remove login attempts older than a given amount of time (e.g. 1h)
