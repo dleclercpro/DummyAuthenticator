@@ -9,7 +9,7 @@ const SearchUsersController: RequestHandler = async (req, res, next) => {
     const { searchText } = req.body;
 
     try {
-        logger.debug(`User '${session.getEmail()}' is searching for users...`);
+        logger.debug(`User '${session.getEmail()}' is searching for users: ${searchText}`);
         
         const admins = await Admin.find(searchText);
         logger.debug(`Found ${admins.length} admin users matching search criteria.`);

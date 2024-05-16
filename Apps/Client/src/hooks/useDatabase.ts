@@ -97,6 +97,8 @@ const useDatabase = () => {
         flush,
         deleteUser,
         getUsers,
+        setUsers,
+        setAdmins,
         searchUsers,
     };
 }

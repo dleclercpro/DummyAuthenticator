@@ -52,7 +52,7 @@ const SearchPage: React.FC<Props> = () => {
         setVersion(version + 1);
     }
 
-    const { users, admins, isDeletingUser, searchUsers, deleteUser } = useDatabase();
+    const { users, admins, isDeletingUser, setUsers, setAdmins, searchUsers, deleteUser } = useDatabase();
 
     useEffect(() => {
 
@@ -66,10 +66,21 @@ const SearchPage: React.FC<Props> = () => {
     const handleSearchUsers = async () => {
         setIsSearching(true);
 
-        await searchUsers(value);
+        if (value === '') {
+            setUsers([]);
+            setAdmins([]);
+        } else {
+            await searchUsers(value);
+        }
 
         setIsSearching(false);
     }
+
+    // Search everytime the value changes
+    useEffect(() => {
+        handleSearchUsers();
+
+    }, [value]);
 
     return (
         <>
@@ -105,7 +116,6 @@ const SearchPage: React.FC<Props> = () => {
                             label='Who are you looking for?'
                             value={value}
                             error={!!error}
-                            disabled={isSearching}
                             onChange={handleSearchFieldChange}
                         />
                     </div>
@@ -117,7 +127,7 @@ const SearchPage: React.FC<Props> = () => {
                             color='primary'
                             type='submit'
                             icon={<SearchIcon />}
-                            loading={isSearching}
+                            loading={false}
                             onClick={handleSearchUsers}
                         >
                             Search
