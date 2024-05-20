@@ -9,6 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import LoadingButton from '../../buttons/LoadingButton';
 import YesNoDialog from '../../dialogs/YesNoDialog';
 import useAuth from '../../../hooks/useAuth';
+import { UserType } from '../../../constants';
 
 interface Props {
 
@@ -20,35 +21,35 @@ const UsersPage: React.FC<Props> = () => {
     const [version, setVersion] = useState(0);
 
     const { isAdmin } = useAuth();
-    const [userEmail, setUserEmail] = useState('');
+    const [selectedUserEmail, setSelectedUserEmail] = useState('');
 
     const [isDeleteUserConfirmDialogOpen, setIsDeleteUserConfirmDialogOpen] = useState(false);
 
     const openDeleteUserConfirmDialog = (email: string) => {
-        setUserEmail(email);
+        setSelectedUserEmail(email);
         setIsDeleteUserConfirmDialogOpen(true);
     }
     const closeDeleteUserConfirmDialog = () => {
-        setUserEmail('');
+        setSelectedUserEmail('');
         setIsDeleteUserConfirmDialogOpen(false);
     }
 
     const handleDeleteUser = async () => {
         setIsDeleteUserConfirmDialogOpen(false);
 
-        await deleteUser(userEmail);
+        await deleteUser(selectedUserEmail);
 
         setVersion(version + 1);
     }
 
-    const { users, admins, isDeletingUser, deleteUser, getUsers } = useDatabase();
+    const { users, isDeletingUser, deleteUser, getUsers } = useDatabase();
 
     useEffect(() => {
         getUsers();
 
     }, [version]);
 
-    if (!admins || !users) {
+    if (!users) {
         return null;
     }
 
@@ -57,7 +58,7 @@ const UsersPage: React.FC<Props> = () => {
             <YesNoDialog
                 open={isDeleteUserConfirmDialogOpen}
                 title='Delete user'
-                text={`Are you sure you want to delete user '${userEmail}'?`}
+                text={`Are you sure you want to delete user '${selectedUserEmail}'?`}
                 handleYes={handleDeleteUser}
                 handleNo={closeDeleteUserConfirmDialog}
                 handleClose={closeDeleteUserConfirmDialog}
@@ -72,73 +73,59 @@ const UsersPage: React.FC<Props> = () => {
                     </Typography>
 
                     <Typography className={classes.text}>
-                        Here is the list of <strong>admin users</strong>:
+                        Here is the complete list of users:
                     </Typography>
 
-                    <table className={classes.table}>
-                        <tbody>
-                            {admins.map((email) => (
-                                <tr key={`admin-${email.value}`}>
-                                    <td>
-                                        <Typography>
-                                            {`${email.value} ${email.confirmed ? '✅' : '❌'}`}
-                                        </Typography>
-                                    </td>
-                                    {isAdmin && (
-                                        <td>
-                                            <LoadingButton
-                                                className={classes.button}
-                                                variant='contained'
-                                                color='error'
-                                                icon={<DeleteIcon />}
-                                                loading={isDeletingUser && email.value === userEmail}
-                                                disabled
-                                                onClick={() => openDeleteUserConfirmDialog(email.value)}
-                                            >
-                                                Delete
-                                            </LoadingButton>
-                                        </td>
-                                    )}
+                    <div className={`${classes.form} users`}>
+                        <table className={classes.table}>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <strong>E-mail</strong>
+                                    </th>
+                                    <th>
+                                        <strong>Type</strong>
+                                    </th>
+                                    <th>
+                                        <strong>Actions</strong>
+                                    </th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    
-                    {users.length > 0 && (
-                        <>
-                            <Typography className={classes.text}>
-                                Here is the list of <strong>regular users</strong>:
-                            </Typography>
-
-                            <table className={classes.table}>
-                                <tbody>
-                                    {users.map((email) => (
-                                        <tr key={`user-${email.value}`}>
-                                            <td>
-                                                <Typography>
-                                                    {`${email.value} ${email.confirmed ? '✅' : '❌'}`}
-                                                </Typography>
-                                            </td>
+                            </thead>
+                            <tbody>
+                                {users.sort((a, b) => {
+                                        if (a.type > b.type) return 1;
+                                        if (a.type < b.type) return -1;
+                                        return 0;
+                                    }).map(({ type, email, confirmed }) => (
+                                    <tr key={`admin-${email}`}>
+                                        <td>
+                                            <Typography>
+                                                {email}
+                                            </Typography>
+                                        </td>
+                                        <td>
+                                            {type}
+                                        </td>
+                                        <td>
                                             {isAdmin && (
-                                                <td>
-                                                    <LoadingButton
-                                                        className={classes.button}
-                                                        variant='contained'
-                                                        color='error'
-                                                        icon={<DeleteIcon />}
-                                                        loading={isDeletingUser && email.value === userEmail}
-                                                        onClick={() => openDeleteUserConfirmDialog(email.value)}
-                                                    >
-                                                        Delete
-                                                    </LoadingButton>
-                                                </td>
+                                                <LoadingButton
+                                                    className={`${classes.button} search`}
+                                                    variant='contained'
+                                                    color='error'
+                                                    icon={<DeleteIcon />}
+                                                    loading={isDeletingUser && email === selectedUserEmail}
+                                                    disabled={type === UserType.Admin}
+                                                    onClick={() => openDeleteUserConfirmDialog(email)}
+                                                >
+                                                    Delete
+                                                </LoadingButton>
                                             )}
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </>
-                    )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div className={classes.buttons}>

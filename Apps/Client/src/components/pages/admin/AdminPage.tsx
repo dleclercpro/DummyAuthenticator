@@ -28,7 +28,7 @@ interface Props {
 const AdminPage: React.FC<Props> = () => {
     const { classes } = useHomePageStyles();
 
-    const { userEmail, setIsLogged, ping, signOut } = useAuth();
+    const { userEmail, setIsLogged, signOut } = useAuth();
 
     const secret = useSecret();
     const server = useServer();
@@ -247,7 +247,7 @@ const AdminPage: React.FC<Props> = () => {
                         to={getURL(Page.Users)}
                         startIcon={<PeopleIcon />}
                     >
-                        List all users
+                        List users
                     </Button>
 
                     <Button

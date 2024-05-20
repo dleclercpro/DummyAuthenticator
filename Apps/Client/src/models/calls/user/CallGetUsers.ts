@@ -1,13 +1,11 @@
+import { UserType } from '../../../constants';
 import CallGET from '../base/CallGET';
 
 export interface Data {
 
 }
 
-export type ResponseData = {
-    users: { value: string, confirmed: boolean }[],
-    admins: { value: string, confirmed: boolean }[],
-};
+export type ResponseData = { type: UserType, email: string, confirmed: boolean }[];
 
 export interface ErrorResponseData {
 

@@ -1,8 +1,6 @@
 import { Button, Paper, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Severity } from '../../../types/CommonTypes';
 import useAuthPageStyles from '../AuthPageStyles';
-import Snackbar from '../../Snackbar';
 import SearchIcon from '@mui/icons-material/Search';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import LoadingButton from '../../buttons/LoadingButton';
@@ -12,6 +10,7 @@ import { Link } from 'react-router-dom';
 import useDatabase from '../../../hooks/useDatabase';
 import YesNoDialog from '../../dialogs/YesNoDialog';
 import useAuth from '../../../hooks/useAuth';
+import { UserType } from '../../../constants';
 
 interface Props {
 
@@ -20,13 +19,10 @@ interface Props {
 const SearchPage: React.FC<Props> = () => {
     const { classes } = useAuthPageStyles();
 
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-
     const [isSearching, setIsSearching] = useState(false);
 
     const { isAdmin } = useAuth();
-    const [userEmail, setUserEmail] = useState('');
+    const [selectedUserEmail, setSelectedUserEmail] = useState('');
 
     const [value, setValue] = useState('');
     const [error, setError] = useState(false);
@@ -36,27 +32,23 @@ const SearchPage: React.FC<Props> = () => {
     const [isDeleteUserConfirmDialogOpen, setIsDeleteUserConfirmDialogOpen] = useState(false);
 
     const openDeleteUserConfirmDialog = (email: string) => {
-        setUserEmail(email);
+        setSelectedUserEmail(email);
         setIsDeleteUserConfirmDialogOpen(true);
     }
     const closeDeleteUserConfirmDialog = () => {
-        setUserEmail('');
+        setSelectedUserEmail('');
         setIsDeleteUserConfirmDialogOpen(false);
     }
 
     const handleDeleteUser = async () => {
         setIsDeleteUserConfirmDialogOpen(false);
 
-        await deleteUser(userEmail);
+        await deleteUser(selectedUserEmail);
 
         setVersion(version + 1);
     }
 
-    const { users, admins, isDeletingUser, setUsers, setAdmins, searchUsers, deleteUser } = useDatabase();
-
-    useEffect(() => {
-
-    }, []);
+    const { users, isDeletingUser, setUsers, searchUsers, deleteUser } = useDatabase();
 
     const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setValue(e.target.value);
@@ -68,7 +60,6 @@ const SearchPage: React.FC<Props> = () => {
 
         if (value === '') {
             setUsers([]);
-            setAdmins([]);
         } else {
             await searchUsers(value);
         }
@@ -87,7 +78,7 @@ const SearchPage: React.FC<Props> = () => {
             <YesNoDialog
                 open={isDeleteUserConfirmDialogOpen}
                 title='Delete user'
-                text={`Are you sure you want to delete user '${userEmail}'?`}
+                text={`Are you sure you want to delete user '${selectedUserEmail}'?`}
                 handleYes={handleDeleteUser}
                 handleNo={closeDeleteUserConfirmDialog}
                 handleClose={closeDeleteUserConfirmDialog}
@@ -127,7 +118,7 @@ const SearchPage: React.FC<Props> = () => {
                             color='primary'
                             type='submit'
                             icon={<SearchIcon />}
-                            loading={false}
+                            loading={isSearching}
                             onClick={handleSearchUsers}
                         >
                             Search
@@ -136,72 +127,56 @@ const SearchPage: React.FC<Props> = () => {
                 </form>
 
                 <div className={`${classes.form} users`}>
-                    {admins.length > 0 && (
-                        <>
-                            <Typography className={classes.text}>
-                                <strong>Admin users</strong> that match your search criteria:
-                            </Typography>
-
-                            <table className={classes.table}>
-                                <tbody>
-                                    {admins.map((email) => (
-                                        <tr key={`admin-${email.value}`}>
-                                            <td>
-                                                <Typography>
-                                                    {`${email.value} ${email.confirmed ? '✅' : '❌'}`}
-                                                </Typography>
-                                            </td>
-                                            {isAdmin && (
-                                                <td>
-                                                    <LoadingButton
-                                                        className={classes.button}
-                                                        variant='contained'
-                                                        color='error'
-                                                        icon={<DeleteIcon />}
-                                                        loading={isDeletingUser && email.value === userEmail}
-                                                        disabled
-                                                        onClick={() => openDeleteUserConfirmDialog(email.value)}
-                                                    >
-                                                        Delete
-                                                    </LoadingButton>
-                                                </td>
-                                            )}
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </>
-                    )}
-                    
                     {users.length > 0 && (
                         <>
                             <Typography className={classes.text}>
-                                <strong>Regular users</strong> that match your search criteria:
+                                List of users that match your search criteria:
                             </Typography>
 
                             <table className={classes.table}>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <strong>E-mail</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Type</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Actions</strong>
+                                        </th>
+                                    </tr>
+                                </thead>
                                 <tbody>
-                                    {users.map((email) => (
-                                        <tr key={`user-${email.value}`}>
+                                    {users.sort((a, b) => {
+                                        if (a.type > b.type) return 1;
+                                        if (a.type < b.type) return -1;
+                                        return 0;
+                                    }).map(({ type, email, confirmed }) => (
+                                        <tr key={`admin-${email}`}>
                                             <td>
                                                 <Typography>
-                                                    {`${email.value} ${email.confirmed ? '✅' : '❌'}`}
+                                                    {email}
                                                 </Typography>
                                             </td>
-                                            {isAdmin && (
-                                                <td>
+                                            <td>
+                                                {type}
+                                            </td>
+                                            <td>
+                                                {isAdmin && (
                                                     <LoadingButton
-                                                        className={classes.button}
+                                                        className={`${classes.button} search`}
                                                         variant='contained'
                                                         color='error'
                                                         icon={<DeleteIcon />}
-                                                        loading={isDeletingUser && email.value === userEmail}
-                                                        onClick={() => openDeleteUserConfirmDialog(email.value)}
+                                                        loading={isDeletingUser && email === selectedUserEmail}
+                                                        disabled={type === UserType.Admin}
+                                                        onClick={() => openDeleteUserConfirmDialog(email)}
                                                     >
                                                         Delete
                                                     </LoadingButton>
-                                                </td>
-                                            )}
+                                                )}
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -223,13 +198,6 @@ const SearchPage: React.FC<Props> = () => {
                         </Button>
                     </div>
                 </div>
-
-                <Snackbar
-                    open={snackbarOpen}
-                    message={snackbarMessage}
-                    severity={Severity.Error}
-                    onClose={() => setSnackbarOpen(false)}
-                />
             </Paper>
         </>
     );

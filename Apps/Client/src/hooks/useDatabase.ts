@@ -5,14 +5,14 @@ import * as CallDeleteUser from '../models/calls/user/CallDeleteUser';
 import * as CallGetUsers from '../models/calls/user/CallGetUsers';
 import * as CallSearchUsers from '../models/calls/user/CallSearchUsers';
 import { translateServerError } from '../errors/ServerErrors';
+import { UserType } from '../constants';
 
 const useDatabase = () => {    
     const [isStopping, setIsStopping] = useState(false);
     const [isFlushing, setIsFlushing] = useState(false);
     const [isDeletingUser, setIsDeletingUser] = useState(false);
 
-    const [users, setUsers] = useState<{ value: string, confirmed: boolean }[]>([]);
-    const [admins, setAdmins] = useState<{ value: string, confirmed: boolean }[]>([]);
+    const [users, setUsers] = useState<{ type: UserType, email: string, confirmed: boolean }[]>([]);
 
     const stop = async () => {
         setIsStopping(true);
@@ -63,10 +63,9 @@ const useDatabase = () => {
         return await new CallGetUsers.default()
             .execute()
             .then(({ data }) => {
-                const { users, admins } = data as CallGetUsers.ResponseData;
+                const users = data as CallGetUsers.ResponseData;
 
                 setUsers(users);
-                setAdmins(admins);
             })
             .catch(({ code, error, data }) => {
                 throw new Error(translateServerError(error));
@@ -77,10 +76,9 @@ const useDatabase = () => {
         return await new CallSearchUsers.default()
             .execute({ searchText })
             .then(({ data }) => {
-                const { users, admins } = data as CallSearchUsers.ResponseData;
+                const users = data as CallSearchUsers.ResponseData;
 
                 setUsers(users);
-                setAdmins(admins);
             })
             .catch(({ code, error, data }) => {
                 throw new Error(translateServerError(error));
@@ -92,13 +90,11 @@ const useDatabase = () => {
         isFlushing,
         isDeletingUser,
         users,
-        admins,
         stop,
         flush,
         deleteUser,
         getUsers,
         setUsers,
-        setAdmins,
         searchUsers,
     };
 }

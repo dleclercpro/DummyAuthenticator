@@ -164,7 +164,7 @@ const HomePage: React.FC<Props> = () => {
                         to={getURL(Page.Users)}
                         startIcon={<PeopleIcon />}
                     >
-                        List all users
+                        List users
                     </Button>
 
                     <Button

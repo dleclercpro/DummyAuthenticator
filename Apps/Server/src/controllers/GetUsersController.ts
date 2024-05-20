@@ -23,17 +23,14 @@ const GetUsersController: RequestHandler = async (req, res, next) => {
         // }
 
         const users = await User.getAll();
-        const regularUsers = users
-            .filter((user) => user.getType() === UserType.Regular);
-        const adminUsers = users
-            .filter((user) => user.getType() === UserType.Admin);
 
-        return res.json(successResponse({
-            users: regularUsers
-                .map((user) => (user.getEmail())),
-            admins: adminUsers
-                .map((user) => (user.getEmail())),
-        }));
+        return res.json(successResponse(
+            users.map((user) => ({
+                type: user.getType(),
+                email: user.getEmail().getValue(),
+                confirmed: user.getEmail().isConfirmed(),
+            })),
+        ));
 
     } catch (err: any) {
         logger.warn(`Failed login attempt for user: ${email}`);

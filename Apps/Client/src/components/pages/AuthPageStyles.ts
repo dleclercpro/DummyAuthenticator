@@ -37,7 +37,22 @@ const useAuthPageStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme
     },
 
     table: {
+        width: '100%',
+        tableLayout: 'fixed',
+        borderCollapse: 'collapse',
         marginBottom: spacing(SPACING),
+
+        'th, td': {
+            width: 'auto',
+            textAlign: 'center',
+            verticalAlign: 'middle',
+            paddingTop: spacing(0.5),
+        },
+
+        'thead th': {
+            borderTop: `1px solid grey`,
+            borderBottom: `1px solid grey`,
+        },
     },
 
     fields: {

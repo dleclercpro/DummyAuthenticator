@@ -148,20 +148,22 @@ class User {
         }
     }
 
-    public static async find(email: string, type: UserType = UserType.Regular) {
+    public static async find(searchText: string) {
         const userKeys = await APP_DB.getKeysByPattern(`user:*`);
-        const resultUserKeys = userKeys.filter((user: string) => user.includes(email));
+        const resultUserKeys = userKeys
+            .map((user: string) => user.replace('user:', ''))
+            .filter((user: string) => user.includes(searchText));
 
         const resultUsers = await Promise.all(
             resultUserKeys
                 .map(async (key: string) => {
-                    const userAsString = await APP_DB.get(key);
+                    const userAsString = await APP_DB.get(`user:${key}`);
 
                     return User.deserialize(userAsString!);
                 })
         );
 
-        return resultUsers.filter((user: User) => user.getType() === type);
+        return resultUsers;
     }
 
     public static async create(email: string, password: string, isDefault: boolean = false) {
