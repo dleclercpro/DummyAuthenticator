@@ -6,6 +6,7 @@ import { Page, getURL } from '../../../routes/Router';
 import { Link } from 'react-router-dom';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EmailIcon from '@mui/icons-material/Email';
 import PromoteUserIcon from '@mui/icons-material/ArrowCircleUp';
 import DemoteUserIcon from '@mui/icons-material/ArrowCircleDown';
 import LoadingButton from '../../buttons/LoadingButton';
@@ -26,12 +27,13 @@ const UsersPage: React.FC<Props> = () => {
     const incrementVersion = () => setVersion(version + 1);
 
     const { userEmail, isAdmin } = useAuth();
-    const { isEditingUser, demoteUserToRegular, promoteUserToAdmin } = useUser();
+    const { isEditingUser, isUnconfirmingUserEmail, unconfirmUserEmail, demoteUserToRegular, promoteUserToAdmin } = useUser();
     
     const [selectedUserEmail, setSelectedUserEmail] = useState('');
     const [selectedUserType, setSelectedUserType] = useState<UserType | null>(null);
 
     const [isEditUserConfirmDialogOpen, setIsEditUserConfirmDialogOpen] = useState(false);
+    const [isUnconfirmUserEmailConfirmDialogOpen, setIsUnconfirmUserEmailConfirmDialogOpen] = useState(false);
     const [isDeleteUserConfirmDialogOpen, setIsDeleteUserConfirmDialogOpen] = useState(false);
 
     const openEditUserConfirmDialog = (email: string, type: UserType) => {
@@ -45,6 +47,17 @@ const UsersPage: React.FC<Props> = () => {
         setIsEditUserConfirmDialogOpen(false);
     }
 
+    const openUnconfirmUserEmailConfirmDialog = (email: string, type: UserType) => {
+        setSelectedUserEmail(email);
+        setSelectedUserType(type);
+        setIsUnconfirmUserEmailConfirmDialogOpen(true);
+    }
+    const closeUnconfirmUserEmailConfirmDialog = () => {
+        setSelectedUserEmail('');
+        setSelectedUserType(null);
+        setIsUnconfirmUserEmailConfirmDialogOpen(false);
+    }
+
     const openDeleteUserConfirmDialog = (email: string) => {
         setSelectedUserEmail(email);
         setIsDeleteUserConfirmDialogOpen(true);
@@ -54,6 +67,8 @@ const UsersPage: React.FC<Props> = () => {
         setIsDeleteUserConfirmDialogOpen(false);
     }
 
+
+
     const handleEditUser = async () => {
         setIsEditUserConfirmDialogOpen(false);
 
@@ -62,6 +77,14 @@ const UsersPage: React.FC<Props> = () => {
         } else {
             await demoteUserToRegular(selectedUserEmail);
         }
+
+        incrementVersion();
+    }
+
+    const handleUnconfirmUserEmail = async () => {
+        setIsUnconfirmUserEmailConfirmDialogOpen(false);
+
+        await unconfirmUserEmail(selectedUserEmail);
 
         incrementVersion();
     }
@@ -94,6 +117,14 @@ const UsersPage: React.FC<Props> = () => {
                 handleYes={handleEditUser}
                 handleNo={closeEditUserConfirmDialog}
                 handleClose={closeEditUserConfirmDialog}
+            />
+            <YesNoDialog
+                open={isUnconfirmUserEmailConfirmDialogOpen}
+                title={`Unconfirm e-mail`}
+                text={`Are you sure you want to unconfirm e-mail address of user '${selectedUserEmail}'?`}
+                handleYes={handleUnconfirmUserEmail}
+                handleNo={closeUnconfirmUserEmailConfirmDialog}
+                handleClose={closeUnconfirmUserEmailConfirmDialog}
             />
             <YesNoDialog
                 open={isDeleteUserConfirmDialogOpen}
@@ -159,6 +190,17 @@ const UsersPage: React.FC<Props> = () => {
                                                         onClick={() => openEditUserConfirmDialog(email, type)}
                                                     >
                                                         {type === UserType.Regular ? 'Promote' : 'Demote'}
+                                                    </LoadingButton>
+                                                    <LoadingButton
+                                                        className={classes.button}
+                                                        variant='contained'
+                                                        color='error'
+                                                        icon={<EmailIcon />}
+                                                        loading={isUnconfirmingUserEmail && email === selectedUserEmail}
+                                                        disabled={email === userEmail || type === UserType.SuperAdmin}
+                                                        onClick={() => openUnconfirmUserEmailConfirmDialog(email, type)}
+                                                    >
+                                                        Unconfirm
                                                     </LoadingButton>
                                                     <LoadingButton
                                                         className={classes.button}

@@ -16,6 +16,7 @@ import StopServerController from '../controllers/StopServerController';
 import StopDatabaseController from '../controllers/StopDatabaseController';
 import SearchUsersController from '../controllers/SearchUsersController';
 import EditUserController from '../controllers/EditUserController';
+import UnconfirmEmailController from '../controllers/UnconfirmEmailController';
 
 
 
@@ -30,6 +31,7 @@ APIRouter.post(`/sign-up`, [], SignUpController);
 APIRouter.put(`/sign-in`, [], SignInController);
 APIRouter.get(`/sign-out`, [AuthMiddleware], SignOutController);
 APIRouter.put('/confirm-email', [], ConfirmEmailController);
+APIRouter.put('/unconfirm-email', [AuthMiddleware], UnconfirmEmailController);
 APIRouter.post(`/forgot-password`, [], ForgotPasswordController);
 APIRouter.post(`/reset-password`, [], ResetPasswordController);
 APIRouter.get('/ping', [AuthMiddleware], PingController);

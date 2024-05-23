@@ -2,21 +2,20 @@ import { RequestHandler } from 'express';
 import { HttpStatusCode } from '../types/HTTPTypes';
 import { errorResponse, successResponse } from '../utils/calls';
 import { ErrorUserDoesNotExist, ErrorUserMustBeAdmin } from '../errors/UserErrors';
-import { ClientError, UserType } from '../constants';
+import { ClientError } from '../constants';
 import User from '../models/user/User';
 import { logger } from '../utils/logger';
 
 type Body = {
     email: string,
-    type: UserType,
  };
 
-const EditUserController: RequestHandler = async (req, res, next) => {
+const UnconfirmEmailController: RequestHandler = async (req, res, next) => {
     let email = '';
 
     try {
         const { session } = req;
-        const { type, email: targetEmail } = req.body as Body;
+        const { email: targetEmail } = req.body as Body;
         email = session.getEmail();
 
         const user = await User.findByEmail(email);
@@ -33,13 +32,10 @@ const EditUserController: RequestHandler = async (req, res, next) => {
             throw new ErrorUserDoesNotExist(targetEmail);
         }
 
-        // Edit user type if different
-        if (targetUser.getType() !== type) {
-            logger.info(`${user.getType()} user '${user.getEmail().getValue()}' is setting user type of user '${targetUser.getEmail().getValue()}' to: ${type}`);
-            
-            targetUser.setType(type);
-            await targetUser.save();
-        }
+        logger.info(`${user.getType()} user '${user.getEmail().getValue()}' is unconfirming e-mail of user '${targetUser.getEmail().getValue()}'...`);
+        
+        targetUser.getEmail().unconfirm();
+        await targetUser.save();
 
         return res.json(successResponse());
 
@@ -56,4 +52,4 @@ const EditUserController: RequestHandler = async (req, res, next) => {
     }
 }
 
-export default EditUserController;
+export default UnconfirmEmailController;

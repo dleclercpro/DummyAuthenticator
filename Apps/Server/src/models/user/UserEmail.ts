@@ -37,6 +37,10 @@ class UserEmail {
         this.confirmed = true;
     }
 
+    public unconfirm() {
+        this.confirmed = false;
+    }
+
     public isConfirmed() {
         return this.confirmed;
     }

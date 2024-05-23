@@ -13,11 +13,13 @@ const FlushDatabaseController: RequestHandler = async (req, res, next) => {
     const { session } = req;
 
     try {
+        logger.debug(`Admin user '${session.getEmail()}' is trying to flush database.`);
+
+        // Cannot stop server unless user is an admin
         if (!session.isAdmin) {
             throw new ErrorUserMustBeAdmin();
         }
 
-        logger.debug(`Admin user '${session.getEmail()}' is trying to flush database.`);
         await sleep(new TimeDuration(2, TimeUnit.Second));
         await APP_DB.flush();
         logger.debug(`Flushed database successfully.`);
