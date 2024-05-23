@@ -167,7 +167,7 @@ const SearchPage: React.FC<Props> = () => {
                                             {isAdmin && (
                                                 <td>
                                                     <LoadingButton
-                                                        className={`${classes.button} search`}
+                                                        className={classes.button}
                                                         variant='contained'
                                                         color='error'
                                                         icon={<DeleteIcon />}

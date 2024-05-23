@@ -5,7 +5,6 @@ import { BUTTON_HEIGHT, SPACING } from '../../styles';
 const useAuthPageStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme) => ({
     root: {
         width: '100%',
-        maxWidth: 600,
         padding: spacing(3),
 
         [breakpoints.down('sm')]: {
@@ -47,11 +46,19 @@ const useAuthPageStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme
             textAlign: 'center',
             verticalAlign: 'middle',
             paddingTop: spacing(0.5),
+            paddingBottom: spacing(0.5),
         },
 
-        'thead th': {
+        'thead th, tbody td': {
             borderTop: `1px solid grey`,
             borderBottom: `1px solid grey`,
+        },
+
+        'button': {
+
+            '&:not(:last-of-type)': {
+                marginBottom: spacing(0.5),
+            },
         },
     },
 

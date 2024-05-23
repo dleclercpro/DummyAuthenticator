@@ -79,6 +79,10 @@ class User {
         return this.type;
     }
 
+    public setType(type: UserType) {
+        this.type = type;
+    }
+
     public getUsername() {
         return this.username;
     }

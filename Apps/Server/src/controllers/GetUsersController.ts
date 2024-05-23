@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
 import { HttpStatusCode } from '../types/HTTPTypes';
 import { errorResponse, successResponse } from '../utils/calls';
-import { ErrorUserDoesNotExist, ErrorUserMustBeAdmin } from '../errors/UserErrors';
-import { ClientError, UserType } from '../constants';
+import { ErrorUserDoesNotExist } from '../errors/UserErrors';
+import { ClientError } from '../constants';
 import User from '../models/user/User';
 import { logger } from '../utils/logger';
 
@@ -17,10 +17,6 @@ const GetUsersController: RequestHandler = async (req, res, next) => {
         if (!user) {
             throw new ErrorUserDoesNotExist(email);
         }
-
-        // if (!session.isAdmin()) {
-        //     throw new ErrorUserMustBeAdmin();
-        // }
 
         const users = await User.getAll();
 

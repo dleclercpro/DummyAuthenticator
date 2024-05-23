@@ -15,6 +15,7 @@ import GetUsersController from '../controllers/GetUsersController';
 import StopServerController from '../controllers/StopServerController';
 import StopDatabaseController from '../controllers/StopDatabaseController';
 import SearchUsersController from '../controllers/SearchUsersController';
+import EditUserController from '../controllers/EditUserController';
 
 
 
@@ -31,7 +32,6 @@ APIRouter.get(`/sign-out`, [AuthMiddleware], SignOutController);
 APIRouter.put('/confirm-email', [], ConfirmEmailController);
 APIRouter.post(`/forgot-password`, [], ForgotPasswordController);
 APIRouter.post(`/reset-password`, [], ResetPasswordController);
-APIRouter.delete('/user', [AuthMiddleware], DeleteUserController);
 APIRouter.get('/ping', [AuthMiddleware], PingController);
 
 // Administration
@@ -40,6 +40,8 @@ APIRouter.put('/database/stop', [AuthMiddleware], StopDatabaseController);
 APIRouter.delete('/database', [AuthMiddleware], FlushDatabaseController);
 APIRouter.get('/users', [AuthMiddleware], GetUsersController);
 APIRouter.put('/users', [AuthMiddleware], SearchUsersController);
+APIRouter.post('/user', [AuthMiddleware], EditUserController);
+APIRouter.delete('/user', [AuthMiddleware], DeleteUserController);
 
 // Tokens
 APIRouter.put('/token', [], ValidateTokenController);
