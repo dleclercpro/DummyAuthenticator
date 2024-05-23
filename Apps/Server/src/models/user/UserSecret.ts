@@ -1,7 +1,8 @@
 import { DatedCounter } from '../../types';
+import { getRandomWord } from '../../utils/string';
 
 type SecretArgs = {
-    value: string,
+    value?: string,
     reset?: DatedCounter,
 }
 
@@ -12,7 +13,7 @@ class UserSecret {
     private reset: DatedCounter;
 
     public constructor(args: SecretArgs) {
-        this.value = args.value;
+        this.value = args.value ?? getRandomWord();
         this.reset = args.reset ?? { count: 0, last: null };
     }
 

@@ -13,6 +13,7 @@ import YesNoDialog from '../../dialogs/YesNoDialog';
 import useAuth from '../../../hooks/useAuth';
 import { UserType } from '../../../constants';
 import useUser from '../../../hooks/useUser';
+import UserTypeComparator from '../../../models/UserTypeComparator';
 
 interface Props {
 
@@ -133,48 +134,47 @@ const UsersPage: React.FC<Props> = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {users.sort((a, b) => {
-                                        if (a.type > b.type) return 1;
-                                        if (a.type < b.type) return -1;
-                                        return 0;
-                                    }).map(({ type, email, confirmed }) => (
-                                    <tr key={`admin-${email}`}>
-                                        <td>
-                                            <Typography>
-                                                {email}
-                                            </Typography>
-                                        </td>
-                                        <td>
-                                            {type}
-                                        </td>
-                                        {isAdmin && (
+                                {users
+                                    .sort((a, b) => UserTypeComparator.compare(a.type, b.type))
+                                    .reverse()
+                                    .map(({ type, email, confirmed }) => (
+                                        <tr key={`admin-${email}`}>
                                             <td>
-                                                <LoadingButton
-                                                    className={classes.button}
-                                                    variant='contained'
-                                                    color={type === UserType.Regular ? 'primary' : 'secondary'}
-                                                    icon={type === UserType.Regular ? <PromoteUserIcon /> : <DemoteUserIcon />}
-                                                    loading={isEditingUser && email === selectedUserEmail}
-                                                    disabled={email === userEmail || type === UserType.SuperAdmin}
-                                                    onClick={() => openEditUserConfirmDialog(email, type)}
-                                                >
-                                                    {type === UserType.Regular ? 'Promote' : 'Demote'}
-                                                </LoadingButton>
-                                                <LoadingButton
-                                                    className={classes.button}
-                                                    variant='contained'
-                                                    color='error'
-                                                    icon={<DeleteIcon />}
-                                                    loading={isDeletingUser && email === selectedUserEmail}
-                                                    disabled={email === userEmail || type === UserType.SuperAdmin}
-                                                    onClick={() => openDeleteUserConfirmDialog(email)}
-                                                >
-                                                    Delete
-                                                </LoadingButton>
+                                                <Typography>
+                                                    {email}
+                                                </Typography>
                                             </td>
-                                        )}
-                                    </tr>
-                                ))}
+                                            <td>
+                                                {type}
+                                            </td>
+                                            {isAdmin && (
+                                                <td>
+                                                    <LoadingButton
+                                                        className={classes.button}
+                                                        variant='contained'
+                                                        color={type === UserType.Regular ? 'primary' : 'secondary'}
+                                                        icon={type === UserType.Regular ? <PromoteUserIcon /> : <DemoteUserIcon />}
+                                                        loading={isEditingUser && email === selectedUserEmail}
+                                                        disabled={email === userEmail || type === UserType.SuperAdmin}
+                                                        onClick={() => openEditUserConfirmDialog(email, type)}
+                                                    >
+                                                        {type === UserType.Regular ? 'Promote' : 'Demote'}
+                                                    </LoadingButton>
+                                                    <LoadingButton
+                                                        className={classes.button}
+                                                        variant='contained'
+                                                        color='error'
+                                                        icon={<DeleteIcon />}
+                                                        loading={isDeletingUser && email === selectedUserEmail}
+                                                        disabled={email === userEmail || type === UserType.SuperAdmin}
+                                                        onClick={() => openDeleteUserConfirmDialog(email)}
+                                                    >
+                                                        Delete
+                                                    </LoadingButton>
+                                                </td>
+                                            )}
+                                        </tr>
+                                    ))}
                             </tbody>
                         </table>
                     </div>
