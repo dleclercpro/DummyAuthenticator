@@ -2,6 +2,11 @@ import TimeDuration from '../models/units/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
 import { PROD } from './AppConfig';
 
+export const SUPER_ADMINS = process.env.SUPER_ADMINS!
+    .split(',')
+    .map(str => str.split(':'))
+    .map(([email, password]) => ({ email, password }));
+
 export const ADMINS = process.env.ADMINS!
     .split(',')
     .map(str => str.split(':'))

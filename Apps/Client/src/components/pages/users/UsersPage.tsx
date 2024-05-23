@@ -155,7 +155,7 @@ const UsersPage: React.FC<Props> = () => {
                                                     color={type === UserType.Regular ? 'primary' : 'secondary'}
                                                     icon={type === UserType.Regular ? <PromoteUserIcon /> : <DemoteUserIcon />}
                                                     loading={isEditingUser && email === selectedUserEmail}
-                                                    disabled={email === userEmail}
+                                                    disabled={email === userEmail || type === UserType.SuperAdmin}
                                                     onClick={() => openEditUserConfirmDialog(email, type)}
                                                 >
                                                     {type === UserType.Regular ? 'Promote' : 'Demote'}
@@ -166,7 +166,7 @@ const UsersPage: React.FC<Props> = () => {
                                                     color='error'
                                                     icon={<DeleteIcon />}
                                                     loading={isDeletingUser && email === selectedUserEmail}
-                                                    disabled={email === userEmail}
+                                                    disabled={email === userEmail || type === UserType.SuperAdmin}
                                                     onClick={() => openDeleteUserConfirmDialog(email)}
                                                 >
                                                     Delete

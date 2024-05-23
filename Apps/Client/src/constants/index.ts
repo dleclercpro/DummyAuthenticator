@@ -5,8 +5,9 @@ export enum Environment {
 };
 
 export enum UserType {
-  Regular = 'Regular',
+  SuperAdmin = 'Super Admin',
   Admin = 'Admin',
+  Regular = 'Regular',
 }
 
 export enum TokenType {

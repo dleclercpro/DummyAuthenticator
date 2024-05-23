@@ -5,17 +5,15 @@ import UserLogin from './UserLogin';
 import UserEmail from './UserEmail';
 import UserSecret from './UserSecret';
 import { UserType } from '../../constants';
-import { getRandomWord } from '../../utils/string';
 import { Token } from '../../types/TokenTypes';
-import { logger } from '../../utils/logger';
 
 export interface UserArgs {
     type: UserType,
     username: string,
     email: UserEmail,
     password: UserPassword,
-    login: UserLogin,
-    secret: UserSecret,
+    login?: UserLogin,
+    secret?: UserSecret,
     tokens?: Token[],
 }
 
@@ -35,8 +33,8 @@ class User {
         this.username = args.username;
         this.email = args.email;
         this.password = args.password;
-        this.login = args.login;
-        this.secret = args.secret;
+        this.login = args.login ?? new UserLogin({}),
+        this.secret = args.secret ?? new UserSecret({});
         this.tokens = args.tokens ?? [];
     }
 
@@ -57,7 +55,6 @@ class User {
 
         const user = new User({
             ...args,
-            username: args.email,
             email: UserEmail.deserialize(args.email),
             password: UserPassword.deserialize(args.password),
             login: UserLogin.deserialize(args.login),
@@ -116,7 +113,11 @@ class User {
     }
 
     public isAdmin() {
-        return this.type === UserType.Admin;
+        return this.isSuperAdmin() || this.type === UserType.Admin;
+    }
+
+    public isSuperAdmin() {
+        return this.type === UserType.SuperAdmin;
     }
 
     public async save() {
@@ -170,22 +171,18 @@ class User {
         return resultUsers;
     }
 
-    public static async create(email: string, password: string, isDefault: boolean = false) {
+    public static async create(email: string, password: string, type: UserType = UserType.Regular, confirmed: boolean = false) {
 
         // Create new user
         const user = new User({
-            type: UserType.Regular,
+            type,
             username: email, // Initialize user's username with their e-mail
             email: new UserEmail({
                 value: email,
-                confirmed: isDefault, // Default users do not need to confirm their e-mail
+                confirmed,
             }),
             password: new UserPassword({
                 value: await PasswordManager.hash(password),
-            }),
-            login: new UserLogin({}),
-            secret: new UserSecret({
-                value: getRandomWord(),
             }),
         });
 

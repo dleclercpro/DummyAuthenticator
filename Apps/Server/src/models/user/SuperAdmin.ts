@@ -5,7 +5,7 @@ import UserSecret from './UserSecret';
 import { UserType } from '../../constants';
 import User from './User';
 
-interface AdminArgs {
+interface SuperAdminArgs {
     email: UserEmail,
     password: UserPassword,
     login: UserLogin,
@@ -14,23 +14,23 @@ interface AdminArgs {
 
 
 
-class Admin extends User {
+class SuperAdmin extends User {
 
-    public constructor(args: AdminArgs) {
+    public constructor(args: SuperAdminArgs) {
         super({
             ...args,
-            type: UserType.Admin,
+            type: UserType.SuperAdmin,
             username: args.email.getValue(),
         });
     }
 
     public static async create(email: string, password: string) {
 
-        // Create new admin user
-        const user = await User.create(email, password, UserType.Admin, false);
+        // Create new super admin user
+        const user = await User.create(email, password, UserType.SuperAdmin, true);
 
         return user;
     }
 }
 
-export default Admin;
+export default SuperAdmin;

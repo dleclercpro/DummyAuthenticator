@@ -1,15 +1,17 @@
 import { logger } from '../utils/logger';
-import { ADMINS, USERS } from '../config/AuthConfig';
+import { ADMINS, SUPER_ADMINS, USERS } from '../config/AuthConfig';
 import User from './user/User';
 import { REDIS_ENABLE, REDIS_OPTIONS, REDIS_DATABASE } from '../config/DatabasesConfig';
 import MemoryDatabase from './databases/MemoryDatabase';
 import RedisDatabase from './databases/RedisDatabase';
-import Admin from './user/Admin';
 import { Token } from '../types/TokenTypes';
 import { LoginAttempt } from './user/UserLogin';
 import { computeDate } from '../utils/time';
 import TimeDuration from './units/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
+import SuperAdmin from './user/SuperAdmin';
+import { UserType } from '../constants';
+import Admin from './user/Admin';
 
 
 
@@ -25,6 +27,18 @@ class AppDatabase {
     }
 
     public async setup() {
+
+        // Create super admin users if they don't already exist
+        SUPER_ADMINS.forEach(async ({ email, password }) => {
+            const superAdmin = await User.findByEmail(email);
+            
+            if (superAdmin) {
+                return;
+            }
+
+            await SuperAdmin.create(email, password);
+            logger.trace(`Default super admin user created: ${email}`);
+        });
 
         // Create admin users if they don't already exist
         ADMINS.forEach(async ({ email, password }) => {
@@ -46,7 +60,7 @@ class AppDatabase {
                 return;
             }
 
-            await User.create(email, password, true);
+            await User.create(email, password, UserType.Regular, true);
             logger.trace(`Default regular user created: ${email}`);
         });
 
