@@ -142,9 +142,11 @@ const SearchPage: React.FC<Props> = () => {
                                         <th>
                                             <strong>Type</strong>
                                         </th>
-                                        <th>
-                                            <strong>Actions</strong>
-                                        </th>
+                                        {isAdmin && (
+                                            <th>
+                                                <strong>Actions</strong>
+                                            </th>
+                                        )}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -162,8 +164,8 @@ const SearchPage: React.FC<Props> = () => {
                                             <td>
                                                 {type}
                                             </td>
-                                            <td>
-                                                {isAdmin && (
+                                            {isAdmin && (
+                                                <td>
                                                     <LoadingButton
                                                         className={`${classes.button} search`}
                                                         variant='contained'
@@ -175,8 +177,8 @@ const SearchPage: React.FC<Props> = () => {
                                                     >
                                                         Delete
                                                     </LoadingButton>
-                                                )}
-                                            </td>
+                                                </td>
+                                            )}
                                         </tr>
                                     ))}
                                 </tbody>
