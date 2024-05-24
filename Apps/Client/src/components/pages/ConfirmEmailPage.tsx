@@ -1,21 +1,21 @@
 import { Button, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import useAuthPageStyles from '../AuthPageStyles';
+import usePageStyles from './PageStyles';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import useAuth from '../../../hooks/useAuth';
-import { Page, getURL } from '../../../routes/Router';
+import useAuth from '../../hooks/useAuth';
+import { Page, getURL } from '../../routes/Router';
 import SuccessIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/WarningSharp';
 import BackIcon from '@mui/icons-material/ArrowBack';
-import { ConfirmEmailToken } from '../../../types/TokenTypes';
-import useToken from '../../../hooks/useToken';
+import { ConfirmEmailToken } from '../../types/TokenTypes';
+import useToken from '../../hooks/useToken';
 
 interface Props {
 
 }
 
 const ConfirmEmailPage: React.FC<Props> = () => {
-    const { classes } = useAuthPageStyles();
+    const { classes } = usePageStyles();
     
     const location = useLocation();
     const navigate = useNavigate();

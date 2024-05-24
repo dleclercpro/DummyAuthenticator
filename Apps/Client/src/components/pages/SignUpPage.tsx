@@ -1,62 +1,69 @@
 import { Button, Paper, Typography } from '@mui/material';
-import React, { useState } from 'react';
-import { Severity } from '../../../types/CommonTypes';
-import useAuthPageStyles from '../AuthPageStyles';
-import Snackbar from '../../Snackbar';
-import EmailField from '../../fields/EmailField';
-import LoadingButton from '../../buttons/LoadingButton';
-import SendIcon from '@mui/icons-material/Send';
-import BackIcon from '@mui/icons-material/ArrowBack';
-import useAuth from '../../../hooks/useAuth';
-import { Page, getURL } from '../../../routes/Router';
+import { useState } from 'react';
+import { Severity } from '../../types/CommonTypes';
+import usePageStyles from './PageStyles';
+import Snackbar from '../Snackbar';
 import { Link, useNavigate } from 'react-router-dom';
-import TimeDuration from '../../../models/TimeDuration';
-import { TimeUnit } from '../../../types/TimeTypes';
-import { sleep } from '../../../utils/time';
+import { getURL, Page } from '../../routes/Router';
+import EmailField from '../fields/EmailField';
+import PasswordField from '../fields/PasswordField';
+import LoadingButton from '../buttons/LoadingButton';
+import BackIcon from '@mui/icons-material/ArrowBack';
+import CreateIcon from '@mui/icons-material/Create';
+import useAuth from '../../hooks/useAuth';
+import { sleep } from '../../utils/time';
+import TimeDuration from '../../models/TimeDuration';
+import { TimeUnit } from '../../types/TimeTypes';
 
 interface Props {
 
 }
 
-const ForgotPasswordPage: React.FC<Props> = () => {
-    const { classes } = useAuthPageStyles();
+const SignUpPage: React.FC<Props> = () => {
+    const { classes } = usePageStyles();
 
+    const { signUp } = useAuth();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
+    const [error, setError] = useState('');
 
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const [snackbarOpen, setSnackbarOpen] = useState(!!error);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    const { forgotPassword } = useAuth();
-
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
-        setError(false);
+        setError('');
+    }
+
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(e.target.value);
+        setError('');
     }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        setSnackbarOpen(false);
         setLoading(true);
+        setSnackbarOpen(false);
 
-        return forgotPassword(email)
+        return signUp(email, password)
             .then(async () => {
-                setError(false);
-                setSnackbarMessage('Please check your e-mail to recover your password!');
+                setError('');
+                
+                setSnackbarMessage('You have successfully signed up!');
                 setSnackbarOpen(true);
 
                 await sleep(new TimeDuration(5, TimeUnit.Second));
-            })
-            .then(() => {
+
                 navigate(getURL(Page.Home));
             })
             .catch((err: any) => {
-                setError(true);
+                setError(err.message);
+
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
             })
@@ -73,11 +80,11 @@ const ForgotPasswordPage: React.FC<Props> = () => {
                 onSubmit={handleSubmit}
             >
                 <Typography variant='h1' className={classes.title}>
-                    Forgot your password?
+                    Welcome
                 </Typography>
 
                 <Typography className={classes.text}>
-                    Please enter your e-mail address, and we'll send you an e-mail with a link to recover your password:
+                    Please choose a username and a password to create your account:
                 </Typography>
 
                 <fieldset className={classes.fields}>
@@ -86,8 +93,15 @@ const ForgotPasswordPage: React.FC<Props> = () => {
                         className={classes.field}
                         value={email}
                         error={!!error}
-                        disabled={loading}
                         onChange={handleEmailChange}
+                    />
+
+                    <PasswordField
+                        id='password'
+                        className={classes.field}
+                        value={password}
+                        error={!!error}
+                        onChange={handlePasswordChange}
                     />
                 </fieldset>
 
@@ -99,18 +113,18 @@ const ForgotPasswordPage: React.FC<Props> = () => {
                             to={getURL(Page.SignIn)}
                             color='secondary'
                             startIcon={<BackIcon />}
+                            disabled={loading}
                         >
                             Back
                         </Button>
                         <LoadingButton
                             className={classes.submitButton}
                             type='submit'
-                            icon={<SendIcon />}
+                            icon={<CreateIcon />}
                             loading={loading}
                             error={!!error}
-                            disabled={loading || email === ''}
                         >
-                            Send link
+                            Sign up
                         </LoadingButton>
                     </div>
                 </div>
@@ -119,11 +133,11 @@ const ForgotPasswordPage: React.FC<Props> = () => {
             <Snackbar
                 open={snackbarOpen}
                 message={snackbarMessage}
-                severity={!!error ? Severity.Error : Severity.Success}
+                severity={error ? Severity.Error : Severity.Success}
                 onClose={() => setSnackbarOpen(false)}
             />
         </Paper>
     );
 }
 
-export default ForgotPasswordPage;
+export default SignUpPage;

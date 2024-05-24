@@ -1,20 +1,20 @@
 import { Button, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Severity } from '../../../types/CommonTypes';
-import useHomePageStyles from './HomePageStyles';
-import Snackbar from '../../Snackbar';
+import { Severity } from '../../types/CommonTypes';
+import useDashboardPageStyles from './DashboardPageStyles';
+import Snackbar from '../Snackbar';
 import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PasswordIcon from '@mui/icons-material/Key';
 import DeleteIcon from '@mui/icons-material/Delete';
-import useAuth from '../../../hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
-import { getURL, Page } from '../../../routes/Router';
-import useSecret from '../../../hooks/useSecret';
-import Spinner from '../../Spinner';
-import LoadingButton from '../../buttons/LoadingButton';
-import YesNoDialog from '../../dialogs/YesNoDialog';
-import useDatabase from '../../../hooks/useDatabase';
+import { getURL, Page } from '../../routes/Router';
+import useSecret from '../../hooks/useSecret';
+import Spinner from '../Spinner';
+import LoadingButton from '../buttons/LoadingButton';
+import YesNoDialog from '../dialogs/YesNoDialog';
+import useDatabase from '../../hooks/useDatabase';
 import PeopleIcon from '@mui/icons-material/People';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -23,7 +23,7 @@ interface Props {
 }
 
 const HomePage: React.FC<Props> = () => {
-    const { classes } = useHomePageStyles();
+    const { classes } = useDashboardPageStyles();
 
     const { userEmail, isAdmin, isSuperAdmin, setIsLogged, signOut } = useAuth();
     const secret = useSecret();
@@ -193,7 +193,7 @@ const HomePage: React.FC<Props> = () => {
                     <LoadingButton
                         className={classes.button}
                         icon={<LogoutIcon />}
-                        variant='outlined'
+                        variant='contained'
                         color='secondary'
                         loading={isSigningOut}
                         onClick={openSignOutConfirmDialog}

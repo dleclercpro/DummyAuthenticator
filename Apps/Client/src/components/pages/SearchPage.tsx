@@ -1,9 +1,9 @@
 import { Button, Paper, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import useAuthPageStyles from '../AuthPageStyles';
+import usePageStyles from './PageStyles';
 import SearchIcon from '@mui/icons-material/Search';
 import BackIcon from '@mui/icons-material/ArrowBack';
-import LoadingButton from '../../buttons/LoadingButton';
+import LoadingButton from '../buttons/LoadingButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ConfirmEmailIcon from '@mui/icons-material/MarkEmailReadOutlined';
 import UnconfirmEmailIcon from '@mui/icons-material/MailLockOutlined';
@@ -11,26 +11,26 @@ import PromoteUserIcon from '@mui/icons-material/ArrowCircleUp';
 import DemoteUserIcon from '@mui/icons-material/ArrowCircleDown';
 import BanUserIcon from '@mui/icons-material/Cancel';
 import UnbanUserIcon from '@mui/icons-material/Check';
-import { Page, getURL } from '../../../routes/Router';
+import { Page, getURL } from '../../routes/Router';
 import { Link } from 'react-router-dom';
-import useDatabase from '../../../hooks/useDatabase';
-import YesNoDialog from '../../dialogs/YesNoDialog';
-import useAuth from '../../../hooks/useAuth';
-import { UserType } from '../../../constants';
-import useUser from '../../../hooks/useUser';
-import { UserJSON } from '../../../types/JSONTypes';
-import UserComparators from '../../../models/comparators/UserComparators';
-import { createCompareFunction } from '../../../utils/comparison';
-import useBackdrop from '../../../hooks/useBackdrop';
-import IconButtonWithTooltip from '../../buttons/IconButtonWithTooltip';
-import { SEARCH_MIN_CHARACTERS } from '../../../config/Config';
+import useDatabase from '../../hooks/useDatabase';
+import YesNoDialog from '../dialogs/YesNoDialog';
+import useAuth from '../../hooks/useAuth';
+import { UserType } from '../../constants';
+import useUser from '../../hooks/useUser';
+import { UserJSON } from '../../types/JSONTypes';
+import UserComparators from '../../models/comparators/UserComparators';
+import { createCompareFunction } from '../../utils/comparison';
+import useBackdrop from '../../hooks/useBackdrop';
+import IconButtonWithTooltip from '../buttons/IconButtonWithTooltip';
+import { SEARCH_MIN_CHARACTERS } from '../../config/Config';
 
 interface Props {
 
 }
 
 const SearchPage: React.FC<Props> = () => {
-    const { classes } = useAuthPageStyles();
+    const { classes } = usePageStyles();
 
     const [isSearching, setIsSearching] = useState(false);
 

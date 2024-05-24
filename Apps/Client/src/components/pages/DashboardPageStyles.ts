@@ -1,8 +1,8 @@
 import { Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { BUTTON_HEIGHT, SPACING } from '../../../styles';
+import { BUTTON_HEIGHT, SPACING } from '../../styles';
 
-const useHomePageStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
+const useDashboardPageStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
@@ -63,4 +63,4 @@ const useHomePageStyles = makeStyles()(({ breakpoints, spacing }: Theme) => ({
     },
 }));
 
-export default useHomePageStyles;
+export default useDashboardPageStyles;

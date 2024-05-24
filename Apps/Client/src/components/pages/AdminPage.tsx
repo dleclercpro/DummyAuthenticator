@@ -1,8 +1,8 @@
 import { Button, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Severity } from '../../../types/CommonTypes';
-import useHomePageStyles from '../home/HomePageStyles';
-import Snackbar from '../../Snackbar';
+import { Severity } from '../../types/CommonTypes';
+import useDashboardPageStyles from './DashboardPageStyles';
+import Snackbar from '../Snackbar';
 import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PasswordIcon from '@mui/icons-material/Key';
@@ -11,22 +11,22 @@ import PeopleIcon from '@mui/icons-material/People';
 import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
 import StopServerIcon from '@mui/icons-material/Dangerous';
-import useAuth from '../../../hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
-import { getURL, Page } from '../../../routes/Router';
-import useSecret from '../../../hooks/useSecret';
-import Spinner from '../../Spinner';
-import LoadingButton from '../../buttons/LoadingButton';
-import useDatabase from '../../../hooks/useDatabase';
-import YesNoDialog from '../../dialogs/YesNoDialog';
-import useServer from '../../../hooks/useServer';
+import { getURL, Page } from '../../routes/Router';
+import useSecret from '../../hooks/useSecret';
+import Spinner from '../Spinner';
+import LoadingButton from '../buttons/LoadingButton';
+import useDatabase from '../../hooks/useDatabase';
+import YesNoDialog from '../dialogs/YesNoDialog';
+import useServer from '../../hooks/useServer';
 
 interface Props {
 
 }
 
 const AdminPage: React.FC<Props> = () => {
-    const { classes } = useHomePageStyles();
+    const { classes } = useDashboardPageStyles();
 
     const { isSuperAdmin, userEmail, setIsLogged, signOut } = useAuth();
 
@@ -311,7 +311,7 @@ const AdminPage: React.FC<Props> = () => {
                     
                     <LoadingButton
                         className={classes.button}
-                        variant='outlined'
+                        variant='contained'
                         color='secondary'
                         icon={<LogoutIcon />}
                         loading={isSigningOut}

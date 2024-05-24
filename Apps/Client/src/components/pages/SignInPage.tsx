@@ -1,23 +1,23 @@
 import { Button, Switch, FormControlLabel, Paper, Typography } from '@mui/material';
 import React, { useState } from 'react';
-import { Severity } from '../../../types/CommonTypes';
-import useAuthPageStyles from '../AuthPageStyles';
-import Snackbar from '../../Snackbar';
+import { Severity } from '../../types/CommonTypes';
+import usePageStyles from './PageStyles';
+import Snackbar from '../Snackbar';
 import { Link, useNavigate } from 'react-router-dom';
-import { getURL, Page } from '../../../routes/Router';
-import EmailField from '../../fields/EmailField';
-import PasswordField from '../../fields/PasswordField';
-import LoadingButton from '../../buttons/LoadingButton';
+import { getURL, Page } from '../../routes/Router';
+import EmailField from '../fields/EmailField';
+import PasswordField from '../fields/PasswordField';
+import LoadingButton from '../buttons/LoadingButton';
 import LoginIcon from '@mui/icons-material/Login';
 import KeyIcon from '@mui/icons-material/Key';
-import useAuth from '../../../hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 
 interface Props {
 
 }
 
 const SignInPage: React.FC<Props> = () => {
-    const { classes } = useAuthPageStyles();
+    const { classes } = usePageStyles();
 
     const { signIn } = useAuth();
     const navigate = useNavigate();

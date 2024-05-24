@@ -2,9 +2,11 @@ import { Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { BUTTON_HEIGHT, SPACING } from '../../styles';
 
-const useAuthPageStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme) => ({
+
+const usePageStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme) => ({
     root: {
         width: '100%',
+        maxWidth: 720,
         padding: spacing(2),
 
         [breakpoints.up('sm')]: {
@@ -161,4 +163,4 @@ const useAuthPageStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme
     },
 }));
 
-export default useAuthPageStyles;
+export default usePageStyles;

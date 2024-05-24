@@ -1,8 +1,8 @@
 import { Button, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import useAuthPageStyles from '../AuthPageStyles';
-import useDatabase from '../../../hooks/useDatabase';
-import { Page, getURL } from '../../../routes/Router';
+import usePageStyles from './PageStyles';
+import useDatabase from '../../hooks/useDatabase';
+import { Page, getURL } from '../../routes/Router';
 import { Link } from 'react-router-dom';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -12,22 +12,22 @@ import PromoteUserIcon from '@mui/icons-material/ArrowCircleUp';
 import DemoteUserIcon from '@mui/icons-material/ArrowCircleDown';
 import BanUserIcon from '@mui/icons-material/Cancel';
 import UnbanUserIcon from '@mui/icons-material/Check';
-import YesNoDialog from '../../dialogs/YesNoDialog';
-import useAuth from '../../../hooks/useAuth';
-import { UserType } from '../../../constants';
-import useUser from '../../../hooks/useUser';
-import { UserJSON } from '../../../types/JSONTypes';
-import { createCompareFunction } from '../../../utils/comparison';
-import UserComparators from '../../../models/comparators/UserComparators';
-import useBackdrop from '../../../hooks/useBackdrop';
-import IconButtonWithTooltip from '../../buttons/IconButtonWithTooltip';
+import YesNoDialog from '../dialogs/YesNoDialog';
+import useAuth from '../../hooks/useAuth';
+import { UserType } from '../../constants';
+import useUser from '../../hooks/useUser';
+import { UserJSON } from '../../types/JSONTypes';
+import { createCompareFunction } from '../../utils/comparison';
+import UserComparators from '../../models/comparators/UserComparators';
+import useBackdrop from '../../hooks/useBackdrop';
+import IconButtonWithTooltip from '../buttons/IconButtonWithTooltip';
 
 interface Props {
 
 }
 
 const UsersPage: React.FC<Props> = () => {
-    const { classes } = useAuthPageStyles();
+    const { classes } = usePageStyles();
 
     const backdrop = useBackdrop();
 

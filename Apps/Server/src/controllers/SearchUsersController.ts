@@ -8,10 +8,10 @@ const SearchUsersController: RequestHandler = async (req, res, next) => {
     const { searchText } = req.body;
 
     try {
-        logger.debug(`User '${session.getEmail()}' is searching for users: ${searchText}`);
+        logger.trace(`User '${session.getEmail()}' is searching for users: ${searchText}`);
         
         const users = await User.find(searchText);
-        logger.debug(`Found ${users.length} users matching search criteria.`);
+        logger.trace(`Found ${users.length} users matching search criteria.`);
 
         return res.json(successResponse(
             users.map((user) => ({
