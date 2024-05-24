@@ -13,14 +13,13 @@ const Backdrop: React.FC<Props> = (props) => {
 
     const { classes } = useBackdropStyles();
 
-    const { isVisible, toggle } = useBackdrop();
+    const { isVisible } = useBackdrop();
 
     return (
       <MuiBackdrop
         id={id}
         className={`${classes.root} ${className}`}
         open={isVisible}
-        onClick={toggle}
       >
         <CircularProgress color='inherit' />
       </MuiBackdrop>

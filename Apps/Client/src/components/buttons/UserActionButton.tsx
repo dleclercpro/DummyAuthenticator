@@ -16,8 +16,6 @@ interface Props {
 const UserActionButton: React.FC<Props> = (props) => {
     const { children, user, isSelf, selfText, text, color, disabled, onClick } = props;
 
-    console.log(user.email);
-
     return (
         <IconButtonWithTooltip
             text={isSelf ? selfText : text}

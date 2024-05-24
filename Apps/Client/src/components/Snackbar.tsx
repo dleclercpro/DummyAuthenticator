@@ -1,8 +1,8 @@
 import React from 'react';
 import { Snackbar as MuiSnackbar, Alert } from '@mui/material';
-import { SNACKBAR_DURATION } from '../../config/Config';
+import { SNACKBAR_DURATION } from '../config/Config';
 import useSnackbarStyles from './SnackbarStyles';
-import { Severity } from '../../types/CommonTypes';
+import { Severity } from '../types/CommonTypes';
 
 interface Props {
     id?: string,

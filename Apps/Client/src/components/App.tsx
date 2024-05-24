@@ -10,6 +10,12 @@ import { getExponentialBackoff, sleep } from '../utils/time';
 import { Typography } from '@mui/material';
 import TimeDuration from '../models/TimeDuration';
 import { TimeUnit } from '../types/TimeTypes';
+import Backdrop from './modals/Backdrop';
+import DeleteUserDialog from './dialogs/DeleteUserDialog';
+import BanUserDialog from './dialogs/BanUserDialog';
+import AddToOrRemoveFromFavoriteUsersDialog from './dialogs/AddToOrRemoveFromFavoriteUsersDialog';
+import ConfirmOrInfirmEmailAddressDialog from './dialogs/ConfirmOrInfirmEmailAddressDialog';
+import PromoteOrDemoteUserDialog from './dialogs/PromoteOrDemoteUserDialog';
 
 interface Props {
 
@@ -79,13 +85,23 @@ const App: React.FC<Props> = () => {
     }
     
     return (
-        <Container className={classes.root} maxWidth='lg'>
-            <Router />
-            <div className={classes.status}>
-                <strong className={classes.statusIcon}>{ping.isOnline ? '🟢' : '🔴'}</strong>
-                <p className={classes.version}>{VERSION}</p>
-            </div>
-        </Container>
+        <>
+            <Backdrop />
+
+            <Container className={classes.root} maxWidth='lg'>
+                <Router />
+                <div className={classes.status}>
+                    <strong className={classes.statusIcon}>{ping.isOnline ? '🟢' : '🔴'}</strong>
+                    <p className={classes.version}>{VERSION}</p>
+                </div>
+            </Container>
+
+            <DeleteUserDialog />
+            <BanUserDialog />
+            <AddToOrRemoveFromFavoriteUsersDialog />
+            <ConfirmOrInfirmEmailAddressDialog />
+            <PromoteOrDemoteUserDialog />
+        </>
     );
 }
 

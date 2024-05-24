@@ -8,7 +8,7 @@ import { BackdropContextProvider } from './hooks/useBackdrop';
 import { StylesCache } from './styles';
 import { getAppTheme } from './styles/Theme';
 import './index.css';
-import Backdrop from './components/modals/Backdrop';
+import { DialogContextProvider } from './hooks/useDialog';
 
 // Render DOM
 ReactDOM
@@ -20,12 +20,11 @@ ReactDOM
                     <ThemeProvider theme={getAppTheme()}>
                         <CssBaseline />
                         
-                        <BackdropContextProvider>
-                            <>
+                        <DialogContextProvider>
+                            <BackdropContextProvider>
                                 <App />
-                                <Backdrop />
-                            </>
-                        </BackdropContextProvider>
+                            </BackdropContextProvider>
+                        </DialogContextProvider>
                     </ThemeProvider>
                 </CacheProvider>
             </AuthContextProvider>

@@ -3,7 +3,7 @@ import { makeStyles } from 'tss-react/mui';
 
 const useBackdropStyles = makeStyles()(({ zIndex, palette, spacing }: Theme) => ({
     root: {
-        zIndex: zIndex.drawer + 1,
+        zIndex: zIndex.drawer + 10,
         color: '#ffffff',
     },
 }));

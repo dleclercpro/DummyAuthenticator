@@ -1,7 +1,7 @@
 import { Button, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
-import Snackbar from '../../dialogs/Snackbar';
+import Snackbar from '../../Snackbar';
 import { Link, useNavigate } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
 import EmailField from '../../fields/EmailField';

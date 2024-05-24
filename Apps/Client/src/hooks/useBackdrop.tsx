@@ -38,7 +38,7 @@ const useBackdrop = () => {
 
     const show = () => setIsVisible(true);
     const hide = () => setIsVisible(false);
-    const toggle = isVisible ? () => hide() : () => show();
+    const toggle = isVisible ? hide : show;
 
     return {
         isVisible,

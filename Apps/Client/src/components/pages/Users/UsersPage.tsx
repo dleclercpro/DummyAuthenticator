@@ -37,7 +37,7 @@ const UsersPage: React.FC<Props> = () => {
     const incrementVersion = () => setVersion(version + 1);
 
     const { userEmail, isAdmin, isSuperAdmin } = useAuth();
-    const { isEditingUser, banUser, unbanUser, addUserToFavorites, removeUserFromFavorites, unconfirmUserEmail, confirmUserEmail, demoteUserToRegular, promoteUserToAdmin } = useUser();
+    const { isEditingUser, banUser, unbanUser, addUserToFavorites, removeUserFromFavorites, infirmUserEmail, confirmUserEmail, demoteUserToRegular, promoteUserToAdmin } = useUser();
     const { users, isDeletingUser, getUsers, deleteUser } = useDatabase();
     
     const [selectedUser, setSelectedUser] = useState<UserJSON | null>(null);
@@ -147,7 +147,7 @@ const UsersPage: React.FC<Props> = () => {
         setIsUnconfirmUserEmailConfirmDialogOpen(false);
 
         if (selectedUser.confirmed) {
-            await unconfirmUserEmail(selectedUser.email);
+            await infirmUserEmail(selectedUser.email);
         } else {
             await confirmUserEmail(selectedUser.email);
         }
@@ -268,7 +268,7 @@ const UsersPage: React.FC<Props> = () => {
                                             (a, b) => UserComparators.compareEmail(a.email, b.email)
                                         ]))
                                         .map((user) => (
-                                            <tr key={`admin-${user.email}`}>
+                                            <tr key={`user-${user.email}`}>
                                                 <td>
                                                     <Typography>
                                                         {user.email}

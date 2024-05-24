@@ -1,7 +1,7 @@
 import { Button, Paper, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
-import Snackbar from '../../dialogs/Snackbar';
+import Snackbar from '../../Snackbar';
 import EmailField from '../../fields/EmailField';
 import LoadingButton from '../../buttons/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';

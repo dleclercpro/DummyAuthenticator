@@ -83,7 +83,7 @@ const useUser = () => {
             });
     };
 
-    const unconfirmUserEmail = async (email: string) => {
+    const infirmUserEmail = async (email: string) => {
         setIsEditingUser(true);
 
         return new CallEditUser.default().execute({ email, confirm: false })
@@ -164,7 +164,7 @@ const useUser = () => {
         isEditingUser,
         demoteUserToRegular,
         promoteUserToAdmin,
-        unconfirmUserEmail,
+        infirmUserEmail,
         confirmUserEmail,
         banUser,
         unbanUser,

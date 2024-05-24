@@ -1,7 +1,7 @@
 import { Button, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Severity } from '../../../types/CommonTypes';
-import Snackbar from '../../dialogs/Snackbar';
+import Snackbar from '../../Snackbar';
 import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PasswordIcon from '@mui/icons-material/Key';

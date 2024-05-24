@@ -14,3 +14,11 @@ export enum TokenType {
   ConfirmEmail = 'ConfirmEmail',
   ResetPassword = 'ResetPassword',
 }
+
+export enum DialogName {
+  AddToOrRemoveFromFavoriteUsers = 'AddToOrRemoveFromFavoriteUsers',
+  ConfirmOrInfirmEmailAddress = 'ConfirmOrInfirmEmailAddress',
+  PromoteOrDemoteUser = 'PromoteOrDemoteUser',
+  BanUser = 'BanUser',
+  DeleteUser = 'DeleteUser',
+}
