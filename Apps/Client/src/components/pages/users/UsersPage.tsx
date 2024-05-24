@@ -1,4 +1,4 @@
-import { Button, IconButton, Paper, Typography } from '@mui/material';
+import { Button, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import useAuthPageStyles from '../AuthPageStyles';
 import useDatabase from '../../../hooks/useDatabase';
@@ -239,34 +239,45 @@ const UsersPage: React.FC<Props> = () => {
                                                 </td>
                                                 {isAdmin && (
                                                     <td>
-                                                        <IconButton
-                                                            color={user.type === UserType.Regular ? 'primary' : 'secondary'}
-                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
-                                                            onClick={() => openEditUserConfirmDialog(user)}
-                                                        >
-                                                            {user.type === UserType.Regular ? <PromoteUserIcon /> : <DemoteUserIcon />}
-                                                        </IconButton>
-                                                        <IconButton
-                                                            color='secondary'
-                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin || !user.confirmed}
-                                                            onClick={() => openUnconfirmUserEmailConfirmDialog(user)}
-                                                        >
-                                                            <EmailIcon />
-                                                        </IconButton>
-                                                        <IconButton
-                                                            color={user.banned ? 'success' : 'error'}
-                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
-                                                            onClick={() => openBanUserConfirmDialog(user)}
-                                                        >
-                                                            {user.banned ? <UnbanUserIcon /> : <BanUserIcon />}
-                                                        </IconButton>
-                                                        <IconButton
-                                                            color='error'
-                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
-                                                            onClick={() => openDeleteUserConfirmDialog(user)}
-                                                        >
-                                                            <DeleteIcon />
-                                                        </IconButton>
+                                                        <Tooltip title={user.type === UserType.Regular ? 'Promote user to admin role' : 'Demote admin to regular user'}>
+                                                            <IconButton
+                                                                color={user.type === UserType.Regular ? 'primary' : 'secondary'}
+                                                                disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                                onClick={() => openEditUserConfirmDialog(user)}
+                                                            >
+                                                                {user.type === UserType.Regular ? <PromoteUserIcon /> : <DemoteUserIcon />}
+                                                            </IconButton>
+                                                        </Tooltip>
+
+                                                        <Tooltip title='Unconfirm user e-mail address'>
+                                                            <IconButton
+                                                                color='secondary'
+                                                                disabled={user.email === userEmail || user.type === UserType.SuperAdmin || !user.confirmed}
+                                                                onClick={() => openUnconfirmUserEmailConfirmDialog(user)}
+                                                            >
+                                                                <EmailIcon />
+                                                            </IconButton>
+                                                        </Tooltip>
+
+                                                        <Tooltip title={user.banned ? 'Unban user' : 'Ban user'}>
+                                                            <IconButton
+                                                                color={user.banned ? 'success' : 'error'}
+                                                                disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                                onClick={() => openBanUserConfirmDialog(user)}
+                                                            >
+                                                                {user.banned ? <UnbanUserIcon /> : <BanUserIcon />}
+                                                            </IconButton>
+                                                        </Tooltip>
+
+                                                        <Tooltip title='Delete user'>
+                                                            <IconButton
+                                                                color='error'
+                                                                disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                                onClick={() => openDeleteUserConfirmDialog(user)}
+                                                            >
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </Tooltip>
                                                     </td>
                                                 )}
                                             </tr>
