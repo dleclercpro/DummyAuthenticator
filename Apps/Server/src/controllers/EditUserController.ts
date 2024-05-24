@@ -41,10 +41,14 @@ const EditUserController: RequestHandler = async (req, res, next) => {
             await targetUser.save();
         }
 
-        if (ban) {
-            logger.info(`${user.getType()} user '${user.getEmail().getValue()}' is banning user '${targetUser.getEmail().getValue()}'...`);
+        if (ban !== undefined) {
+            logger.info(`${user.getType()} user '${user.getEmail().getValue()}' is ${ban ? 'banning' : 'unbanning'} user '${targetUser.getEmail().getValue()}'...`);
 
-            targetUser.ban();
+            if (ban) {
+                targetUser.ban();
+            } else {
+                targetUser.unban();
+            }
             await targetUser.save();
         }
 

@@ -61,13 +61,6 @@ const useAuthPageStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme
             borderTop: `1px solid grey`,
             borderBottom: `1px solid grey`,
         },
-
-        'button': {
-
-            '&:not(:last-of-type)': {
-                marginBottom: spacing(0.5),
-            },
-        },
     },
 
     fields: {

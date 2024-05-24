@@ -4,9 +4,11 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './components/App';
 import { AuthContextProvider } from './hooks/useAuth';
+import { BackdropContextProvider } from './hooks/useBackdrop';
 import { StylesCache } from './styles';
 import { getAppTheme } from './styles/Theme';
 import './index.css';
+import Backdrop from './components/Backdrop';
 
 // Render DOM
 ReactDOM
@@ -18,7 +20,12 @@ ReactDOM
                     <ThemeProvider theme={getAppTheme()}>
                         <CssBaseline />
                         
-                        <App />
+                        <BackdropContextProvider>
+                            <>
+                                <App />
+                                <Backdrop />
+                            </>
+                        </BackdropContextProvider>
                     </ThemeProvider>
                 </CacheProvider>
             </AuthContextProvider>

@@ -1,11 +1,11 @@
-import { Button, Paper, TextField, Typography } from '@mui/material';
+import { Button, IconButton, Paper, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import useAuthPageStyles from '../AuthPageStyles';
 import SearchIcon from '@mui/icons-material/Search';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import LoadingButton from '../../buttons/LoadingButton';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EmailIcon from '@mui/icons-material/Email';
+import EmailIcon from '@mui/icons-material/MailLockOutlined';
 import PromoteUserIcon from '@mui/icons-material/ArrowCircleUp';
 import DemoteUserIcon from '@mui/icons-material/ArrowCircleDown';
 import BanUserIcon from '@mui/icons-material/Cancel';
@@ -17,8 +17,10 @@ import YesNoDialog from '../../dialogs/YesNoDialog';
 import useAuth from '../../../hooks/useAuth';
 import { UserType } from '../../../constants';
 import useUser from '../../../hooks/useUser';
-import UserTypeComparator from '../../../models/UserTypeComparator';
 import { UserJSON } from '../../../types/JSONTypes';
+import UserComparators from '../../../models/comparators/UserComparators';
+import { createCompareFunction } from '../../../utils/comparison';
+import useBackdrop from '../../../hooks/useBackdrop';
 
 interface Props {
 
@@ -29,6 +31,8 @@ const SearchPage: React.FC<Props> = () => {
 
     const [isSearching, setIsSearching] = useState(false);
 
+    const backdrop = useBackdrop();
+
     const [value, setValue] = useState('');
     const [error, setError] = useState(false);
 
@@ -37,6 +41,7 @@ const SearchPage: React.FC<Props> = () => {
 
     const { userEmail, isAdmin } = useAuth();
     const { isEditingUser, isUnconfirmingUserEmail, banUser, unbanUser, unconfirmUserEmail, demoteUserToRegular, promoteUserToAdmin } = useUser();
+    const { users, isDeletingUser, setUsers, searchUsers, deleteUser } = useDatabase();
     
     const [selectedUser, setSelectedUser] = useState<UserJSON | null>(null);
 
@@ -44,6 +49,8 @@ const SearchPage: React.FC<Props> = () => {
     const [isBanUserConfirmDialogOpen, setIsBanUserConfirmDialogOpen] = useState(false);
     const [isUnconfirmUserEmailConfirmDialogOpen, setIsUnconfirmUserEmailConfirmDialogOpen] = useState(false);
     const [isDeleteUserConfirmDialogOpen, setIsDeleteUserConfirmDialogOpen] = useState(false);
+
+    const isLoading = isEditingUser || isDeletingUser || isUnconfirmingUserEmail;
 
 
 
@@ -133,10 +140,6 @@ const SearchPage: React.FC<Props> = () => {
         incrementVersion();
     }
 
-
-
-    const { users, isDeletingUser, setUsers, searchUsers, deleteUser } = useDatabase();
-
     const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setValue(e.target.value);
         setError(false);
@@ -154,11 +157,24 @@ const SearchPage: React.FC<Props> = () => {
         setIsSearching(false);
     }
 
+
+    
     // Search everytime the value changes or an action is done
     useEffect(() => {
         handleSearchUsers();
 
     }, [value, version]);
+
+    // Show loading backdrop when calls are being executed
+    useEffect(() => {
+        if (!backdrop.isVisible && isLoading) {
+            backdrop.show();
+        }
+        if (backdrop.isVisible && !isLoading) {
+            backdrop.hide();
+        }
+
+    }, [isLoading]);
 
     return (
         <>
@@ -263,8 +279,10 @@ const SearchPage: React.FC<Props> = () => {
                                     </thead>
                                     <tbody>
                                         {users
-                                            .sort((a, b) => UserTypeComparator.compare(a.type, b.type))
-                                            .reverse()
+                                            .sort(createCompareFunction<UserJSON>([
+                                                (a, b) => UserComparators.compareType(a.type, b.type, true),
+                                                (a, b) => UserComparators.compareEmail(a.email, b.email)
+                                            ]))
                                             .map((user) => (
                                                 <tr key={`admin-${user.email}`}>
                                                     <td>
@@ -277,50 +295,34 @@ const SearchPage: React.FC<Props> = () => {
                                                     </td>
                                                     {isAdmin && (
                                                         <td>
-                                                            <LoadingButton
-                                                                className={classes.button}
-                                                                variant='contained'
+                                                            <IconButton
                                                                 color={user.type === UserType.Regular ? 'primary' : 'secondary'}
-                                                                icon={user.type === UserType.Regular ? <PromoteUserIcon /> : <DemoteUserIcon />}
-                                                                loading={isEditingUser && selectedUser !== null && user.email === selectedUser.email}
                                                                 disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
                                                                 onClick={() => openEditUserConfirmDialog(user)}
                                                             >
-                                                                {user.type === UserType.Regular ? 'Promote' : 'Demote'}
-                                                            </LoadingButton>
-                                                            <LoadingButton
-                                                                className={classes.button}
-                                                                variant='contained'
+                                                                {user.type === UserType.Regular ? <PromoteUserIcon /> : <DemoteUserIcon />}
+                                                            </IconButton>
+                                                            <IconButton
                                                                 color='secondary'
-                                                                icon={<EmailIcon />}
-                                                                loading={isUnconfirmingUserEmail && selectedUser !== null && user.email === selectedUser.email}
-                                                                disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                                disabled={user.email === userEmail || user.type === UserType.SuperAdmin || !user.confirmed}
                                                                 onClick={() => openUnconfirmUserEmailConfirmDialog(user)}
                                                             >
-                                                                Unconfirm
-                                                            </LoadingButton>
-                                                            <LoadingButton
-                                                                className={classes.button}
-                                                                variant='contained'
+                                                                <EmailIcon />
+                                                            </IconButton>
+                                                            <IconButton
                                                                 color={user.banned ? 'success' : 'error'}
-                                                                icon={user.banned ? <UnbanUserIcon /> : <BanUserIcon />}
-                                                                loading={isEditingUser && selectedUser !== null && user.email === selectedUser.email}
                                                                 disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
                                                                 onClick={() => openBanUserConfirmDialog(user)}
                                                             >
-                                                                {user.banned ? 'Unban' : 'Ban'}
-                                                            </LoadingButton>
-                                                            <LoadingButton
-                                                                className={classes.button}
-                                                                variant='contained'
+                                                                {user.banned ? <UnbanUserIcon /> : <BanUserIcon />}
+                                                            </IconButton>
+                                                            <IconButton
                                                                 color='error'
-                                                                icon={<DeleteIcon />}
-                                                                loading={isDeletingUser && selectedUser !== null && user.email === selectedUser.email}
                                                                 disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
                                                                 onClick={() => openDeleteUserConfirmDialog(user)}
                                                             >
-                                                                Delete
-                                                            </LoadingButton>
+                                                                <DeleteIcon />
+                                                            </IconButton>
                                                         </td>
                                                     )}
                                                 </tr>
