@@ -8,7 +8,7 @@ import { BackdropContextProvider } from './hooks/useBackdrop';
 import { StylesCache } from './styles';
 import { getAppTheme } from './styles/Theme';
 import './index.css';
-import Backdrop from './components/Backdrop';
+import Backdrop from './components/modals/Backdrop';
 
 // Render DOM
 ReactDOM

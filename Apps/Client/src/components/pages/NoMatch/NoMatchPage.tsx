@@ -1,9 +1,9 @@
 import { Button, Paper, Typography } from '@mui/material';
 import useNoMatchPageStyles from './NoMatchPageStyles';
 import { Link } from 'react-router-dom';
-import { getURL, Page } from '../../routes/Router';
+import { getURL, Page } from '../../../routes/Router';
 import WarningIcon from '@mui/icons-material/Warning';
-import { Severity } from '../../types/CommonTypes';
+import { Severity } from '../../../types/CommonTypes';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 interface Props {

@@ -1,25 +1,28 @@
-import { Button, Switch, FormControlLabel, Paper, Typography } from '@mui/material';
-import React, { useState } from 'react';
-import { Severity } from '../../types/CommonTypes';
-import usePageStyles from './PageStyles';
-import Snackbar from '../Snackbar';
+import { Button, Paper, Typography } from '@mui/material';
+import { useState } from 'react';
+import { Severity } from '../../../types/CommonTypes';
+import Snackbar from '../../dialogs/Snackbar';
 import { Link, useNavigate } from 'react-router-dom';
-import { getURL, Page } from '../../routes/Router';
-import EmailField from '../fields/EmailField';
-import PasswordField from '../fields/PasswordField';
-import LoadingButton from '../buttons/LoadingButton';
-import LoginIcon from '@mui/icons-material/Login';
-import KeyIcon from '@mui/icons-material/Key';
-import useAuth from '../../hooks/useAuth';
+import { getURL, Page } from '../../../routes/Router';
+import EmailField from '../../fields/EmailField';
+import PasswordField from '../../fields/PasswordField';
+import LoadingButton from '../../buttons/LoadingButton';
+import BackIcon from '@mui/icons-material/ArrowBack';
+import CreateIcon from '@mui/icons-material/Create';
+import useAuth from '../../../hooks/useAuth';
+import { sleep } from '../../../utils/time';
+import TimeDuration from '../../../models/TimeDuration';
+import { TimeUnit } from '../../../types/TimeTypes';
+import useSignUpPageStyles from './SignUpPageStyles';
 
 interface Props {
 
 }
 
-const SignInPage: React.FC<Props> = () => {
-    const { classes } = usePageStyles();
+const SignUpPage: React.FC<Props> = () => {
+    const { classes } = useSignUpPageStyles();
 
-    const { signIn } = useAuth();
+    const { signUp } = useAuth();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
@@ -27,7 +30,6 @@ const SignInPage: React.FC<Props> = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [staySignedIn, setStaySignedIn] = useState(true);
 
     const [snackbarOpen, setSnackbarOpen] = useState(!!error);
     const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -42,26 +44,31 @@ const SignInPage: React.FC<Props> = () => {
         setError('');
     }
 
-    const handleStaySignedInChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setStaySignedIn(e.target.checked);
-    }
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         setLoading(true);
         setSnackbarOpen(false);
 
-        return signIn(email, password, staySignedIn)
-            .then((user) => {
-                navigate(getURL(user.isAdmin || user.isSuperAdmin ? Page.Admin : Page.Home));
+        return signUp(email, password)
+            .then(async () => {
+                setError('');
+                
+                setSnackbarMessage('You have successfully signed up!');
+                setSnackbarOpen(true);
+
+                await sleep(new TimeDuration(5, TimeUnit.Second));
+
+                navigate(getURL(Page.Home));
             })
             .catch((err: any) => {
                 setError(err.message);
-                setLoading(false);
 
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }
 
@@ -73,17 +80,12 @@ const SignInPage: React.FC<Props> = () => {
                 onSubmit={handleSubmit}
             >
                 <Typography variant='h1' className={classes.title}>
-                    Welcome back
+                    Welcome
                 </Typography>
 
-                <Button
-                    className={classes.switchButton}
-                    component={Link}
-                    to={getURL(Page.SignUp)}
-                    color='secondary'
-                >
-                    Not registered yet?
-                </Button>
+                <Typography className={classes.text}>
+                    Please choose a username and a password to create your account:
+                </Typography>
 
                 <fieldset className={classes.fields}>
                     <EmailField
@@ -105,32 +107,25 @@ const SignInPage: React.FC<Props> = () => {
 
                 <div className={classes.buttons}>
                     <div className='top'>
-                        <FormControlLabel
-                            className={classes.staySignedInSwitch}
-                            control={<Switch checked={staySignedIn} onChange={handleStaySignedInChange} name='stay-signed-in' />}
-                            label='Stay signed in?'
-                        />
-
-                        <LoadingButton
-                            className={classes.submitButton}
-                            type='submit'
-                            icon={<LoginIcon />}
-                            loading={loading}
-                            error={!!error}
-                        >
-                            Sign in
-                        </LoadingButton>
-                    </div>
-                    <div className='bottom'>
                         <Button
                             className={classes.linkButton}
                             component={Link}
-                            to={getURL(Page.ForgotPassword)}
+                            to={getURL(Page.SignIn)}
                             color='secondary'
-                            startIcon={<KeyIcon />}
+                            startIcon={<BackIcon />}
+                            disabled={loading}
                         >
-                            Forgot your password?
+                            Back
                         </Button>
+                        <LoadingButton
+                            className={classes.submitButton}
+                            type='submit'
+                            icon={<CreateIcon />}
+                            loading={loading}
+                            error={!!error}
+                        >
+                            Sign up
+                        </LoadingButton>
                     </div>
                 </div>
             </form>
@@ -138,11 +133,11 @@ const SignInPage: React.FC<Props> = () => {
             <Snackbar
                 open={snackbarOpen}
                 message={snackbarMessage}
-                severity={Severity.Error}
+                severity={error ? Severity.Error : Severity.Success}
                 onClose={() => setSnackbarOpen(false)}
             />
         </Paper>
     );
 }
 
-export default SignInPage;
+export default SignUpPage;

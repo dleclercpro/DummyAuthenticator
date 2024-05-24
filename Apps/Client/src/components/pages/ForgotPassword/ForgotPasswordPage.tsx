@@ -1,25 +1,25 @@
 import { Button, Paper, Typography } from '@mui/material';
 import React, { useState } from 'react';
-import { Severity } from '../../types/CommonTypes';
-import usePageStyles from './PageStyles';
-import Snackbar from '../Snackbar';
-import EmailField from '../fields/EmailField';
-import LoadingButton from '../buttons/LoadingButton';
+import { Severity } from '../../../types/CommonTypes';
+import Snackbar from '../../dialogs/Snackbar';
+import EmailField from '../../fields/EmailField';
+import LoadingButton from '../../buttons/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
 import BackIcon from '@mui/icons-material/ArrowBack';
-import useAuth from '../../hooks/useAuth';
-import { Page, getURL } from '../../routes/Router';
+import useAuth from '../../../hooks/useAuth';
+import { Page, getURL } from '../../../routes/Router';
 import { Link, useNavigate } from 'react-router-dom';
-import TimeDuration from '../../models/TimeDuration';
-import { TimeUnit } from '../../types/TimeTypes';
-import { sleep } from '../../utils/time';
+import TimeDuration from '../../../models/TimeDuration';
+import { TimeUnit } from '../../../types/TimeTypes';
+import { sleep } from '../../../utils/time';
+import useForgotPasswordPageStyles from './ForgotPasswordPageStyles';
 
 interface Props {
 
 }
 
 const ForgotPasswordPage: React.FC<Props> = () => {
-    const { classes } = usePageStyles();
+    const { classes } = useForgotPasswordPageStyles();
 
     const navigate = useNavigate();
 

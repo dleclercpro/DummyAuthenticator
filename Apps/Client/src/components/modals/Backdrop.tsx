@@ -1,7 +1,7 @@
 import React from 'react';
 import { Backdrop as MuiBackdrop, CircularProgress } from '@mui/material';
 import useBackdropStyles from './BackdropStyles';
-import useBackdrop from '../hooks/useBackdrop';
+import useBackdrop from '../../hooks/useBackdrop';
 
 interface Props {
     id?: string,

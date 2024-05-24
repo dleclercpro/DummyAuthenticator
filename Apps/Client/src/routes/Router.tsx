@@ -1,17 +1,17 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import NoMatchPage from '../components/pages/NoMatchPage';
-import HomePage from '../components/pages/HomePage';
-import SignInPage from '../components/pages/SignInPage';
-import SignUpPage from '../components/pages/SignUpPage';
+import NoMatchPage from '../components/pages/NoMatch/NoMatchPage';
+import HomePage from '../components/pages/Home/HomePage';
+import SignInPage from '../components/pages/SignIn/SignInPage';
+import SignUpPage from '../components/pages/SignUp/SignUpPage';
 import AuthenticatedRoute from './AuthenticatedRoute';
 import UnauthenticatedRoute from './UnauthenticatedRoute';
-import ForgotPasswordPage from '../components/pages/ForgotPasswordPage';
-import ResetPasswordPage from '../components/pages/ResetPasswordPage';
-import ConfirmEmailPage from '../components/pages/ConfirmEmailPage';
-import AdminPage from '../components/pages/AdminPage';
-import UsersPage from '../components/pages/UsersPage';
-import SearchPage from '../components/pages/SearchPage';
+import ForgotPasswordPage from '../components/pages/ForgotPassword/ForgotPasswordPage';
+import ResetPasswordPage from '../components/pages/ResetPassword/ResetPasswordPage';
+import ConfirmEmailPage from '../components/pages/ConfirmEmail/ConfirmEmailPage';
+import AdminPage from '../components/pages/Admin/AdminPage';
+import UsersPage from '../components/pages/Users/UsersPage';
+import SearchPage from '../components/pages/Search/SearchPage';
 
 export enum Page {
     Home = '',

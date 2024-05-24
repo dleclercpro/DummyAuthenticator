@@ -1,27 +1,27 @@
 import { Button, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { Severity } from '../../types/CommonTypes';
-import usePageStyles from './PageStyles';
-import Snackbar from '../Snackbar';
-import PasswordField from '../fields/PasswordField';
-import LoadingButton from '../buttons/LoadingButton';
+import { Severity } from '../../../types/CommonTypes';
+import Snackbar from '../../dialogs/Snackbar';
+import PasswordField from '../../fields/PasswordField';
+import LoadingButton from '../../buttons/LoadingButton';
 import ResetIcon from '@mui/icons-material/LockReset';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import useAuth from '../../hooks/useAuth';
-import { Page, getURL } from '../../routes/Router';
-import { sleep } from '../../utils/time';
-import TimeDuration from '../../models/TimeDuration';
-import { TimeUnit } from '../../types/TimeTypes';
-import { ResetPasswordToken } from '../../types/TokenTypes';
-import useToken from '../../hooks/useToken';
+import useAuth from '../../../hooks/useAuth';
+import { Page, getURL } from '../../../routes/Router';
+import { sleep } from '../../../utils/time';
+import TimeDuration from '../../../models/TimeDuration';
+import { TimeUnit } from '../../../types/TimeTypes';
+import { ResetPasswordToken } from '../../../types/TokenTypes';
+import useToken from '../../../hooks/useToken';
+import useResetPasswordPageStyles from './ResetPasswordPageStyles';
 
 interface Props {
 
 }
 
 const ResetPasswordPage: React.FC<Props> = () => {
-    const { classes } = usePageStyles();
+    const { classes } = useResetPasswordPageStyles();
     
     const location = useLocation();
     const navigate = useNavigate();
@@ -163,7 +163,7 @@ const ResetPasswordPage: React.FC<Props> = () => {
                             color='secondary'
                             startIcon={<BackIcon />}
                         >
-                            Back to homepage
+                            {isLogged ? 'Back' : 'Back to homepage'}
                         </Button>
                         <LoadingButton
                             className={classes.submitButton}

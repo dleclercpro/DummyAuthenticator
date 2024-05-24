@@ -1,8 +1,7 @@
 import { Button, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import usePageStyles from './PageStyles';
-import useDatabase from '../../hooks/useDatabase';
-import { Page, getURL } from '../../routes/Router';
+import useDatabase from '../../../hooks/useDatabase';
+import { Page, getURL } from '../../../routes/Router';
 import { Link } from 'react-router-dom';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -12,22 +11,23 @@ import PromoteUserIcon from '@mui/icons-material/ArrowCircleUp';
 import DemoteUserIcon from '@mui/icons-material/ArrowCircleDown';
 import BanUserIcon from '@mui/icons-material/Cancel';
 import UnbanUserIcon from '@mui/icons-material/Check';
-import YesNoDialog from '../dialogs/YesNoDialog';
-import useAuth from '../../hooks/useAuth';
-import { UserType } from '../../constants';
-import useUser from '../../hooks/useUser';
-import { UserJSON } from '../../types/JSONTypes';
-import { createCompareFunction } from '../../utils/comparison';
-import UserComparators from '../../models/comparators/UserComparators';
-import useBackdrop from '../../hooks/useBackdrop';
-import IconButtonWithTooltip from '../buttons/IconButtonWithTooltip';
+import YesNoDialog from '../../dialogs/YesNoDialog';
+import useAuth from '../../../hooks/useAuth';
+import { UserType } from '../../../constants';
+import useUser from '../../../hooks/useUser';
+import { UserJSON } from '../../../types/JSONTypes';
+import { createCompareFunction } from '../../../utils/comparison';
+import UserComparators from '../../../models/comparators/UserComparators';
+import useBackdrop from '../../../hooks/useBackdrop';
+import IconButtonWithTooltip from '../../buttons/IconButtonWithTooltip';
+import useUsersPageStyles from './UsersPageStyles';
 
 interface Props {
 
 }
 
 const UsersPage: React.FC<Props> = () => {
-    const { classes } = usePageStyles();
+    const { classes } = useUsersPageStyles();
 
     const backdrop = useBackdrop();
 
@@ -246,7 +246,7 @@ const UsersPage: React.FC<Props> = () => {
                                                 {(isAdmin || isSuperAdmin) && (
                                                     <td>
                                                         <IconButtonWithTooltip
-                                                            text={user.type === UserType.Regular ? 'Promote regular user to admin' : 'Demote admin to regular user'}
+                                                            text={user.type === UserType.SuperAdmin ? 'Super admins cannot be demoted' : (user.type === UserType.Regular ? 'Promote regular user to admin' : 'Demote admin to regular user')}
                                                             color={user.type === UserType.Regular ? 'primary' : 'secondary'}
                                                             disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
                                                             onClick={() => openPromoteUserConfirmDialog(user)}
