@@ -23,6 +23,7 @@ import UserComparators from '../../../models/comparators/UserComparators';
 import { createCompareFunction } from '../../../utils/comparison';
 import useBackdrop from '../../../hooks/useBackdrop';
 import IconButtonWithTooltip from '../../buttons/IconButtonWithTooltip';
+import { SEARCH_MIN_CHARACTERS } from '../../../config/Config';
 
 interface Props {
 
@@ -37,6 +38,8 @@ const SearchPage: React.FC<Props> = () => {
 
     const [value, setValue] = useState('');
     const [error, setError] = useState(false);
+
+    const canSearch = value.length >= SEARCH_MIN_CHARACTERS;
 
     const [version, setVersion] = useState(0);
     const incrementVersion = () => setVersion(version + 1);
@@ -94,7 +97,7 @@ const SearchPage: React.FC<Props> = () => {
 
 
 
-    const handleEditUser = async () => {
+    const handlePromoteUser = async () => {
         if (selectedUser === null) return;
 
         setIsPromoteUserConfirmDialogOpen(false);
@@ -146,20 +149,25 @@ const SearchPage: React.FC<Props> = () => {
         incrementVersion();
     }
 
+
+
     const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setValue(e.target.value);
         setError(false);
     }
 
-    const handleSearchUsers = async () => {
-        setIsSearching(true);
 
-        if (value === '') {
-            setUsers([]);
-        } else {
-            await searchUsers(value);
+
+    const handleSearchUsers = async () => {
+        if (!canSearch) {
+            if (users.length > 0) {
+                setUsers([]);
+            }
+            return;
         }
 
+        setIsSearching(true);
+        await searchUsers(value);
         setIsSearching(false);
     }
 
@@ -196,7 +204,7 @@ const SearchPage: React.FC<Props> = () => {
                 open={isPromoteUserConfirmDialogOpen}
                 title={selectedUser ? `${selectedUser.type === UserType.Regular ? 'Promote' : 'Demote'} user` : ''}
                 text={selectedUser ? `Are you sure you want to ${selectedUser.type === UserType.Regular ? 'promote' : 'demote'} user '${selectedUser.email}'?` : ''}
-                handleYes={handleEditUser}
+                handleYes={handlePromoteUser}
                 handleNo={closePromoteUserConfirmDialog}
                 handleClose={closePromoteUserConfirmDialog}
             />
@@ -228,7 +236,7 @@ const SearchPage: React.FC<Props> = () => {
                     onSubmit={handleSearchUsers}
                 >
                     <Typography className={classes.text}>
-                        Search for users in the database:
+                        {`Enter at least ${SEARCH_MIN_CHARACTERS} characters to search for users in the database:`}
                     </Typography>
 
                     <div className={classes.fields}>

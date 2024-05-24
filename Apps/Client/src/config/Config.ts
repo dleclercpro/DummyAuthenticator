@@ -20,6 +20,9 @@ export const SERVER_RETRY_CONN_MAX_BACKOFF = new TimeDuration(10, TimeUnit.Secon
 // Auth
 export const DISABLE_AUTH = false;
 
+// Search
+export const SEARCH_MIN_CHARACTERS = 3;
+
 // Styles
 export const APP_THEME = 'dark';
 
