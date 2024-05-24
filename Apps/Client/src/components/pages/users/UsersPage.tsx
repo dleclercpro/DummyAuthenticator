@@ -9,6 +9,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EmailIcon from '@mui/icons-material/Email';
 import PromoteUserIcon from '@mui/icons-material/ArrowCircleUp';
 import DemoteUserIcon from '@mui/icons-material/ArrowCircleDown';
+import BanUserIcon from '@mui/icons-material/Cancel';
+import UnbanUserIcon from '@mui/icons-material/Check';
 import LoadingButton from '../../buttons/LoadingButton';
 import YesNoDialog from '../../dialogs/YesNoDialog';
 import useAuth from '../../../hooks/useAuth';
@@ -27,12 +29,14 @@ const UsersPage: React.FC<Props> = () => {
     const incrementVersion = () => setVersion(version + 1);
 
     const { userEmail, isAdmin } = useAuth();
-    const { isEditingUser, isUnconfirmingUserEmail, unconfirmUserEmail, demoteUserToRegular, promoteUserToAdmin } = useUser();
+    const { isEditingUser, isUnconfirmingUserEmail, banUser, unbanUser, unconfirmUserEmail, demoteUserToRegular, promoteUserToAdmin } = useUser();
     
     const [selectedUserEmail, setSelectedUserEmail] = useState('');
     const [selectedUserType, setSelectedUserType] = useState<UserType | null>(null);
+    const [selectedUserBan, setSelectedUserBan] = useState(false);
 
     const [isEditUserConfirmDialogOpen, setIsEditUserConfirmDialogOpen] = useState(false);
+    const [isBanUserConfirmDialogOpen, setIsBanUserConfirmDialogOpen] = useState(false);
     const [isUnconfirmUserEmailConfirmDialogOpen, setIsUnconfirmUserEmailConfirmDialogOpen] = useState(false);
     const [isDeleteUserConfirmDialogOpen, setIsDeleteUserConfirmDialogOpen] = useState(false);
 
@@ -45,6 +49,17 @@ const UsersPage: React.FC<Props> = () => {
         setSelectedUserEmail('');
         setSelectedUserType(null);
         setIsEditUserConfirmDialogOpen(false);
+    }
+
+    const openBanUserConfirmDialog = (email: string, type: UserType) => {
+        setSelectedUserEmail(email);
+        setSelectedUserType(type);
+        setIsBanUserConfirmDialogOpen(true);
+    }
+    const closeBanUserConfirmDialog = () => {
+        setSelectedUserEmail('');
+        setSelectedUserType(null);
+        setIsBanUserConfirmDialogOpen(false);
     }
 
     const openUnconfirmUserEmailConfirmDialog = (email: string, type: UserType) => {
@@ -80,6 +95,18 @@ const UsersPage: React.FC<Props> = () => {
 
         incrementVersion();
     }
+    
+    const handleBanUser = async () => {
+        setIsBanUserConfirmDialogOpen(false);
+
+        if (selectedUserBan) {
+            await unbanUser(selectedUserEmail);
+        } else {
+            await banUser(selectedUserEmail);
+        }
+
+        incrementVersion();
+    }
 
     const handleUnconfirmUserEmail = async () => {
         setIsUnconfirmUserEmailConfirmDialogOpen(false);
@@ -110,6 +137,14 @@ const UsersPage: React.FC<Props> = () => {
 
     return (
         <>
+            <YesNoDialog
+                open={isBanUserConfirmDialogOpen}
+                title={`${selectedUserBan ? 'Unban' : 'Ban'} user`}
+                text={`Are you sure you want to ${selectedUserBan ? 'unban' : 'ban'} user '${selectedUserEmail}'?`}
+                handleYes={handleBanUser}
+                handleNo={closeBanUserConfirmDialog}
+                handleClose={closeBanUserConfirmDialog}
+            />
             <YesNoDialog
                 open={isEditUserConfirmDialogOpen}
                 title={`${selectedUserType === UserType.Regular ? 'Promote' : 'Demote'} user`}
@@ -168,7 +203,7 @@ const UsersPage: React.FC<Props> = () => {
                                 {users
                                     .sort((a, b) => UserTypeComparator.compare(a.type, b.type))
                                     .reverse()
-                                    .map(({ type, email, confirmed }) => (
+                                    .map(({ type, email, banned, confirmed }) => (
                                         <tr key={`admin-${email}`}>
                                             <td>
                                                 <Typography>
@@ -194,13 +229,24 @@ const UsersPage: React.FC<Props> = () => {
                                                     <LoadingButton
                                                         className={classes.button}
                                                         variant='contained'
-                                                        color='error'
+                                                        color='secondary'
                                                         icon={<EmailIcon />}
                                                         loading={isUnconfirmingUserEmail && email === selectedUserEmail}
                                                         disabled={email === userEmail || type === UserType.SuperAdmin}
                                                         onClick={() => openUnconfirmUserEmailConfirmDialog(email, type)}
                                                     >
                                                         Unconfirm
+                                                    </LoadingButton>
+                                                    <LoadingButton
+                                                        className={classes.button}
+                                                        variant='contained'
+                                                        color={banned ? 'success' : 'error'}
+                                                        icon={banned ? <UnbanUserIcon /> : <BanUserIcon />}
+                                                        loading={isEditingUser && email === selectedUserEmail}
+                                                        disabled={email === userEmail || type === UserType.SuperAdmin}
+                                                        onClick={() => openBanUserConfirmDialog(email, type)}
+                                                    >
+                                                        {banned ? 'Unban' : 'Ban'}
                                                     </LoadingButton>
                                                     <LoadingButton
                                                         className={classes.button}

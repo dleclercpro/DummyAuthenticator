@@ -17,6 +17,7 @@ const SearchUsersController: RequestHandler = async (req, res, next) => {
             users.map((user) => ({
                 type: user.getType(),
                 email: user.getEmail().getValue(),
+                banned: user.isBanned(),
                 confirmed: user.getEmail().isConfirmed(),
             })),
         ));

@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { HttpStatusCode } from '../types/HTTPTypes';
 import { errorResponse, successResponse } from '../utils/calls';
-import { ErrorEmailNotConfirmed, ErrorUserDoesNotExist, ErrorUserWrongPassword } from '../errors/UserErrors';
+import { ErrorEmailNotConfirmed, ErrorUserDoesNotExist, ErrorUserIsBanned, ErrorUserWrongPassword } from '../errors/UserErrors';
 import { validate } from 'email-validator';
 import { ErrorInvalidEmail, ErrorNoMoreLoginAttempts } from '../errors/ServerError';
 import { HOURLY_LOGIN_MAX_ATTEMPTS, SESSION_COOKIE } from '../config/AuthConfig';
@@ -35,7 +35,12 @@ const SignInController: RequestHandler = async (req, res, next) => {
             throw new ErrorUserDoesNotExist(email);
         }
 
-        // Is e-mail confirmed?
+        // Is user banned?
+        if (user.isBanned()) {
+            throw new ErrorUserIsBanned(email);
+        }
+
+        // Is user e-mail confirmed?
         if (!user.getEmail().isConfirmed()) {
             throw new ErrorEmailNotConfirmed(user);
         }
@@ -97,6 +102,12 @@ const SignInController: RequestHandler = async (req, res, next) => {
             return res
                 .status(HttpStatusCode.FORBIDDEN)
                 .json(errorResponse(ClientError.UnconfirmedEmail));
+        }
+
+        if (err.code === ErrorUserIsBanned.code) {
+            return res
+                .status(HttpStatusCode.UNAUTHORIZED)
+                .json(errorResponse(ClientError.UserIsBanned));
         }
 
         if (err.code === ErrorNoMoreLoginAttempts.code) {

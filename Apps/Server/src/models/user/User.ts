@@ -9,6 +9,7 @@ import { Token } from '../../types/TokenTypes';
 
 export interface UserArgs {
     type: UserType,
+    banned?: boolean,
     username: string,
     email: UserEmail,
     password: UserPassword,
@@ -21,6 +22,7 @@ export interface UserArgs {
 
 class User {
     protected type: UserType;
+    protected banned: boolean;
     protected username: string;
     protected email: UserEmail;
     protected password: UserPassword;
@@ -30,6 +32,7 @@ class User {
 
     public constructor(args: UserArgs) {
         this.type = args.type;
+        this.banned = args.banned ?? false;
         this.username = args.username;
         this.email = args.email;
         this.password = args.password;
@@ -41,6 +44,7 @@ class User {
     public serialize() {
         return JSON.stringify({
             type: this.type,
+            banned: this.banned,
             username: this.username,
             email: this.email.serialize(),
             password: this.password.serialize(),
@@ -118,6 +122,18 @@ class User {
 
     public isSuperAdmin() {
         return this.type === UserType.SuperAdmin;
+    }
+
+    public isBanned() {
+        return this.banned;
+    }
+
+    public unban() {
+        this.banned = false;
+    }
+
+    public ban() {
+        this.banned = true;
     }
 
     public async save() {

@@ -1,11 +1,11 @@
-import { UserType } from '../../../constants';
+import { UserJSON } from '../../../types/JSONTypes';
 import CallGET from '../base/CallGET';
 
 export interface Data {
 
 }
 
-export type ResponseData = { type: UserType, email: string, confirmed: boolean }[];
+export type ResponseData = UserJSON[];
 
 export interface ErrorResponseData {
 

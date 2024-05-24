@@ -5,14 +5,14 @@ import * as CallDeleteUser from '../models/calls/user/CallDeleteUser';
 import * as CallGetUsers from '../models/calls/user/CallGetUsers';
 import * as CallSearchUsers from '../models/calls/user/CallSearchUsers';
 import { translateServerError } from '../errors/ServerErrors';
-import { UserType } from '../constants';
+import { UserJSON } from '../types/JSONTypes';
 
 const useDatabase = () => {    
     const [isStopping, setIsStopping] = useState(false);
     const [isFlushing, setIsFlushing] = useState(false);
     const [isDeletingUser, setIsDeletingUser] = useState(false);
 
-    const [users, setUsers] = useState<{ type: UserType, email: string, confirmed: boolean }[]>([]);
+    const [users, setUsers] = useState<UserJSON[]>([]);
 
     const stop = async () => {
         setIsStopping(true);

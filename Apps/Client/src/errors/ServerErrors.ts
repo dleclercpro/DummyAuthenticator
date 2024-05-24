@@ -11,6 +11,7 @@ export enum ServerError {
     NewerTokenIssued = 'NEWER_TOKEN_EXISTS',
     UserAlreadyExists = 'USER_ALREADY_EXISTS',
     UserDoesNotExist = 'USER_DOES_NOT_EXIST',
+    UserIsBanned = 'USER_IS_BANNED',
     NoMoreLoginAttempts = 'NO_MORE_LOGIN_ATTEMPTS',
     UnconfirmedEmail = 'UNCONFIRMED_EMAIL',
     PasswordMustBeDifferent = 'PASSWORD_MUST_BE_DIFFERENT',
@@ -32,6 +33,8 @@ export const translateServerError = (err: ServerError) => {
             return 'This user does not exist.';
         case ServerError.UserAlreadyExists:
             return 'This user already exists.';
+        case ServerError.UserIsBanned:
+            return 'You are banned.';
         case ServerError.InvalidToken:
             return 'The token you tried to use is invalid.';
         case ServerError.ExpiredToken:

@@ -8,7 +8,8 @@ import { logger } from '../utils/logger';
 
 type Body = {
     email: string,
-    type: UserType,
+    type?: UserType,
+    ban?: boolean,
  };
 
 const EditUserController: RequestHandler = async (req, res, next) => {
@@ -16,7 +17,7 @@ const EditUserController: RequestHandler = async (req, res, next) => {
 
     try {
         const { session } = req;
-        const { type, email: targetEmail } = req.body as Body;
+        const { email: targetEmail, type, ban } = req.body as Body;
         email = session.getEmail();
 
         const user = await User.findByEmail(email);
@@ -33,11 +34,17 @@ const EditUserController: RequestHandler = async (req, res, next) => {
             throw new ErrorUserDoesNotExist(targetEmail);
         }
 
-        // Edit user type if different
-        if (targetUser.getType() !== type) {
+        if (type && targetUser.getType() !== type) {
             logger.info(`${user.getType()} user '${user.getEmail().getValue()}' is setting user type of user '${targetUser.getEmail().getValue()}' to: ${type}`);
-            
+
             targetUser.setType(type);
+            await targetUser.save();
+        }
+
+        if (ban) {
+            logger.info(`${user.getType()} user '${user.getEmail().getValue()}' is banning user '${targetUser.getEmail().getValue()}'...`);
+
+            targetUser.ban();
             await targetUser.save();
         }
 

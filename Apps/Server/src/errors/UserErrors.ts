@@ -40,3 +40,11 @@ export class ErrorUserMustBeAdmin extends ServerError {
         super(ErrorUserMustBeAdmin.code, `User must be admin to do that!`);
     }
 }
+
+export class ErrorUserIsBanned extends ServerError {
+    public static code = -305;
+    
+    constructor(email: string) {
+        super(ErrorUserIsBanned.code, `User '${email}' is banned!`);
+    }
+}
