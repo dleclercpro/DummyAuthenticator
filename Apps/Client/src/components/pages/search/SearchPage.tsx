@@ -5,8 +5,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import LoadingButton from '../../buttons/LoadingButton';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EmailIcon from '@mui/icons-material/Email';
 import PromoteUserIcon from '@mui/icons-material/ArrowCircleUp';
 import DemoteUserIcon from '@mui/icons-material/ArrowCircleDown';
+import BanUserIcon from '@mui/icons-material/Cancel';
+import UnbanUserIcon from '@mui/icons-material/Check';
 import { Page, getURL } from '../../../routes/Router';
 import { Link } from 'react-router-dom';
 import useDatabase from '../../../hooks/useDatabase';
@@ -15,6 +18,7 @@ import useAuth from '../../../hooks/useAuth';
 import { UserType } from '../../../constants';
 import useUser from '../../../hooks/useUser';
 import UserTypeComparator from '../../../models/UserTypeComparator';
+import { UserJSON } from '../../../types/JSONTypes';
 
 interface Props {
 
@@ -32,53 +36,104 @@ const SearchPage: React.FC<Props> = () => {
     const incrementVersion = () => setVersion(version + 1);
 
     const { userEmail, isAdmin } = useAuth();
-    const { isEditingUser, demoteUserToRegular, promoteUserToAdmin } = useUser();
+    const { isEditingUser, isUnconfirmingUserEmail, banUser, unbanUser, unconfirmUserEmail, demoteUserToRegular, promoteUserToAdmin } = useUser();
     
-    const [selectedUserEmail, setSelectedUserEmail] = useState('');
-    const [selectedUserType, setSelectedUserType] = useState<UserType | null>(null);
+    const [selectedUser, setSelectedUser] = useState<UserJSON | null>(null);
 
     const [isEditUserConfirmDialogOpen, setIsEditUserConfirmDialogOpen] = useState(false);
+    const [isBanUserConfirmDialogOpen, setIsBanUserConfirmDialogOpen] = useState(false);
+    const [isUnconfirmUserEmailConfirmDialogOpen, setIsUnconfirmUserEmailConfirmDialogOpen] = useState(false);
     const [isDeleteUserConfirmDialogOpen, setIsDeleteUserConfirmDialogOpen] = useState(false);
 
-    const openEditUserConfirmDialog = (email: string, type: UserType) => {
-        setSelectedUserEmail(email);
-        setSelectedUserType(type);
+
+
+    const openEditUserConfirmDialog = (user: UserJSON) => {
+        setSelectedUser(user);
         setIsEditUserConfirmDialogOpen(true);
     }
     const closeEditUserConfirmDialog = () => {
-        setSelectedUserEmail('');
-        setSelectedUserType(null);
+        setSelectedUser(null);
         setIsEditUserConfirmDialogOpen(false);
     }
 
-    const openDeleteUserConfirmDialog = (email: string) => {
-        setSelectedUserEmail(email);
+    const openBanUserConfirmDialog = (user: UserJSON) => {
+        setSelectedUser(user);
+        setIsBanUserConfirmDialogOpen(true);
+    }
+    const closeBanUserConfirmDialog = () => {
+        setSelectedUser(null);
+        setIsBanUserConfirmDialogOpen(false);
+    }
+
+    const openUnconfirmUserEmailConfirmDialog = (user: UserJSON) => {
+        setSelectedUser(user);
+        setIsUnconfirmUserEmailConfirmDialogOpen(true);
+    }
+    const closeUnconfirmUserEmailConfirmDialog = () => {
+        setSelectedUser(null);
+        setIsUnconfirmUserEmailConfirmDialogOpen(false);
+    }
+
+    const openDeleteUserConfirmDialog = (user: UserJSON) => {
+        setSelectedUser(user);
         setIsDeleteUserConfirmDialogOpen(true);
     }
     const closeDeleteUserConfirmDialog = () => {
-        setSelectedUserEmail('');
+        setSelectedUser(null);
         setIsDeleteUserConfirmDialogOpen(false);
     }
 
+
+
     const handleEditUser = async () => {
+        if (selectedUser === null) return;
+
         setIsEditUserConfirmDialogOpen(false);
 
-        if (selectedUserType === UserType.Regular) {
-            await promoteUserToAdmin(selectedUserEmail);
+        if (selectedUser.type === UserType.Regular) {
+            await promoteUserToAdmin(selectedUser.email);
         } else {
-            await demoteUserToRegular(selectedUserEmail);
+            await demoteUserToRegular(selectedUser.email);
+        }
+
+        incrementVersion();
+    }
+    
+    const handleBanUser = async () => {
+        if (selectedUser === null) return;
+
+        setIsBanUserConfirmDialogOpen(false);
+
+        if (selectedUser.banned) {
+            await unbanUser(selectedUser.email);
+        } else {
+            await banUser(selectedUser.email);
         }
 
         incrementVersion();
     }
 
-    const handleDeleteUser = async () => {
-        setIsDeleteUserConfirmDialogOpen(false);
+    const handleUnconfirmUserEmail = async () => {
+        if (selectedUser === null) return;
 
-        await deleteUser(selectedUserEmail);
+        setIsUnconfirmUserEmailConfirmDialogOpen(false);
+
+        await unconfirmUserEmail(selectedUser.email);
 
         incrementVersion();
     }
+
+    const handleDeleteUser = async () => {
+        if (selectedUser === null) return;
+
+        setIsDeleteUserConfirmDialogOpen(false);
+
+        await deleteUser(selectedUser.email);
+
+        incrementVersion();
+    }
+
+
 
     const { users, isDeletingUser, setUsers, searchUsers, deleteUser } = useDatabase();
 
@@ -108,17 +163,33 @@ const SearchPage: React.FC<Props> = () => {
     return (
         <>
             <YesNoDialog
+                open={isBanUserConfirmDialogOpen}
+                title={selectedUser ? `${selectedUser.banned ? 'Unban' : 'Ban'} user` : ''}
+                text={selectedUser ? `Are you sure you want to ${selectedUser.banned ? 'unban' : 'ban'} user '${selectedUser.email}'?` : ''}
+                handleYes={handleBanUser}
+                handleNo={closeBanUserConfirmDialog}
+                handleClose={closeBanUserConfirmDialog}
+            />
+            <YesNoDialog
                 open={isEditUserConfirmDialogOpen}
-                title={`${selectedUserType === UserType.Regular ? 'Promote' : 'Demote'} user`}
-                text={`Are you sure you want to ${selectedUserType === UserType.Regular ? 'promote' : 'demote'} user '${selectedUserEmail}'?`}
+                title={selectedUser ? `${selectedUser.type === UserType.Regular ? 'Promote' : 'Demote'} user` : ''}
+                text={selectedUser ? `Are you sure you want to ${selectedUser.type === UserType.Regular ? 'promote' : 'demote'} user '${selectedUser.email}'?` : ''}
                 handleYes={handleEditUser}
                 handleNo={closeEditUserConfirmDialog}
                 handleClose={closeEditUserConfirmDialog}
             />
             <YesNoDialog
+                open={isUnconfirmUserEmailConfirmDialogOpen}
+                title={`Unconfirm e-mail`}
+                text={selectedUser ? `Are you sure you want to unconfirm e-mail address of user '${selectedUser.email}'?` : ''}
+                handleYes={handleUnconfirmUserEmail}
+                handleNo={closeUnconfirmUserEmailConfirmDialog}
+                handleClose={closeUnconfirmUserEmailConfirmDialog}
+            />
+            <YesNoDialog
                 open={isDeleteUserConfirmDialogOpen}
                 title='Delete user'
-                text={`Are you sure you want to delete user '${selectedUserEmail}'?`}
+                text={selectedUser ? `Are you sure you want to delete user '${selectedUser.email}'?` : ''}
                 handleYes={handleDeleteUser}
                 handleNo={closeDeleteUserConfirmDialog}
                 handleClose={closeDeleteUserConfirmDialog}
@@ -193,37 +264,59 @@ const SearchPage: React.FC<Props> = () => {
                                     {users
                                         .sort((a, b) => UserTypeComparator.compare(a.type, b.type))
                                         .reverse()
-                                        .map(({ type, email, confirmed }) => (
-                                            <tr key={`admin-${email}`}>
+                                        .map((user) => (
+                                            <tr key={`admin-${user.email}`}>
                                                 <td>
                                                     <Typography>
-                                                        {email}
+                                                        {user.email}
                                                     </Typography>
                                                 </td>
                                                 <td>
-                                                    {type}
+                                                    {user.type}
                                                 </td>
                                                 {isAdmin && (
                                                     <td>
                                                         <LoadingButton
                                                             className={classes.button}
                                                             variant='contained'
-                                                            color={type === UserType.Regular ? 'primary' : 'secondary'}
-                                                            icon={type === UserType.Regular ? <PromoteUserIcon /> : <DemoteUserIcon />}
-                                                            loading={isEditingUser && email === selectedUserEmail}
-                                                            disabled={email === userEmail || type === UserType.SuperAdmin}
-                                                            onClick={() => openEditUserConfirmDialog(email, type)}
+                                                            color={user.type === UserType.Regular ? 'primary' : 'secondary'}
+                                                            icon={user.type === UserType.Regular ? <PromoteUserIcon /> : <DemoteUserIcon />}
+                                                            loading={isEditingUser && selectedUser !== null && user.email === selectedUser.email}
+                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                            onClick={() => openEditUserConfirmDialog(user)}
                                                         >
-                                                            {type === UserType.Regular ? 'Promote' : 'Demote'}
+                                                            {user.type === UserType.Regular ? 'Promote' : 'Demote'}
+                                                        </LoadingButton>
+                                                        <LoadingButton
+                                                            className={classes.button}
+                                                            variant='contained'
+                                                            color='secondary'
+                                                            icon={<EmailIcon />}
+                                                            loading={isUnconfirmingUserEmail && selectedUser !== null && user.email === selectedUser.email}
+                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                            onClick={() => openUnconfirmUserEmailConfirmDialog(user)}
+                                                        >
+                                                            Unconfirm
+                                                        </LoadingButton>
+                                                        <LoadingButton
+                                                            className={classes.button}
+                                                            variant='contained'
+                                                            color={user.banned ? 'success' : 'error'}
+                                                            icon={user.banned ? <UnbanUserIcon /> : <BanUserIcon />}
+                                                            loading={isEditingUser && selectedUser !== null && user.email === selectedUser.email}
+                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                            onClick={() => openBanUserConfirmDialog(user)}
+                                                        >
+                                                            {user.banned ? 'Unban' : 'Ban'}
                                                         </LoadingButton>
                                                         <LoadingButton
                                                             className={classes.button}
                                                             variant='contained'
                                                             color='error'
                                                             icon={<DeleteIcon />}
-                                                            loading={isDeletingUser && email === selectedUserEmail}
-                                                            disabled={email === userEmail || type === UserType.SuperAdmin}
-                                                            onClick={() => openDeleteUserConfirmDialog(email)}
+                                                            loading={isDeletingUser && selectedUser !== null && user.email === selectedUser.email}
+                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                            onClick={() => openDeleteUserConfirmDialog(user)}
                                                         >
                                                             Delete
                                                         </LoadingButton>
