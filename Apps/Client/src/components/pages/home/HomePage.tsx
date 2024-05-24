@@ -25,7 +25,7 @@ interface Props {
 const HomePage: React.FC<Props> = () => {
     const { classes } = useHomePageStyles();
 
-    const { userEmail, isAdmin, setIsLogged, signOut } = useAuth();
+    const { userEmail, isAdmin, isSuperAdmin, setIsLogged, signOut } = useAuth();
     const secret = useSecret();
 
     const navigate = useNavigate();
@@ -52,7 +52,7 @@ const HomePage: React.FC<Props> = () => {
 
     // Redirect admin
     useEffect(() => {
-        if (isAdmin) {
+        if (isAdmin || isSuperAdmin) {
             navigate(getURL(Page.Admin));
         }
     }, []);
@@ -184,6 +184,7 @@ const HomePage: React.FC<Props> = () => {
                         color='error'
                         icon={<DeleteIcon />}
                         loading={isDeletingUser}
+                        disabled={isSuperAdmin}
                         onClick={openDeleteUserConfirmDialog}
                     >
                         Delete account

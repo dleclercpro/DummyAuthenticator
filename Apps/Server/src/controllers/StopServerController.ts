@@ -12,7 +12,7 @@ const StopServerController: RequestHandler = async (req, res, next) => {
         logger.debug(`Admin user '${session.getEmail()}' is trying to stop server.`);
 
         // Cannot stop server unless user is an admin
-        if (!session.isAdmin()) {
+        if (!session.isAdmin() && !session.isSuperAdmin()) {
             throw new ErrorUserMustBeAdmin();
         }
 

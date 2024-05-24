@@ -24,10 +24,12 @@ interface IAuthContext {
     userEmail: string,
     isLogged: boolean,
     isAdmin: boolean,
+    isSuperAdmin: boolean,
     setIsLogged: (isLogged: boolean) => void,
     setIsAdmin: (isAdmin: boolean) => void,
+    setIsSuperAdmin: (isAdmin: boolean) => void,
     signUp: (email: string, password: string) => Promise<void>,
-    signIn: (email: string, password: string, staySignedIn: boolean) => Promise<{ email: string, isAdmin: boolean }>,
+    signIn: (email: string, password: string, staySignedIn: boolean) => Promise<{ email: string, isAdmin: boolean, isSuperAdmin: boolean }>,
     signOut: () => Promise<void>,
     confirmEmail: (token: string) => Promise<void>,
     forgotPassword: (email: string) => Promise<void>,
@@ -65,6 +67,7 @@ const useAuth = () => {
 
     const [isLogged, setIsLogged] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isSuperAdmin, setIsSuperAdmin] = useState(false);
     const [isOnline, setIsOnline] = useState(false);
 
     const [pingIsLoading, setPingIsLoading] = useState(false);
@@ -82,6 +85,7 @@ const useAuth = () => {
 
             setUserEmail(user.email);
             setIsAdmin(user.isAdmin);
+            setIsSuperAdmin(user.isSuperAdmin);
             setIsLogged(true);
             setPingError('');
 
@@ -92,11 +96,12 @@ const useAuth = () => {
             setIsLogged(false);
             setUserEmail('');
             setIsAdmin(false);
+            setIsSuperAdmin(false);
             setPingError(err.message);
 
             setIsOnline(err.message !== 'NO_SERVER_CONNECTION');
 
-            return { email: '', isAdmin: false };
+            return { email: '', isAdmin: false, isSuperAdmin: false };
         } finally {
             setPingIsLoading(false);
             setPingIsDone(true);
@@ -147,6 +152,7 @@ const useAuth = () => {
 
         setUserEmail(user.email);
         setIsAdmin(user.isAdmin);
+        setIsSuperAdmin(user.isSuperAdmin);
         setIsLogged(true);
 
         return user;
@@ -164,6 +170,7 @@ const useAuth = () => {
             .finally(() => {
                 setIsLogged(false);
                 setIsAdmin(false);
+                setIsSuperAdmin(false);
             });
     }
 
@@ -225,8 +232,10 @@ const useAuth = () => {
         userEmail,
         isLogged,
         isAdmin,
+        isSuperAdmin,
         setIsLogged,
         setIsAdmin,
+        setIsSuperAdmin,
         signUp,
         signIn,
         signOut,

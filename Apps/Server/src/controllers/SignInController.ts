@@ -83,6 +83,7 @@ const SignInController: RequestHandler = async (req, res, next) => {
         return res.json(successResponse({
             email: user.getEmail().getValue(),
             isAdmin: user.isAdmin(),
+            isSuperAdmin: user.isSuperAdmin(),
         }));
 
     } catch (err: any) { 

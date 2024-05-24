@@ -23,7 +23,7 @@ const UnconfirmEmailController: RequestHandler = async (req, res, next) => {
             throw new ErrorUserDoesNotExist(email);
         }
 
-        if (!user.isAdmin()) {
+        if (!user.isAdmin() && !user.isSuperAdmin()) {
             throw new ErrorUserMustBeAdmin();
         }
 

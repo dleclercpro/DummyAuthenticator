@@ -32,7 +32,7 @@ const UsersPage: React.FC<Props> = () => {
     const [version, setVersion] = useState(0);
     const incrementVersion = () => setVersion(version + 1);
 
-    const { userEmail, isAdmin } = useAuth();
+    const { userEmail, isAdmin, isSuperAdmin } = useAuth();
     const { isEditingUser, isUnconfirmingUserEmail, banUser, unbanUser, unconfirmUserEmail, demoteUserToRegular, promoteUserToAdmin } = useUser();
     const { users, isDeletingUser, getUsers, deleteUser } = useDatabase();
     
@@ -214,7 +214,7 @@ const UsersPage: React.FC<Props> = () => {
                                         <th>
                                             <strong>Type</strong>
                                         </th>
-                                        {isAdmin && (
+                                        {(isAdmin || isSuperAdmin) && (
                                             <th>
                                                 <strong>Actions</strong>
                                             </th>
@@ -237,7 +237,7 @@ const UsersPage: React.FC<Props> = () => {
                                                 <td>
                                                     {user.type}
                                                 </td>
-                                                {isAdmin && (
+                                                {(isAdmin || isSuperAdmin) && (
                                                     <td>
                                                         <Tooltip title={user.type === UserType.Regular ? 'Promote user to admin role' : 'Demote admin to regular user'}>
                                                             <IconButton

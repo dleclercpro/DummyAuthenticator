@@ -9,6 +9,7 @@ export interface Data {
 export type ResponseData = {
     email: string,
     isAdmin: boolean,
+    isSuperAdmin: boolean,
 };
 
 export interface ErrorResponseData {

@@ -48,7 +48,7 @@ class Session {
     }
 
     public isAdmin() {
-        return this.isSuperAdmin() || this.userType === UserType.Admin;
+        return this.userType === UserType.Admin;
     }
 
     public isSuperAdmin() {

@@ -39,7 +39,7 @@ const SearchPage: React.FC<Props> = () => {
     const [version, setVersion] = useState(0);
     const incrementVersion = () => setVersion(version + 1);
 
-    const { userEmail, isAdmin } = useAuth();
+    const { userEmail, isAdmin, isSuperAdmin } = useAuth();
     const { isEditingUser, isUnconfirmingUserEmail, banUser, unbanUser, unconfirmUserEmail, demoteUserToRegular, promoteUserToAdmin } = useUser();
     const { users, isDeletingUser, setUsers, searchUsers, deleteUser } = useDatabase();
     
@@ -270,7 +270,7 @@ const SearchPage: React.FC<Props> = () => {
                                             <th>
                                                 <strong>Type</strong>
                                             </th>
-                                            {isAdmin && (
+                                            {(isAdmin || isSuperAdmin) && (
                                                 <th>
                                                     <strong>Actions</strong>
                                                 </th>
@@ -293,7 +293,7 @@ const SearchPage: React.FC<Props> = () => {
                                                     <td>
                                                         {user.type}
                                                     </td>
-                                                    {isAdmin && (
+                                                    {(isAdmin || isSuperAdmin) && (
                                                         <td>
                                                             <Tooltip title={user.type === UserType.Regular ? 'Promote user to admin' : 'Demote admin to regular user'}>
                                                                 <IconButton

@@ -28,7 +28,7 @@ interface Props {
 const AdminPage: React.FC<Props> = () => {
     const { classes } = useHomePageStyles();
 
-    const { userEmail, setIsLogged, signOut } = useAuth();
+    const { isSuperAdmin, userEmail, setIsLogged, signOut } = useAuth();
 
     const secret = useSecret();
     const server = useServer();
@@ -267,6 +267,7 @@ const AdminPage: React.FC<Props> = () => {
                         color='error'
                         icon={<DeleteIcon />}
                         loading={db.isDeletingUser}
+                        disabled={isSuperAdmin}
                         onClick={openDeleteUserConfirmDialog}
                     >
                         Delete account
@@ -278,6 +279,7 @@ const AdminPage: React.FC<Props> = () => {
                         color='error'
                         icon={<DatabaseIcon />}
                         loading={db.isFlushing}
+                        disabled={!isSuperAdmin}
                         onClick={openFlushDatabaseConfirmDialog}
                     >
                         Flush database
@@ -289,6 +291,7 @@ const AdminPage: React.FC<Props> = () => {
                         color='error'
                         icon={<StopServerIcon />}
                         loading={db.isStopping}
+                        disabled={!isSuperAdmin}
                         onClick={openStoppingDatabaseConfirmDialog}
                     >
                         Stop database
@@ -300,6 +303,7 @@ const AdminPage: React.FC<Props> = () => {
                         color='error'
                         icon={<StopServerIcon />}
                         loading={server.isStopping}
+                        disabled={!isSuperAdmin}
                         onClick={openStoppingServerConfirmDialog}
                     >
                         Stop server

@@ -27,7 +27,7 @@ class Admin extends User {
     public static async create(email: string, password: string) {
 
         // Create new admin user
-        const user = await User.create(email, password, UserType.Admin, false);
+        const user = await User.create(email, password, UserType.Admin, true);
 
         return user;
     }

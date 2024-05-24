@@ -8,6 +8,7 @@ const PingController: RequestHandler = async (req, res, next) => {
         return res.json(successResponse({
             email: session.getEmail(),
             isAdmin: session.isAdmin(),
+            isSuperAdmin: session.isSuperAdmin(),
         }));
 
     } catch (err: any) {

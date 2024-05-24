@@ -117,7 +117,7 @@ class User {
     }
 
     public isAdmin() {
-        return this.isSuperAdmin() || this.type === UserType.Admin;
+        return this.type === UserType.Admin;
     }
 
     public isSuperAdmin() {
