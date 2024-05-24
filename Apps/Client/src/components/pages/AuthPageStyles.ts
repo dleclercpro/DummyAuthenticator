@@ -10,11 +10,6 @@ const useAuthPageStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme
         [breakpoints.up('sm')]: {
             padding: spacing(3),
         },
-
-        [breakpoints.up('lg')]: {
-            maxHeight: `calc(100vh - 100px)`,
-            overflowY: 'auto',
-        },
     },
     
     form: {
@@ -38,6 +33,14 @@ const useAuthPageStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme
     text: {
         marginTop: spacing(2 * SPACING),
         marginBottom: spacing(1 * SPACING),
+    },
+
+    tableContainer: {
+
+        [breakpoints.up('lg')]: {
+            maxHeight: 640,
+            overflowY: 'auto',
+        },
     },
 
     table: {

@@ -244,88 +244,90 @@ const SearchPage: React.FC<Props> = () => {
                                 List of users that match your search criteria:
                             </Typography>
 
-                            <table className={classes.table}>
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            <strong>E-mail</strong>
-                                        </th>
-                                        <th>
-                                            <strong>Type</strong>
-                                        </th>
-                                        {isAdmin && (
+                            <div className={classes.tableContainer}>
+                                <table className={classes.table}>
+                                    <thead>
+                                        <tr>
                                             <th>
-                                                <strong>Actions</strong>
+                                                <strong>E-mail</strong>
                                             </th>
-                                        )}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {users
-                                        .sort((a, b) => UserTypeComparator.compare(a.type, b.type))
-                                        .reverse()
-                                        .map((user) => (
-                                            <tr key={`admin-${user.email}`}>
-                                                <td>
-                                                    <Typography>
-                                                        {user.email}
-                                                    </Typography>
-                                                </td>
-                                                <td>
-                                                    {user.type}
-                                                </td>
-                                                {isAdmin && (
+                                            <th>
+                                                <strong>Type</strong>
+                                            </th>
+                                            {isAdmin && (
+                                                <th>
+                                                    <strong>Actions</strong>
+                                                </th>
+                                            )}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {users
+                                            .sort((a, b) => UserTypeComparator.compare(a.type, b.type))
+                                            .reverse()
+                                            .map((user) => (
+                                                <tr key={`admin-${user.email}`}>
                                                     <td>
-                                                        <LoadingButton
-                                                            className={classes.button}
-                                                            variant='contained'
-                                                            color={user.type === UserType.Regular ? 'primary' : 'secondary'}
-                                                            icon={user.type === UserType.Regular ? <PromoteUserIcon /> : <DemoteUserIcon />}
-                                                            loading={isEditingUser && selectedUser !== null && user.email === selectedUser.email}
-                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
-                                                            onClick={() => openEditUserConfirmDialog(user)}
-                                                        >
-                                                            {user.type === UserType.Regular ? 'Promote' : 'Demote'}
-                                                        </LoadingButton>
-                                                        <LoadingButton
-                                                            className={classes.button}
-                                                            variant='contained'
-                                                            color='secondary'
-                                                            icon={<EmailIcon />}
-                                                            loading={isUnconfirmingUserEmail && selectedUser !== null && user.email === selectedUser.email}
-                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
-                                                            onClick={() => openUnconfirmUserEmailConfirmDialog(user)}
-                                                        >
-                                                            Unconfirm
-                                                        </LoadingButton>
-                                                        <LoadingButton
-                                                            className={classes.button}
-                                                            variant='contained'
-                                                            color={user.banned ? 'success' : 'error'}
-                                                            icon={user.banned ? <UnbanUserIcon /> : <BanUserIcon />}
-                                                            loading={isEditingUser && selectedUser !== null && user.email === selectedUser.email}
-                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
-                                                            onClick={() => openBanUserConfirmDialog(user)}
-                                                        >
-                                                            {user.banned ? 'Unban' : 'Ban'}
-                                                        </LoadingButton>
-                                                        <LoadingButton
-                                                            className={classes.button}
-                                                            variant='contained'
-                                                            color='error'
-                                                            icon={<DeleteIcon />}
-                                                            loading={isDeletingUser && selectedUser !== null && user.email === selectedUser.email}
-                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
-                                                            onClick={() => openDeleteUserConfirmDialog(user)}
-                                                        >
-                                                            Delete
-                                                        </LoadingButton>
+                                                        <Typography>
+                                                            {user.email}
+                                                        </Typography>
                                                     </td>
-                                                )}
-                                            </tr>
-                                        ))}
-                                </tbody>
-                            </table>
+                                                    <td>
+                                                        {user.type}
+                                                    </td>
+                                                    {isAdmin && (
+                                                        <td>
+                                                            <LoadingButton
+                                                                className={classes.button}
+                                                                variant='contained'
+                                                                color={user.type === UserType.Regular ? 'primary' : 'secondary'}
+                                                                icon={user.type === UserType.Regular ? <PromoteUserIcon /> : <DemoteUserIcon />}
+                                                                loading={isEditingUser && selectedUser !== null && user.email === selectedUser.email}
+                                                                disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                                onClick={() => openEditUserConfirmDialog(user)}
+                                                            >
+                                                                {user.type === UserType.Regular ? 'Promote' : 'Demote'}
+                                                            </LoadingButton>
+                                                            <LoadingButton
+                                                                className={classes.button}
+                                                                variant='contained'
+                                                                color='secondary'
+                                                                icon={<EmailIcon />}
+                                                                loading={isUnconfirmingUserEmail && selectedUser !== null && user.email === selectedUser.email}
+                                                                disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                                onClick={() => openUnconfirmUserEmailConfirmDialog(user)}
+                                                            >
+                                                                Unconfirm
+                                                            </LoadingButton>
+                                                            <LoadingButton
+                                                                className={classes.button}
+                                                                variant='contained'
+                                                                color={user.banned ? 'success' : 'error'}
+                                                                icon={user.banned ? <UnbanUserIcon /> : <BanUserIcon />}
+                                                                loading={isEditingUser && selectedUser !== null && user.email === selectedUser.email}
+                                                                disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                                onClick={() => openBanUserConfirmDialog(user)}
+                                                            >
+                                                                {user.banned ? 'Unban' : 'Ban'}
+                                                            </LoadingButton>
+                                                            <LoadingButton
+                                                                className={classes.button}
+                                                                variant='contained'
+                                                                color='error'
+                                                                icon={<DeleteIcon />}
+                                                                loading={isDeletingUser && selectedUser !== null && user.email === selectedUser.email}
+                                                                disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                                onClick={() => openDeleteUserConfirmDialog(user)}
+                                                            >
+                                                                Delete
+                                                            </LoadingButton>
+                                                        </td>
+                                                    )}
+                                                </tr>
+                                            ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </>
                     )}
                 </div>
