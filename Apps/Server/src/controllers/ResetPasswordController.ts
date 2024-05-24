@@ -130,7 +130,7 @@ const ResetPasswordController: RequestHandler = async (req, res, next) => {
         if (err.code === ErrorNewPasswordMustBeDifferent.code) {
             return res
                 .status(HttpStatusCode.BAD_REQUEST)
-                .json(errorResponse(ClientError.PasswordMustBeDifferent));
+                .json(errorResponse(ClientError.NewPasswordMustBeDifferent));
         }
 
         next(err);

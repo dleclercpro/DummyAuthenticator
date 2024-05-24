@@ -20,7 +20,8 @@ export enum ClientError {
   UserAlreadyExists = 'USER_ALREADY_EXISTS',
   UserDoesNotExist = 'USER_DOES_NOT_EXIST',
   UserIsBanned = 'USER_IS_BANNED',
+  UserMustBeAdmin = 'USER_MUST_BE_ADMIN',
   NoMoreLoginAttempts = 'NO_MORE_LOGIN_ATTEMPTS',
   UnconfirmedEmail = 'UNCONFIRMED_EMAIL',
-  PasswordMustBeDifferent = 'PASSWORD_MUST_BE_DIFFERENT',
+  NewPasswordMustBeDifferent = 'NEW_PASSWORD_MUST_BE_DIFFERENT',
 }

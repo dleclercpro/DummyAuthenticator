@@ -22,6 +22,7 @@ const DeleteUserController: RequestHandler = async (req, res, next) => {
         }
         
         await sleep(new TimeDuration(2, TimeUnit.Second));
+        
         await APP_DB.delete(`user:${email}`);
         logger.debug(`Deleted user successfully.`);
 

@@ -3,6 +3,7 @@ import CallPOST from '../base/CallPOST';
 
 export interface Data {
     email: string,
+    confirm?: boolean,
     type?: UserType,
     ban?: boolean,
 }

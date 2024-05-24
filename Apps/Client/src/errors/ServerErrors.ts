@@ -12,9 +12,10 @@ export enum ServerError {
     UserAlreadyExists = 'USER_ALREADY_EXISTS',
     UserDoesNotExist = 'USER_DOES_NOT_EXIST',
     UserIsBanned = 'USER_IS_BANNED',
+    UserMustBeAdmin = 'USER_MUST_BE_ADMIN',
     NoMoreLoginAttempts = 'NO_MORE_LOGIN_ATTEMPTS',
     UnconfirmedEmail = 'UNCONFIRMED_EMAIL',
-    PasswordMustBeDifferent = 'PASSWORD_MUST_BE_DIFFERENT',
+    NewPasswordMustBeDifferent = 'NEW_PASSWORD_MUST_BE_DIFFERENT',
 }
 
 export const translateServerError = (err: ServerError) => {
@@ -35,6 +36,8 @@ export const translateServerError = (err: ServerError) => {
             return 'This user already exists.';
         case ServerError.UserIsBanned:
             return 'You are banned.';
+        case ServerError.UserMustBeAdmin:
+            return 'You must be admin to do that.';
         case ServerError.InvalidToken:
             return 'The token you tried to use is invalid.';
         case ServerError.ExpiredToken:
@@ -47,7 +50,7 @@ export const translateServerError = (err: ServerError) => {
             return 'You have tried to log in without success too many times. A maximum of {{ MAX_ATTEMPTS }} login failures are allowed per hour.';
         case ServerError.UnconfirmedEmail:
             return 'Please confirm your e-mail address, and then try logging in again.';
-        case ServerError.PasswordMustBeDifferent:
+        case ServerError.NewPasswordMustBeDifferent:
             return 'New password must be different than the previous one!';
         default:
             return 'UNKNOWN_ERROR';

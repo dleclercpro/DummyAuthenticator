@@ -1,8 +1,9 @@
 import pino from 'pino';
-import { PROD } from '../config/AppConfig';
+import { ENV, PROD } from '../config/AppConfig';
+import { Environment } from '../types';
 
-const DEFAULT_OPTIONS = {
-    level: 'trace',
+const DEV_OPTIONS = {
+    level: 'debug',
     transport: {
         target: 'pino-pretty',
         options: {
@@ -12,7 +13,26 @@ const DEFAULT_OPTIONS = {
 };
 
 const PROD_OPTIONS = {
-    level: 'debug',
+    level: 'info',
 };
 
-export const logger = pino(PROD ? PROD_OPTIONS : DEFAULT_OPTIONS);
+const getLogger = (env: Environment) => {
+    switch (env) {
+        case Environment.Development:
+            return pino(DEV_OPTIONS);
+        case Environment.Production:
+            return pino(PROD_OPTIONS);
+        default:
+            return pino({
+                level: 'trace',
+                transport: {
+                    target: 'pino-pretty',
+                    options: {
+                        colorize: true,
+                    },
+                },
+            });
+    }
+} 
+
+export const logger = getLogger(ENV);

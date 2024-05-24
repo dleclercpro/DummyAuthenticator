@@ -5,7 +5,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import LoadingButton from '../../buttons/LoadingButton';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EmailIcon from '@mui/icons-material/MailLockOutlined';
+import ConfirmEmailIcon from '@mui/icons-material/MarkEmailReadOutlined';
+import UnconfirmEmailIcon from '@mui/icons-material/MailLockOutlined';
 import PromoteUserIcon from '@mui/icons-material/ArrowCircleUp';
 import DemoteUserIcon from '@mui/icons-material/ArrowCircleDown';
 import BanUserIcon from '@mui/icons-material/Cancel';
@@ -40,7 +41,7 @@ const SearchPage: React.FC<Props> = () => {
     const incrementVersion = () => setVersion(version + 1);
 
     const { userEmail, isAdmin, isSuperAdmin } = useAuth();
-    const { isEditingUser, isUnconfirmingUserEmail, banUser, unbanUser, unconfirmUserEmail, demoteUserToRegular, promoteUserToAdmin } = useUser();
+    const { isEditingUser, banUser, unbanUser, unconfirmUserEmail, confirmUserEmail, demoteUserToRegular, promoteUserToAdmin } = useUser();
     const { users, isDeletingUser, setUsers, searchUsers, deleteUser } = useDatabase();
     
     const [selectedUser, setSelectedUser] = useState<UserJSON | null>(null);
@@ -50,7 +51,7 @@ const SearchPage: React.FC<Props> = () => {
     const [isUnconfirmUserEmailConfirmDialogOpen, setIsUnconfirmUserEmailConfirmDialogOpen] = useState(false);
     const [isDeleteUserConfirmDialogOpen, setIsDeleteUserConfirmDialogOpen] = useState(false);
 
-    const isLoading = isEditingUser || isDeletingUser || isUnconfirmingUserEmail;
+    const isLoading = isEditingUser || isDeletingUser;
 
 
 
@@ -125,7 +126,11 @@ const SearchPage: React.FC<Props> = () => {
 
         setIsUnconfirmUserEmailConfirmDialogOpen(false);
 
-        await unconfirmUserEmail(selectedUser.email);
+        if (selectedUser.confirmed) {
+            await unconfirmUserEmail(selectedUser.email);
+        } else {
+            await confirmUserEmail(selectedUser.email);
+        }
 
         incrementVersion();
     }
@@ -196,8 +201,8 @@ const SearchPage: React.FC<Props> = () => {
             />
             <YesNoDialog
                 open={isUnconfirmUserEmailConfirmDialogOpen}
-                title={`Unconfirm e-mail`}
-                text={selectedUser ? `Are you sure you want to unconfirm e-mail address of user '${selectedUser.email}'?` : ''}
+                title={selectedUser ? `${selectedUser.confirmed ? 'Unconfirm' : 'Confirm'} e-mail` : ''}
+                text={selectedUser ? `Are you sure you want to ${selectedUser.confirmed ? 'unconfirm' : 'confirm'} the e-mail address of user '${selectedUser.email}'?` : ''}
                 handleYes={handleUnconfirmUserEmail}
                 handleNo={closeUnconfirmUserEmailConfirmDialog}
                 handleClose={closeUnconfirmUserEmailConfirmDialog}
@@ -305,13 +310,13 @@ const SearchPage: React.FC<Props> = () => {
                                                                 </IconButton>
                                                             </Tooltip>
 
-                                                            <Tooltip title='Unconfirm user e-mail address'>
+                                                            <Tooltip title={user.confirmed ? `Unconfirm user's e-mail address` : `Confirm user's e-mail address`}>
                                                                 <IconButton
-                                                                    color='secondary'
-                                                                    disabled={user.email === userEmail || user.type === UserType.SuperAdmin || !user.confirmed}
+                                                                    color={user.confirmed ? 'error' : 'success'}
+                                                                    disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
                                                                     onClick={() => openUnconfirmUserEmailConfirmDialog(user)}
                                                                 >
-                                                                    <EmailIcon />
+                                                                    {user.confirmed ? <UnconfirmEmailIcon /> : <ConfirmEmailIcon />}
                                                                 </IconButton>
                                                             </Tooltip>
 
