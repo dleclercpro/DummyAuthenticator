@@ -166,7 +166,7 @@ const SearchPage: React.FC<Props> = () => {
                     </div>
                 </form>
 
-                <div className={`${classes.form} users`}>
+                <div className={`${classes.form} search`}>
                     {users.length > 0 && (
                         <>
                             <Typography className={classes.text}>

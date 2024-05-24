@@ -5,10 +5,15 @@ import { BUTTON_HEIGHT, SPACING } from '../../styles';
 const useAuthPageStyles = makeStyles()(({ palette, breakpoints, spacing }: Theme) => ({
     root: {
         width: '100%',
-        padding: spacing(3),
+        padding: spacing(2),
 
-        [breakpoints.down('sm')]: {
-            padding: spacing(2),
+        [breakpoints.up('sm')]: {
+            padding: spacing(3),
+        },
+
+        [breakpoints.up('lg')]: {
+            maxHeight: `calc(100vh - 100px)`,
+            overflowY: 'auto',
         },
     },
     

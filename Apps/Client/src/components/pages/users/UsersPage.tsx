@@ -131,6 +131,8 @@ const UsersPage: React.FC<Props> = () => {
 
     }, [version]);
 
+
+
     if (!users) {
         return null;
     }
@@ -171,9 +173,7 @@ const UsersPage: React.FC<Props> = () => {
             />
 
             <Paper elevation={8} className={classes.root}>
-                <div
-                    className={`${classes.form} users`}
-                >
+                <div className={`${classes.form} users`}>
                     <Typography variant='h1' className={classes.title}>
                         Users
                     </Typography>

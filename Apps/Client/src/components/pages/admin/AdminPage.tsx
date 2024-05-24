@@ -205,7 +205,7 @@ const AdminPage: React.FC<Props> = () => {
             
             <Paper elevation={8} className={classes.root}>
                 <Typography variant='h1' className={classes.title}>
-                    Administration
+                    Administration Panel
                 </Typography>
                 
                 <Typography className={classes.text}>

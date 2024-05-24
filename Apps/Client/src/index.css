@@ -4,3 +4,31 @@ body,
     height: 100%;
     font-size: 1rem;
 }
+
+/* Scroll bar styles */
+::-webkit-scrollbar {
+    width: 12px; /* Adjust the width as needed */
+    height: 12px; /* Adjust the height for horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background: transparent; /* Track is usually transparent on MacOS */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.5); /* Dark thumb */
+    border-radius: 10px; /* Rounded corners */
+    border: 3px solid rgba(0, 0, 0, 0); /* To create space around the thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.7); /* Darker thumb on hover */
+}
+
+::-webkit-scrollbar-thumb:active {
+    background-color: rgba(0, 0, 0, 0.9); /* Even darker thumb when active */
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}

@@ -10,6 +10,7 @@ const useAppStyles = makeStyles()(({ palette, spacing }: Theme) => ({
         alignItems: 'center',
         width: '100%',
         minHeight: '100%',
+        padding: spacing(SPACING),
     },
     spinnerContainer: {
         display: 'flex',
