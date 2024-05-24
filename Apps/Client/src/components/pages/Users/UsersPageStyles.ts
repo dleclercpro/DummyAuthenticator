@@ -10,6 +10,10 @@ const createUsersPageStyles = (theme: Theme): Record<string, CSSObject> => {
         ...createPageStyles(theme),
         ...createFormStyles(theme),
         ...createTableStyles(theme),
+
+        iconStar: {
+  
+        },
     };
 
     return styles;

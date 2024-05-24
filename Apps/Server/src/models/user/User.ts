@@ -6,6 +6,7 @@ import UserEmail from './UserEmail';
 import UserSecret from './UserSecret';
 import { UserType } from '../../constants';
 import { Token } from '../../types/TokenTypes';
+import { unique } from '../../utils/array';
 
 export interface UserArgs {
     type: UserType,
@@ -16,6 +17,7 @@ export interface UserArgs {
     login?: UserLogin,
     secret?: UserSecret,
     tokens?: Token[],
+    favorites?: string[],
 }
 
 
@@ -29,6 +31,7 @@ class User {
     protected login: UserLogin;
     protected secret: UserSecret;
     protected tokens: Token[];
+    protected favorites: string[];
 
     public constructor(args: UserArgs) {
         this.type = args.type;
@@ -39,6 +42,7 @@ class User {
         this.login = args.login ?? new UserLogin({}),
         this.secret = args.secret ?? new UserSecret({});
         this.tokens = args.tokens ?? [];
+        this.favorites = args.favorites ?? [];
     }
 
     public serialize() {
@@ -51,6 +55,7 @@ class User {
             login: this.login.serialize(),
             secret: this.secret.serialize(),
             tokens: this.tokens,
+            favorites: this.favorites,
         });
     }
 
@@ -134,6 +139,22 @@ class User {
 
     public ban() {
         this.banned = true;
+    }
+
+    public getFavorites() {
+        return this.favorites;
+    }
+
+    public isFavorite(user: User) {
+        return this.favorites.includes(user.getEmail().getValue());
+    }
+
+    public addFavorite(user: User) {
+        this.favorites = unique([...this.favorites, user.getEmail().getValue()]);
+    }
+
+    public removeFavorite(user: User) {
+        this.favorites = this.favorites.filter(favorite => favorite !== user.getEmail().getValue());
     }
 
     public async save() {

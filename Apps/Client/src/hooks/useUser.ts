@@ -45,6 +45,44 @@ const useUser = () => {
             });
     };
 
+    const addUserToFavorites = async (email: string) => {
+        setIsEditingUser(true);
+
+        return new CallEditUser.default().execute({ email, favorite: true })
+            .then(({ data }) => {
+
+            })
+            .catch(({ code, error, data }) => {
+                const err = translateServerError(error);
+
+                setError(err);
+
+                throw new Error(err);
+            })
+            .finally(() => {
+                setIsEditingUser(false);
+            });
+    };
+
+    const removeUserFromFavorites = async (email: string) => {
+        setIsEditingUser(true);
+
+        return new CallEditUser.default().execute({ email, favorite: false })
+            .then(({ data }) => {
+
+            })
+            .catch(({ code, error, data }) => {
+                const err = translateServerError(error);
+
+                setError(err);
+
+                throw new Error(err);
+            })
+            .finally(() => {
+                setIsEditingUser(false);
+            });
+    };
+
     const unconfirmUserEmail = async (email: string) => {
         setIsEditingUser(true);
 
@@ -130,6 +168,8 @@ const useUser = () => {
         confirmUserEmail,
         banUser,
         unbanUser,
+        addUserToFavorites,
+        removeUserFromFavorites,
     };
 }
 

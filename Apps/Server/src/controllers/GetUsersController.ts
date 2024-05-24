@@ -5,12 +5,14 @@ import { ErrorUserDoesNotExist } from '../errors/UserErrors';
 import { ClientError } from '../constants';
 import User from '../models/user/User';
 import { logger } from '../utils/logger';
+import { UserJSON } from '../types/JSONTypes';
 
 const GetUsersController: RequestHandler = async (req, res, next) => {
     let email = '';
 
     try {
         const { session } = req;
+
         email = session.getEmail();
 
         const user = await User.findByEmail(email);
@@ -18,19 +20,19 @@ const GetUsersController: RequestHandler = async (req, res, next) => {
             throw new ErrorUserDoesNotExist(email);
         }
 
-        const users = await User.getAll();
+        const targetUsers = await User.getAll();
 
         return res.json(successResponse(
-            users.map((user) => ({
-                type: user.getType(),
-                email: user.getEmail().getValue(),
-                banned: user.isBanned(),
-                confirmed: user.getEmail().isConfirmed(),
-            })),
+            targetUsers.map((targetUser: User) => ({
+                type: targetUser.getType(),
+                email: targetUser.getEmail().getValue(),
+                favorited: user.isFavorite(targetUser),
+                banned: targetUser.isBanned(),
+                confirmed: targetUser.getEmail().isConfirmed(),
+            })) as UserJSON[],
         ));
 
     } catch (err: any) {
-        logger.warn(`Failed login attempt for user: ${email}`);
         logger.warn(err.message);
 
         if (err.code === ErrorUserDoesNotExist.code) {

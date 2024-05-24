@@ -33,7 +33,7 @@ const YesNoDialog: React.FC<Props> = (props) => {
         <Button onClick={handleNo} color='secondary' autoFocus>
           No
         </Button>
-        <Button onClick={handleYes} color='primary'>
+        <Button onClick={handleYes} color='secondary'>
           Yes
         </Button>
       </DialogActions>

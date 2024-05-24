@@ -8,6 +8,8 @@ import ConfirmEmailIcon from '@mui/icons-material/MarkEmailReadOutlined';
 import UnconfirmEmailIcon from '@mui/icons-material/MailLockOutlined';
 import PromoteUserIcon from '@mui/icons-material/ArrowCircleUp';
 import DemoteUserIcon from '@mui/icons-material/ArrowCircleDown';
+import RemoveFavoriteIcon from '@mui/icons-material/StarBorder';
+import AddFavoriteIcon from '@mui/icons-material/Star';
 import BanUserIcon from '@mui/icons-material/Cancel';
 import UnbanUserIcon from '@mui/icons-material/Check';
 import { Page, getURL } from '../../../routes/Router';
@@ -21,9 +23,9 @@ import { UserJSON } from '../../../types/JSONTypes';
 import UserComparators from '../../../models/comparators/UserComparators';
 import { createCompareFunction } from '../../../utils/comparison';
 import useBackdrop from '../../../hooks/useBackdrop';
-import IconButtonWithTooltip from '../../buttons/IconButtonWithTooltip';
 import { SEARCH_MIN_CHARACTERS } from '../../../config/Config';
 import useSearchPageStyles from './SearchPageStyles';
+import UserActionButton from '../../buttons/UserActionButton';
 
 interface Props {
 
@@ -45,12 +47,13 @@ const SearchPage: React.FC<Props> = () => {
     const incrementVersion = () => setVersion(version + 1);
 
     const { userEmail, isAdmin, isSuperAdmin } = useAuth();
-    const { isEditingUser, banUser, unbanUser, unconfirmUserEmail, confirmUserEmail, demoteUserToRegular, promoteUserToAdmin } = useUser();
-    const { users, isDeletingUser, setUsers, searchUsers, deleteUser } = useDatabase();
+    const { isEditingUser, banUser, unbanUser, addUserToFavorites, removeUserFromFavorites, unconfirmUserEmail, confirmUserEmail, demoteUserToRegular, promoteUserToAdmin } = useUser();
+    const { users, isDeletingUser, setUsers, deleteUser, searchUsers } = useDatabase();
     
     const [selectedUser, setSelectedUser] = useState<UserJSON | null>(null);
 
     const [isPromoteUserConfirmDialogOpen, setIsPromoteUserConfirmDialogOpen] = useState(false);
+    const [isFavoriteUserConfirmDialogOpen, setIsFavoriteUserConfirmDialogOpen] = useState(false);
     const [isBanUserConfirmDialogOpen, setIsBanUserConfirmDialogOpen] = useState(false);
     const [isUnconfirmUserEmailConfirmDialogOpen, setIsUnconfirmUserEmailConfirmDialogOpen] = useState(false);
     const [isDeleteUserConfirmDialogOpen, setIsDeleteUserConfirmDialogOpen] = useState(false);
@@ -66,6 +69,15 @@ const SearchPage: React.FC<Props> = () => {
     const closePromoteUserConfirmDialog = () => {
         setSelectedUser(null);
         setIsPromoteUserConfirmDialogOpen(false);
+    }
+
+    const openFavoriteUserConfirmDialog = (user: UserJSON) => {
+        setSelectedUser(user);
+        setIsFavoriteUserConfirmDialogOpen(true);
+    }
+    const closeFavoriteUserConfirmDialog = () => {
+        setSelectedUser(null);
+        setIsFavoriteUserConfirmDialogOpen(false);
     }
 
     const openBanUserConfirmDialog = (user: UserJSON) => {
@@ -106,6 +118,20 @@ const SearchPage: React.FC<Props> = () => {
             await promoteUserToAdmin(selectedUser.email);
         } else {
             await demoteUserToRegular(selectedUser.email);
+        }
+
+        incrementVersion();
+    }
+
+    const handleFavoriteUser = async () => {
+        if (selectedUser === null) return;
+
+        setIsFavoriteUserConfirmDialogOpen(false);
+
+        if (!selectedUser.favorited) {
+            await addUserToFavorites(selectedUser.email);
+        } else {
+            await removeUserFromFavorites(selectedUser.email);
         }
 
         incrementVersion();
@@ -209,6 +235,14 @@ const SearchPage: React.FC<Props> = () => {
                 handleClose={closePromoteUserConfirmDialog}
             />
             <YesNoDialog
+                open={isFavoriteUserConfirmDialogOpen}
+                title={selectedUser ? (selectedUser.favorited ? 'Remove user from favorite' : 'Add user to favorites') : ''}
+                text={selectedUser ? `Are you sure you want to ${selectedUser.favorited ? 'remove' : 'add'} user '${selectedUser.email}' ${selectedUser.favorited ? 'from' : 'to'} your favorites?` : ''}
+                handleYes={handleFavoriteUser}
+                handleNo={closeFavoriteUserConfirmDialog}
+                handleClose={closeFavoriteUserConfirmDialog}
+            />
+            <YesNoDialog
                 open={isUnconfirmUserEmailConfirmDialogOpen}
                 title={selectedUser ? `${selectedUser.confirmed ? 'Unconfirm' : 'Confirm'} e-mail` : ''}
                 text={selectedUser ? `Are you sure you want to ${selectedUser.confirmed ? 'unconfirm' : 'confirm'} the e-mail address of user '${selectedUser.email}'?` : ''}
@@ -309,41 +343,74 @@ const SearchPage: React.FC<Props> = () => {
                                                     </td>
                                                     {(isAdmin || isSuperAdmin) && (
                                                         <td>
-                                                            <IconButtonWithTooltip
+                                                            <UserActionButton
+                                                                user={user}
+                                                                isSelf={user.email === userEmail}
+                                                                selfText={`${user.type === UserType.Regular ? 'Promote' : 'Demote'} yourself`}
                                                                 text={user.type === UserType.Regular ? 'Promote regular user to admin' : 'Demote admin to regular user'}
                                                                 color={user.type === UserType.Regular ? 'primary' : 'secondary'}
                                                                 disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
                                                                 onClick={() => openPromoteUserConfirmDialog(user)}
                                                             >
                                                                 {user.type === UserType.Regular ? <PromoteUserIcon /> : <DemoteUserIcon />}
-                                                            </IconButtonWithTooltip>
-                                                            
-                                                            <IconButtonWithTooltip
+                                                            </UserActionButton>
+
+                                                            <UserActionButton
+                                                                user={user}
+                                                                isSelf={user.email === userEmail}
+                                                                selfText='You cannot remove your e-mail confirmation'
                                                                 text={user.confirmed ? `Unconfirm user's e-mail address` : `Confirm user's e-mail address`}
                                                                 color={user.confirmed ? 'error' : 'success'}
                                                                 disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
                                                                 onClick={() => openUnconfirmUserEmailConfirmDialog(user)}
                                                             >
                                                                 {user.confirmed ? <UnconfirmEmailIcon /> : <ConfirmEmailIcon />}
-                                                            </IconButtonWithTooltip>
+                                                            </UserActionButton>
 
-                                                            <IconButtonWithTooltip
+                                                            <UserActionButton
+                                                                user={user}
+                                                                isSelf={user.email === userEmail}
+                                                                selfText='You cannot add yourself to your favorites'
+                                                                text={user.favorited ? 'Remove user from favorites' : 'Add user to favorites'}
+                                                                color={user.banned ? 'success' : 'error'}
+                                                                disabled={user.email === userEmail}
+                                                                onClick={() => openFavoriteUserConfirmDialog(user)}
+                                                            >
+                                                                {user.email === userEmail && (
+                                                                    <AddFavoriteIcon />
+                                                                )}
+                                                                {user.email !== userEmail && (
+                                                                    user.favorited ? (
+                                                                        <RemoveFavoriteIcon color='warning' />
+                                                                    ) : (
+                                                                        <AddFavoriteIcon color='warning' />
+                                                                    )
+                                                                )}
+                                                            </UserActionButton>
+
+                                                            <UserActionButton
+                                                                user={user}
+                                                                isSelf={user.email === userEmail}
+                                                                selfText='You cannot ban yourself'
                                                                 text={user.banned ? 'Unban user' : 'Ban user'}
                                                                 color={user.banned ? 'success' : 'error'}
                                                                 disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
                                                                 onClick={() => openBanUserConfirmDialog(user)}
                                                             >
                                                                 {user.banned ? <UnbanUserIcon /> : <BanUserIcon />}
-                                                            </IconButtonWithTooltip>
+                                                            </UserActionButton>
 
-                                                            <IconButtonWithTooltip
+                                                            <UserActionButton
+                                                                user={user}
+                                                                isSelf={user.email === userEmail}
+                                                                selfText='Delete your account'
                                                                 text='Delete user'
                                                                 color='error'
                                                                 disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
                                                                 onClick={() => openDeleteUserConfirmDialog(user)}
                                                             >
                                                                 <DeleteIcon />
-                                                            </IconButtonWithTooltip>
+                                                            </UserActionButton>
                                                         </td>
                                                     )}
                                                 </tr>

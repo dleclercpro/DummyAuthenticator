@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 interface Props {
     children: ReactNode,
     text: string,
-    color: 'primary' | 'secondary' | 'success' | 'error',
+    color?: 'primary' | 'secondary' | 'success' | 'error',
     disabled?: boolean,
     onClick: (() => void) | (() => Promise<void>),
 }

@@ -14,15 +14,17 @@ type Body = {
     confirm?: boolean,
     type?: UserType,
     ban?: boolean,
+    favorite?: boolean,
  };
 
 const EditUserController: RequestHandler = async (req, res, next) => {
     let email = '';
     let edited = false;
+    let editedTarget = false;
 
     try {
         const { session } = req;
-        const { email: targetEmail, confirm, type, ban } = req.body as Body;
+        const { email: targetEmail, confirm, type, ban, favorite } = req.body as Body;
         email = session.getEmail();
 
         const user = await User.findByEmail(email);
@@ -44,7 +46,7 @@ const EditUserController: RequestHandler = async (req, res, next) => {
 
             targetUser.setType(type);
 
-            edited = true;
+            editedTarget = true;
         }
 
         if (confirm !== undefined) {
@@ -56,7 +58,7 @@ const EditUserController: RequestHandler = async (req, res, next) => {
                 targetUser.getEmail().unconfirm();
             }
 
-            edited = true;
+            editedTarget = true;
         }
 
         if (ban !== undefined) {
@@ -68,13 +70,30 @@ const EditUserController: RequestHandler = async (req, res, next) => {
                 targetUser.unban();
             }
             
+            editedTarget = true;
+        }
+
+        if (favorite !== undefined) {
+            logger.info(`${user.getType()} user '${user.getEmail().getValue()}' is ${favorite ? 'adding' : 'removing'} user '${targetUser.getEmail().getValue()}' ${favorite ? 'to' : 'from'} their favorites...`);
+
+            if (favorite) {
+                user.addFavorite(targetUser);
+            } else {
+                user.removeFavorite(targetUser);
+            }
+            
             edited = true;
         }
 
+        if (edited || editedTarget) {
+            await sleep(new TimeDuration(2, TimeUnit.Second));
+        }
 
         if (edited) {
-            await sleep(new TimeDuration(2, TimeUnit.Second));
+            await user.save();
+        }
 
+        if (editedTarget) {
             await targetUser.save();
         }
 

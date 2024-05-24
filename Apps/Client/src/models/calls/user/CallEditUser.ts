@@ -6,6 +6,7 @@ export interface Data {
     confirm?: boolean,
     type?: UserType,
     ban?: boolean,
+    favorite?: boolean,
 }
 
 export type ResponseData = {
