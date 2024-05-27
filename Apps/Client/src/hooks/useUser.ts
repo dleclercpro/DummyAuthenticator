@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import * as CallEditUser from '../models/calls/user/CallEditUser';
+import * as CallDeleteUser from '../models/calls/user/CallDeleteUser';
 import { translateServerError } from '../errors/ServerErrors';
 import { UserType } from '../constants';
 
 const useUser = () => {    
     const [isEditingUser, setIsEditingUser] = useState(false);
+    const [isDeletingUser, setIsDeletingUser] = useState(false);
     const [error, setError] = useState('');
 
     const banUser = async (email: string) => {
@@ -159,9 +161,25 @@ const useUser = () => {
             });
     };
 
+    const deleteUser = async (email: string) => {
+        setIsDeletingUser(true);
+
+        return await new CallDeleteUser.default().execute({ email })
+            .then(() => {
+
+            })
+            .catch(({ code, error, data }) => {
+                throw new Error(translateServerError(error));
+            })
+            .finally(() => {
+                setIsDeletingUser(false);
+            });
+    };
+
     return {
         error,
         isEditingUser,
+        isDeletingUser,
         demoteUserToRegular,
         promoteUserToAdmin,
         infirmUserEmail,
@@ -170,6 +188,7 @@ const useUser = () => {
         unbanUser,
         addUserToFavorites,
         removeUserFromFavorites,
+        deleteUser,
     };
 }
 

@@ -20,6 +20,7 @@ import useDatabase from '../../../hooks/useDatabase';
 import YesNoDialog from '../../dialogs/YesNoDialog';
 import useServer from '../../../hooks/useServer';
 import useAdminPageStyles from './AdminPageStyles';
+import useUser from '../../../hooks/useUser';
 
 interface Props {
 
@@ -29,6 +30,8 @@ const AdminPage: React.FC<Props> = () => {
     const { classes } = useAdminPageStyles();
 
     const { isSuperAdmin, userEmail, setIsLogged, signOut } = useAuthContext();
+
+    const { isDeletingUser, deleteUser } = useUser();
 
     const secret = useSecret();
     const server = useServer();
@@ -128,7 +131,7 @@ const AdminPage: React.FC<Props> = () => {
 
         closeDeleteUserConfirmDialog();
 
-        return db.deleteUser(userEmail)
+        return deleteUser(userEmail)
             .catch((err) => {
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
@@ -266,7 +269,7 @@ const AdminPage: React.FC<Props> = () => {
                         variant='contained'
                         color='error'
                         icon={<DeleteIcon />}
-                        loading={db.isDeletingUser}
+                        loading={isDeletingUser}
                         disabled={isSuperAdmin}
                         onClick={openDeleteUserConfirmDialog}
                     >

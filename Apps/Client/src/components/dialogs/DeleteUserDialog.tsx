@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import useDatabase from '../../hooks/useDatabase';
 import YesNoDialog from './YesNoDialog';
 import { DialogName } from '../../constants';
 import Snackbar from '../Snackbar';
 import { Severity } from '../../types/CommonTypes';
 import useBackdropContext from '../../contexts/BackdropContext';
 import useDialog from '../../hooks/useDialog';
+import useUser from '../../hooks/useUser';
 
 const DIALOG_NAME = DialogName.DeleteUser;
 
@@ -18,7 +18,7 @@ const DeleteUserDialog: React.FC<Props> = (props) => {
 
     const backdrop = useBackdropContext();
 
-    const { deleteUser } = useDatabase();
+    const { deleteUser } = useUser();
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');

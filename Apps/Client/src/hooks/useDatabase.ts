@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import * as CallFlushDatabase from '../models/calls/admin/CallFlushDatabase';
 import * as CallStopDatabase from '../models/calls/admin/CallStopDatabase';
-import * as CallDeleteUser from '../models/calls/user/CallDeleteUser';
 import * as CallGetUsers from '../models/calls/user/CallGetUsers';
 import * as CallSearchUsers from '../models/calls/user/CallSearchUsers';
 import { translateServerError } from '../errors/ServerErrors';
@@ -12,7 +11,6 @@ const useDatabase = () => {
     const [isFlushing, setIsFlushing] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
-    const [isDeletingUser, setIsDeletingUser] = useState(false);
 
     const [users, setUsers] = useState<UserJSON[]>([]);
 
@@ -43,21 +41,6 @@ const useDatabase = () => {
             })
             .finally(() => {
                 setIsFlushing(false);
-            });
-    };
-
-    const deleteUser = async (email: string) => {
-        setIsDeletingUser(true);
-
-        return await new CallDeleteUser.default().execute({ email })
-            .then(() => {
-
-            })
-            .catch(({ code, error, data }) => {
-                throw new Error(translateServerError(error));
-            })
-            .finally(() => {
-                setIsDeletingUser(false);
             });
     };
 
@@ -102,11 +85,9 @@ const useDatabase = () => {
         isFlushing,
         isFetching,
         isSearching,
-        isDeletingUser,
         users,
         stop,
         flush,
-        deleteUser,
         fetchUsers,
         setUsers,
         searchUsers,

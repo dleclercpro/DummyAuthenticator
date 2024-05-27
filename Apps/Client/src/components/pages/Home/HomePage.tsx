@@ -13,10 +13,10 @@ import useSecret from '../../../hooks/useSecret';
 import Spinner from '../../Spinner';
 import LoadingButton from '../../buttons/LoadingButton';
 import YesNoDialog from '../../dialogs/YesNoDialog';
-import useDatabase from '../../../hooks/useDatabase';
 import PeopleIcon from '@mui/icons-material/People';
 import SearchIcon from '@mui/icons-material/Search';
 import useHomePageStyles from './HomePageStyles';
+import useUser from '../../../hooks/useUser';
 
 interface Props {
 
@@ -48,7 +48,7 @@ const HomePage: React.FC<Props> = () => {
         setIsDeleteUserConfirmDialogOpen(false);
     }
 
-    const { isDeletingUser, deleteUser } = useDatabase();
+    const { isDeletingUser, deleteUser } = useUser();
 
     // Redirect admin
     useEffect(() => {
