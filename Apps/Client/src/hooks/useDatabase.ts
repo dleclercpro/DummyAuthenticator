@@ -10,6 +10,8 @@ import { UserJSON } from '../types/JSONTypes';
 const useDatabase = () => {    
     const [isStopping, setIsStopping] = useState(false);
     const [isFlushing, setIsFlushing] = useState(false);
+    const [isFetching, setIsFetching] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
     const [isDeletingUser, setIsDeletingUser] = useState(false);
 
     const [users, setUsers] = useState<UserJSON[]>([]);
@@ -59,7 +61,9 @@ const useDatabase = () => {
             });
     };
 
-    const getUsers = async () => {
+    const fetchUsers = async () => {
+        setIsFetching(true);
+
         return await new CallGetUsers.default()
             .execute()
             .then(({ data }) => {
@@ -69,10 +73,15 @@ const useDatabase = () => {
             })
             .catch(({ code, error, data }) => {
                 throw new Error(translateServerError(error));
+            })
+            .finally(() => {
+                setIsFetching(false);
             });
     }
 
     const searchUsers = async (searchText: string) => {
+        setIsSearching(true);
+
         return await new CallSearchUsers.default()
             .execute({ searchText })
             .then(({ data }) => {
@@ -82,18 +91,23 @@ const useDatabase = () => {
             })
             .catch(({ code, error, data }) => {
                 throw new Error(translateServerError(error));
+            })
+            .finally(() => {
+                setIsSearching(false);
             });
     }
 
     return {
         isStopping,
         isFlushing,
+        isFetching,
+        isSearching,
         isDeletingUser,
         users,
         stop,
         flush,
         deleteUser,
-        getUsers,
+        fetchUsers,
         setUsers,
         searchUsers,
     };

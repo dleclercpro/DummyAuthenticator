@@ -1,22 +1,28 @@
 import { useState } from 'react';
 import YesNoDialog from './YesNoDialog';
-import useDialog from '../../hooks/useDialog';
+import useDialog from '../../contexts/DialogContext';
 import { DialogName } from '../../constants';
 import Snackbar from '../Snackbar';
 import { Severity } from '../../types/CommonTypes';
 import useUser from '../../hooks/useUser';
+import useBackdrop from '../../contexts/BackdropContext';
+
+const DIALOG_NAME = DialogName.ConfirmOrInfirmEmailAddress;
 
 interface Props {
 
 }
 
 const ConfirmOrInfirmEmailAddressDialog: React.FC<Props> = (props) => {
-    const { isDialogOpen, closeDialog, getDialogUser, getDialogAction } = useDialog();
+    const { isDialogOpen, closeDialog, getDialogUser, getDialogBeforeAction, getDialogAfterAction } = useDialog();
 
-    const isOpen = isDialogOpen(DialogName.ConfirmOrInfirmEmailAddress);
-    const user = getDialogUser(DialogName.ConfirmOrInfirmEmailAddress);
-    const action = getDialogAction(DialogName.ConfirmOrInfirmEmailAddress);
-    const close = () => closeDialog(DialogName.ConfirmOrInfirmEmailAddress);
+    const backdrop = useBackdrop();
+
+    const isOpen = isDialogOpen(DIALOG_NAME);
+    const user = getDialogUser(DIALOG_NAME);
+    const close = () => closeDialog(DIALOG_NAME);
+    const beforeAction = getDialogBeforeAction(DIALOG_NAME);
+    const afterAction = getDialogAfterAction(DIALOG_NAME);
 
     const { confirmUserEmail, infirmUserEmail } = useUser();
 
@@ -26,17 +32,26 @@ const ConfirmOrInfirmEmailAddressDialog: React.FC<Props> = (props) => {
     const handleConfirmOrInfirmUserEmail = async () => {
         if (user === null) return;
 
+        setSnackbarOpen(false);
+
+        backdrop.show();
+
         close();
 
-        (user.confirmed ? infirmUserEmail(user.email) : confirmUserEmail(user.email))
+        beforeAction()
             .then(() => {
-                if (action) {
-                    return action();
+                if (user.confirmed) {
+                    return infirmUserEmail(user.email);
                 }
+                return confirmUserEmail(user.email);
             })
+            .then(() => afterAction())
             .catch((err) => {
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
+            })
+            .finally(() => {
+                backdrop.hide();
             });
     }
 

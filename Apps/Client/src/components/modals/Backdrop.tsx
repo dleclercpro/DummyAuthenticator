@@ -1,7 +1,7 @@
 import React from 'react';
 import { Backdrop as MuiBackdrop, CircularProgress } from '@mui/material';
 import useBackdropStyles from './BackdropStyles';
-import useBackdrop from '../../hooks/useBackdrop';
+import useBackdrop from '../../contexts/BackdropContext';
 
 interface Props {
     id?: string,
@@ -13,13 +13,13 @@ const Backdrop: React.FC<Props> = (props) => {
 
     const { classes } = useBackdropStyles();
 
-    const { isVisible } = useBackdrop();
+    const backdrop = useBackdrop();
 
     return (
       <MuiBackdrop
         id={id}
         className={`${classes.root} ${className}`}
-        open={isVisible}
+        open={backdrop.isVisible}
       >
         <CircularProgress color='inherit' />
       </MuiBackdrop>

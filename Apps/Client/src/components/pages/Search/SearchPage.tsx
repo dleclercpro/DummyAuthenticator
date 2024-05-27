@@ -15,7 +15,7 @@ import UnbanUserIcon from '@mui/icons-material/Check';
 import { Page, getURL } from '../../../routes/Router';
 import { Link } from 'react-router-dom';
 import useDatabase from '../../../hooks/useDatabase';
-import useAuth from '../../../hooks/useAuth';
+import useAuth from '../../../contexts/AuthContext';
 import { DialogName, UserType } from '../../../constants';
 import { UserJSON } from '../../../types/JSONTypes';
 import UserComparators from '../../../models/comparators/UserComparators';
@@ -23,7 +23,7 @@ import { createCompareFunction } from '../../../utils/comparison';
 import { SEARCH_MIN_CHARACTERS } from '../../../config/Config';
 import useSearchPageStyles from './SearchPageStyles';
 import UserActionButton from '../../buttons/UserActionButton';
-import useDialog from '../../../hooks/useDialog';
+import useDialog from '../../../contexts/DialogContext';
 
 interface Props {
 
@@ -32,9 +32,7 @@ interface Props {
 const SearchPage: React.FC<Props> = () => {
     const { classes } = useSearchPageStyles();
 
-    const [isSearching, setIsSearching] = useState(false);
-
-    const { openDialog, setDialogUser, setDialogAction } = useDialog();
+    const { openDialog, setDialogUser, setDialogAfterAction } = useDialog();
 
     const [value, setValue] = useState('');
     const [error, setError] = useState(false);
@@ -42,7 +40,7 @@ const SearchPage: React.FC<Props> = () => {
     const canSearch = value.length >= SEARCH_MIN_CHARACTERS;
 
     const { userEmail, isAdmin, isSuperAdmin } = useAuth();
-    const { users, setUsers, searchUsers } = useDatabase();
+    const { users, isSearching, setUsers, searchUsers } = useDatabase();
 
 
 
@@ -54,6 +52,13 @@ const SearchPage: React.FC<Props> = () => {
 
 
     const handleSearchUsers = async () => {
+        await searchUsers(value);
+    }
+
+
+
+    // Search everytime the value changes or an action is done
+    useEffect(() => {
         if (!canSearch) {
             if (users.length > 0) {
                 setUsers([]);
@@ -61,16 +66,7 @@ const SearchPage: React.FC<Props> = () => {
             return;
         }
 
-        setIsSearching(true);
-        await searchUsers(value);
-        setIsSearching(false);
-    }
-
-
-
-    // Search everytime the value changes or an action is done
-    useEffect(() => {
-        handleSearchUsers();
+        searchUsers(value);
 
     }, [value]);
 
@@ -168,7 +164,7 @@ const SearchPage: React.FC<Props> = () => {
                                                             disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
                                                             onClick={() => {
                                                                 setDialogUser(DialogName.PromoteOrDemoteUser, user);
-                                                                setDialogAction(DialogName.PromoteOrDemoteUser, () => handleSearchUsers());
+                                                                setDialogAfterAction(DialogName.PromoteOrDemoteUser, handleSearchUsers);
                                                                 openDialog(DialogName.PromoteOrDemoteUser);
                                                             }}
                                                         >
@@ -184,7 +180,7 @@ const SearchPage: React.FC<Props> = () => {
                                                             disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
                                                             onClick={() => {
                                                                 setDialogUser(DialogName.ConfirmOrInfirmEmailAddress, user);
-                                                                setDialogAction(DialogName.ConfirmOrInfirmEmailAddress, () => handleSearchUsers());
+                                                                setDialogAfterAction(DialogName.ConfirmOrInfirmEmailAddress, handleSearchUsers);
                                                                 openDialog(DialogName.ConfirmOrInfirmEmailAddress);
                                                             }}
                                                         >
@@ -200,7 +196,7 @@ const SearchPage: React.FC<Props> = () => {
                                                             disabled={user.email === userEmail}
                                                             onClick={() => {
                                                                 setDialogUser(DialogName.AddToOrRemoveFromFavoriteUsers, user);
-                                                                setDialogAction(DialogName.AddToOrRemoveFromFavoriteUsers, () => handleSearchUsers());
+                                                                setDialogAfterAction(DialogName.AddToOrRemoveFromFavoriteUsers, handleSearchUsers);
                                                                 openDialog(DialogName.AddToOrRemoveFromFavoriteUsers);
                                                             }}
                                                         >
@@ -225,7 +221,7 @@ const SearchPage: React.FC<Props> = () => {
                                                             disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
                                                             onClick={() => {
                                                                 setDialogUser(DialogName.BanUser, user);
-                                                                setDialogAction(DialogName.BanUser, () => handleSearchUsers());
+                                                                setDialogAfterAction(DialogName.BanUser, handleSearchUsers);
                                                                 openDialog(DialogName.BanUser);
                                                             }}
                                                         >
@@ -241,7 +237,7 @@ const SearchPage: React.FC<Props> = () => {
                                                             disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
                                                             onClick={() => {
                                                                 setDialogUser(DialogName.DeleteUser, user);
-                                                                setDialogAction(DialogName.DeleteUser, () => handleSearchUsers());
+                                                                setDialogAfterAction(DialogName.DeleteUser, handleSearchUsers);
                                                                 openDialog(DialogName.DeleteUser);
                                                             }}
                                                         >

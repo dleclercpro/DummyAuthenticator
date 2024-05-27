@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useAppStyles from './AppStyles';
 import Router from '../routes/Router';
 import { Container } from '@mui/system';
-import useAuth from '../hooks/useAuth';
+import useAuth from '../contexts/AuthContext';
 import Spinner from './Spinner';
 import ErrorIcon from '@mui/icons-material/WarningSharp';
 import { SERVER_RETRY_CONN_MAX_ATTEMPTS, VERSION } from '../config/Config';

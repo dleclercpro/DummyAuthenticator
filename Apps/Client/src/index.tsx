@@ -3,12 +3,12 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './components/App';
-import { AuthContextProvider } from './hooks/useAuth';
-import { BackdropContextProvider } from './hooks/useBackdrop';
+import { AuthContextProvider } from './contexts/AuthContext';
 import { StylesCache } from './styles';
 import { getAppTheme } from './styles/Theme';
 import './index.css';
-import { DialogContextProvider } from './hooks/useDialog';
+import { DialogContextProvider } from './contexts/DialogContext';
+import { BackdropContextProvider } from './contexts/BackdropContext';
 
 // Render DOM
 ReactDOM
@@ -20,11 +20,11 @@ ReactDOM
                     <ThemeProvider theme={getAppTheme()}>
                         <CssBaseline />
                         
-                        <DialogContextProvider>
-                            <BackdropContextProvider>
+                        <BackdropContextProvider>
+                            <DialogContextProvider>
                                 <App />
-                            </BackdropContextProvider>
-                        </DialogContextProvider>
+                            </DialogContextProvider>
+                        </BackdropContextProvider>
                     </ThemeProvider>
                 </CacheProvider>
             </AuthContextProvider>

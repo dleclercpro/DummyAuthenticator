@@ -1,22 +1,28 @@
 import { useState } from 'react';
 import YesNoDialog from './YesNoDialog';
-import useDialog from '../../hooks/useDialog';
+import useDialog from '../../contexts/DialogContext';
 import { DialogName } from '../../constants';
 import Snackbar from '../Snackbar';
 import { Severity } from '../../types/CommonTypes';
 import useUser from '../../hooks/useUser';
+import useBackdrop from '../../contexts/BackdropContext';
+
+const DIALOG_NAME = DialogName.BanUser;
 
 interface Props {
 
 }
 
 const BanUserDialog: React.FC<Props> = (props) => {
-    const { isDialogOpen, closeDialog, getDialogUser, getDialogAction } = useDialog();
+    const { isDialogOpen, closeDialog, getDialogUser, getDialogBeforeAction, getDialogAfterAction } = useDialog();
+    
+    const backdrop = useBackdrop();
 
-    const isOpen = isDialogOpen(DialogName.BanUser);
-    const user = getDialogUser(DialogName.BanUser);
-    const action = getDialogAction(DialogName.BanUser);
-    const close = () => closeDialog(DialogName.BanUser);
+    const isOpen = isDialogOpen(DIALOG_NAME);
+    const user = getDialogUser(DIALOG_NAME);
+    const close = () => closeDialog(DIALOG_NAME);
+    const beforeAction = getDialogBeforeAction(DIALOG_NAME);
+    const afterAction = getDialogAfterAction(DIALOG_NAME);
 
     const { banUser, unbanUser } = useUser();
 
@@ -26,17 +32,26 @@ const BanUserDialog: React.FC<Props> = (props) => {
     const handleBanUser = async () => {
         if (user === null) return;
 
+        setSnackbarOpen(false);
+
+        backdrop.show();
+
         close();
 
-        (user.banned ? unbanUser(user.email) : banUser(user.email))
+        beforeAction()
             .then(() => {
-                if (action) {
-                    return action();
+                if (user.banned) {
+                    return unbanUser(user.email);
                 }
+                return banUser(user.email);
             })
+            .then(() => afterAction())
             .catch((err) => {
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
+            })
+            .finally(() => {
+                backdrop.hide();
             });
     }
 

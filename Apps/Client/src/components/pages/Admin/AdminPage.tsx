@@ -10,7 +10,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
 import StopServerIcon from '@mui/icons-material/Dangerous';
-import useAuth from '../../../hooks/useAuth';
+import useAuth from '../../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
 import useSecret from '../../../hooks/useSecret';

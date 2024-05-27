@@ -1,22 +1,28 @@
 import { useState } from 'react';
 import YesNoDialog from './YesNoDialog';
-import useDialog from '../../hooks/useDialog';
+import useDialog from '../../contexts/DialogContext';
 import { DialogName, UserType } from '../../constants';
 import Snackbar from '../Snackbar';
 import { Severity } from '../../types/CommonTypes';
 import useUser from '../../hooks/useUser';
+import useBackdrop from '../../contexts/BackdropContext';
+
+const DIALOG_NAME = DialogName.PromoteOrDemoteUser;
 
 interface Props {
 
 }
 
 const PromoteOrDemoteUserDialog: React.FC<Props> = (props) => {
-    const { isDialogOpen, closeDialog, getDialogUser, getDialogAction } = useDialog();
+    const { isDialogOpen, closeDialog, getDialogUser, getDialogBeforeAction, getDialogAfterAction } = useDialog();
 
-    const isOpen = isDialogOpen(DialogName.PromoteOrDemoteUser);
-    const user = getDialogUser(DialogName.PromoteOrDemoteUser);
-    const action = getDialogAction(DialogName.PromoteOrDemoteUser);
-    const close = () => closeDialog(DialogName.PromoteOrDemoteUser);
+    const backdrop = useBackdrop();
+
+    const isOpen = isDialogOpen(DIALOG_NAME);
+    const user = getDialogUser(DIALOG_NAME);
+    const close = () => closeDialog(DIALOG_NAME);
+    const beforeAction = getDialogBeforeAction(DIALOG_NAME);
+    const afterAction = getDialogAfterAction(DIALOG_NAME);
 
     const { promoteUserToAdmin, demoteUserToRegular } = useUser();
 
@@ -26,17 +32,26 @@ const PromoteOrDemoteUserDialog: React.FC<Props> = (props) => {
     const handlePromoteOrDemoteUser = async () => {
         if (user === null) return;
 
+        setSnackbarOpen(false);
+
+        backdrop.show();
+
         close();
 
-        (user.type === UserType.Regular ? promoteUserToAdmin(user.email) : demoteUserToRegular(user.email))
+        beforeAction()
             .then(() => {
-                if (action) {
-                    return action();
+                if (user.type === UserType.Regular) {
+                    return promoteUserToAdmin(user.email);
                 }
+                return demoteUserToRegular(user.email);
             })
+            .then(() => afterAction())
             .catch((err) => {
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
+            })
+            .finally(() => {
+                backdrop.hide();
             });
     }
 

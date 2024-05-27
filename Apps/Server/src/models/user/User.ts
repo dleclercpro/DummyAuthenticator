@@ -167,11 +167,11 @@ class User {
 
     public static async getAll(): Promise<User[]> {
         const userKeys: string[] | null = await APP_DB.getKeysByPattern('user:*');
-    
+        
         if (!userKeys) {
             return [];
         }
-    
+
         const users: (string | null)[] = await Promise.all(
             userKeys.map((userKey: string) => APP_DB.get(userKey))
         );

@@ -1,7 +1,7 @@
 import { Button, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import useAuth from '../../../hooks/useAuth';
+import useAuth from '../../../contexts/AuthContext';
 import { Page, getURL } from '../../../routes/Router';
 import SuccessIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/WarningSharp';

@@ -9,7 +9,7 @@ import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import CreateIcon from '@mui/icons-material/Create';
-import useAuth from '../../../hooks/useAuth';
+import useAuth from '../../../contexts/AuthContext';
 import { sleep } from '../../../utils/time';
 import TimeDuration from '../../../models/TimeDuration';
 import { TimeUnit } from '../../../types/TimeTypes';

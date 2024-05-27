@@ -1,22 +1,28 @@
 import { useState } from 'react';
 import useDatabase from '../../hooks/useDatabase';
 import YesNoDialog from './YesNoDialog';
-import useDialog from '../../hooks/useDialog';
+import useDialog from '../../contexts/DialogContext';
 import { DialogName } from '../../constants';
 import Snackbar from '../Snackbar';
 import { Severity } from '../../types/CommonTypes';
+import useBackdrop from '../../contexts/BackdropContext';
+
+const DIALOG_NAME = DialogName.DeleteUser;
 
 interface Props {
 
 }
 
 const DeleteUserDialog: React.FC<Props> = (props) => {
-    const { isDialogOpen, closeDialog, getDialogUser, getDialogAction } = useDialog();
+    const { isDialogOpen, closeDialog, getDialogUser, getDialogBeforeAction, getDialogAfterAction } = useDialog();
 
-    const isOpen = isDialogOpen(DialogName.DeleteUser);
-    const user = getDialogUser(DialogName.DeleteUser);
-    const action = getDialogAction(DialogName.DeleteUser);
-    const close = () => closeDialog(DialogName.DeleteUser);
+    const backdrop = useBackdrop();
+
+    const isOpen = isDialogOpen(DIALOG_NAME);
+    const user = getDialogUser(DIALOG_NAME);
+    const close = () => closeDialog(DIALOG_NAME);
+    const beforeAction = getDialogBeforeAction(DIALOG_NAME);
+    const afterAction = getDialogAfterAction(DIALOG_NAME);
 
     const { deleteUser } = useDatabase();
 
@@ -28,17 +34,19 @@ const DeleteUserDialog: React.FC<Props> = (props) => {
 
         setSnackbarOpen(false);
 
+        backdrop.show();
+
         close();
 
-        return deleteUser(user.email)
-            .then(() => {
-                if (action) {
-                    return action();
-                }
-            })
+        beforeAction()
+            .then(() => deleteUser(user.email))
+            .then(() => afterAction())
             .catch((err) => {
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
+            })
+            .finally(() => {
+                backdrop.hide();
             });
     }
 

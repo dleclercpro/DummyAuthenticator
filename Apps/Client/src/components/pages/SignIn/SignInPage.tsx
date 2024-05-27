@@ -9,7 +9,7 @@ import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import LoginIcon from '@mui/icons-material/Login';
 import KeyIcon from '@mui/icons-material/Key';
-import useAuth from '../../../hooks/useAuth';
+import useAuth from '../../../contexts/AuthContext';
 import useSignInPageStyles from './SignInPageStyles';
 
 interface Props {

@@ -1,46 +1,35 @@
-import { createContext, ReactElement, useContext, useEffect, useState } from 'react';
+import { createContext, ReactElement, useContext, useState } from 'react';
 import { DialogName } from '../constants';
 import { UserJSON } from '../types/JSONTypes';
-import useUser from './useUser';
-import useDatabase from './useDatabase';
-import useBackdrop from './useBackdrop';
 
 type DialogState = {
     open: boolean,
     user: UserJSON | null,
-    action: () => Promise<void>,
+    actions: {
+        before: () => Promise<void>,
+        after: () => Promise<void>,
+    },
 }
 
 type Dialogs = {
     [dialog in DialogName]: DialogState;
 };
 
+const generateDialogInitState = () => ({
+    open: false,
+    user: null,
+    actions: {
+        before: () => Promise.resolve(),
+        after: () => Promise.resolve(),
+    },
+});
+
 const DIALOGS_INIT_STATE: Dialogs = {
-    [DialogName.AddToOrRemoveFromFavoriteUsers]: {
-        open: false,
-        user: null,
-        action: () => Promise.resolve(),
-    },
-    [DialogName.PromoteOrDemoteUser]: {
-        open: false,
-        user: null,
-        action: () => Promise.resolve(),
-    },
-    [DialogName.BanUser]: {
-        open: false,
-        user: null,
-        action: () => Promise.resolve(),
-    },
-    [DialogName.ConfirmOrInfirmEmailAddress]: {
-        open: false,
-        user: null,
-        action: () => Promise.resolve(),
-    },
-    [DialogName.DeleteUser]: {
-        open: false,
-        user: null,
-        action: () => Promise.resolve(),
-    },
+    [DialogName.AddToOrRemoveFromFavoriteUsers]: generateDialogInitState(),
+    [DialogName.PromoteOrDemoteUser]: generateDialogInitState(),
+    [DialogName.BanUser]: generateDialogInitState(),
+    [DialogName.ConfirmOrInfirmEmailAddress]: generateDialogInitState(),
+    [DialogName.DeleteUser]: generateDialogInitState(),
 }
 
 interface IDialogContext {
@@ -50,8 +39,10 @@ interface IDialogContext {
     toggleDialog: (name: DialogName) => void,
     getDialogUser: (name: DialogName) => UserJSON | null,
     setDialogUser: (name: DialogName, user: UserJSON | null) => void,
-    getDialogAction: (name: DialogName) => () => Promise<void>,
-    setDialogAction: (name: DialogName, action: () => Promise<void>) => void,
+    getDialogBeforeAction: (name: DialogName) => () => Promise<void>,
+    getDialogAfterAction: (name: DialogName) => () => Promise<void>,
+    setDialogBeforeAction: (name: DialogName, action: () => Promise<void>) => void,
+    setDialogAfterAction: (name: DialogName, action: () => Promise<void>) => void,
 }
 
 export const DialogContext = createContext<IDialogContext>({} as IDialogContext);
@@ -82,15 +73,6 @@ export default function DialogContextConsumer() {
 
 const useDialog = () => {
     const [dialogs, setDialogs] = useState<Dialogs>(DIALOGS_INIT_STATE);
-
-    const backdrop = useBackdrop(); 
-
-    const { isEditingUser } = useUser();
-    const { isDeletingUser } = useDatabase();
-
-    const isLoading = isEditingUser || isDeletingUser;
-
-
 
     const isDialogOpen = (name: DialogName) => {
         return dialogs[name].open;
@@ -128,24 +110,21 @@ const useDialog = () => {
         dialogs[name].user = user;
     }
 
-    const getDialogAction = (name: DialogName) => {
-        return dialogs[name].action;
+    const getDialogBeforeAction = (name: DialogName) => {
+        return dialogs[name].actions.before;
     }
 
-    const setDialogAction = (name: DialogName, action: () => Promise<void>) => {
-        dialogs[name].action = action;
+    const getDialogAfterAction = (name: DialogName) => {
+        return dialogs[name].actions.after;
     }
 
-    // Show loading backdrop when calls are being executed
-    useEffect(() => {
-        if (!backdrop.isVisible && isLoading) {
-            backdrop.show();
-        }
-        if (backdrop.isVisible && !isLoading) {
-            backdrop.hide();
-        }
+    const setDialogBeforeAction = (name: DialogName, action: () => Promise<void>) => {
+        dialogs[name].actions.before = action;
+    }
 
-    }, [isLoading]);
+    const setDialogAfterAction = (name: DialogName, action: () => Promise<void>) => {
+        dialogs[name].actions.after = action;
+    }
 
     return {
         isDialogOpen,
@@ -154,7 +133,9 @@ const useDialog = () => {
         toggleDialog,
         getDialogUser,
         setDialogUser,
-        getDialogAction,
-        setDialogAction,
+        getDialogBeforeAction,
+        getDialogAfterAction,
+        setDialogBeforeAction,
+        setDialogAfterAction,
     };
 }

@@ -7,7 +7,7 @@ import LoadingButton from '../../buttons/LoadingButton';
 import ResetIcon from '@mui/icons-material/LockReset';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import useAuth from '../../../hooks/useAuth';
+import useAuth from '../../../contexts/AuthContext';
 import { Page, getURL } from '../../../routes/Router';
 import { sleep } from '../../../utils/time';
 import TimeDuration from '../../../models/TimeDuration';

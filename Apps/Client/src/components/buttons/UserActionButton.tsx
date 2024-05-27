@@ -14,7 +14,7 @@ interface Props {
 }
 
 const UserActionButton: React.FC<Props> = (props) => {
-    const { children, user, isSelf, selfText, text, color, disabled, onClick } = props;
+    const { children, isSelf, selfText, text, color, disabled, onClick } = props;
 
     return (
         <IconButtonWithTooltip

@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
+import useAuth from '../contexts/AuthContext';
 import { getURL, Page } from './Router';
 
 interface Props {

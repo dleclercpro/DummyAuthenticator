@@ -6,7 +6,7 @@ import EmailField from '../../fields/EmailField';
 import LoadingButton from '../../buttons/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
 import BackIcon from '@mui/icons-material/ArrowBack';
-import useAuth from '../../../hooks/useAuth';
+import useAuth from '../../../contexts/AuthContext';
 import { Page, getURL } from '../../../routes/Router';
 import { Link, useNavigate } from 'react-router-dom';
 import TimeDuration from '../../../models/TimeDuration';

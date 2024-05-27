@@ -18,10 +18,10 @@ interface Props {
 export const BackdropContextProvider: React.FC<Props> = (props) => {
     const { children } = props;
 
-    const backdrop = useBackdrop();
+    const auth = useBackdrop();
     
     return (
-        <BackdropContext.Provider value={backdrop}>
+        <BackdropContext.Provider value={auth}>
             {children}
         </BackdropContext.Provider>
     );

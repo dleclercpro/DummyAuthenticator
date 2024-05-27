@@ -1,22 +1,28 @@
 import { useState } from 'react';
 import YesNoDialog from './YesNoDialog';
-import useDialog from '../../hooks/useDialog';
+import useDialog from '../../contexts/DialogContext';
 import { DialogName } from '../../constants';
 import Snackbar from '../Snackbar';
 import { Severity } from '../../types/CommonTypes';
 import useUser from '../../hooks/useUser';
+import useBackdrop from '../../contexts/BackdropContext';
+
+const DIALOG_NAME = DialogName.AddToOrRemoveFromFavoriteUsers;
 
 interface Props {
 
 }
 
 const AddToOrRemoveFromFavoriteUsersDialog: React.FC<Props> = (props) => {
-    const { isDialogOpen, closeDialog, getDialogUser, getDialogAction } = useDialog();
+    const { isDialogOpen, closeDialog, getDialogUser, getDialogBeforeAction, getDialogAfterAction } = useDialog();
 
-    const isOpen = isDialogOpen(DialogName.AddToOrRemoveFromFavoriteUsers);
-    const user = getDialogUser(DialogName.AddToOrRemoveFromFavoriteUsers);
-    const action = getDialogAction(DialogName.AddToOrRemoveFromFavoriteUsers);
-    const close = () => closeDialog(DialogName.AddToOrRemoveFromFavoriteUsers);
+    const backdrop = useBackdrop();
+
+    const isOpen = isDialogOpen(DIALOG_NAME);
+    const user = getDialogUser(DIALOG_NAME);
+    const close = () => closeDialog(DIALOG_NAME);
+    const beforeAction = getDialogBeforeAction(DIALOG_NAME);
+    const afterAction = getDialogAfterAction(DIALOG_NAME);
 
     const { addUserToFavorites, removeUserFromFavorites } = useUser();
 
@@ -26,17 +32,26 @@ const AddToOrRemoveFromFavoriteUsersDialog: React.FC<Props> = (props) => {
     const handleAddToOrRemoveFromFavoriteUsers = async () => {
         if (user === null) return;
 
+        setSnackbarOpen(false);
+
+        backdrop.show();
+
         close();
 
-        (user.favorited ? removeUserFromFavorites(user.email) : addUserToFavorites(user.email))
-            .then(() => {                
-                if (action) {
-                    return action();
+        beforeAction()
+            .then(() => {
+                if (user.favorited) {
+                    return removeUserFromFavorites(user.email);
                 }
+                return addUserToFavorites(user.email);
             })
+            .then(() => afterAction())
             .catch((err) => {
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
+            })
+            .finally(() => {
+                backdrop.hide();
             });
     }
 
