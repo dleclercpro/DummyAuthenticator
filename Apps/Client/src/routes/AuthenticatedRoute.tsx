@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import useAuth from '../contexts/AuthContext';
+import useAuthContext from '../contexts/AuthContext';
 import { getURL, Page } from './Router';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 const AuthenticatedRoute: React.FC<Props> = (props) => {
     const { children, shouldBeAdmin } = props;
 
-    const { ping, isLogged, isAdmin, isSuperAdmin } = useAuth();
+    const { ping, isLogged, isAdmin, isSuperAdmin } = useAuthContext();
     const location = useLocation();
 
     if (!ping.isDone) {

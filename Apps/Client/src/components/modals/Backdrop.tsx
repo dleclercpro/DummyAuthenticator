@@ -1,7 +1,7 @@
 import React from 'react';
 import { Backdrop as MuiBackdrop, CircularProgress } from '@mui/material';
-import useBackdropStyles from './BackdropStyles';
-import useBackdrop from '../../contexts/BackdropContext';
+import useBackdropContextStyles from './BackdropStyles';
+import useBackdropContext from '../../contexts/BackdropContext';
 
 interface Props {
     id?: string,
@@ -11,9 +11,9 @@ interface Props {
 const Backdrop: React.FC<Props> = (props) => {
     const { id, className } = props;
 
-    const { classes } = useBackdropStyles();
+    const { classes } = useBackdropContextStyles();
 
-    const backdrop = useBackdrop();
+    const backdrop = useBackdropContext();
 
     return (
       <MuiBackdrop

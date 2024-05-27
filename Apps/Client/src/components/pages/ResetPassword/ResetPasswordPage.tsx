@@ -7,7 +7,7 @@ import LoadingButton from '../../buttons/LoadingButton';
 import ResetIcon from '@mui/icons-material/LockReset';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import useAuth from '../../../contexts/AuthContext';
+import useAuthContext from '../../../contexts/AuthContext';
 import { Page, getURL } from '../../../routes/Router';
 import { sleep } from '../../../utils/time';
 import TimeDuration from '../../../models/TimeDuration';
@@ -28,7 +28,7 @@ const ResetPasswordPage: React.FC<Props> = () => {
 
     const queryParams = new URLSearchParams(location.search);
 
-    const { isLogged, setIsLogged, resetPassword } = useAuth();
+    const { isLogged, setIsLogged, resetPassword } = useAuthContext();
     const token = useToken<ResetPasswordToken>(queryParams.get('token') ?? '');
 
     const [loading, setLoading] = useState(false);

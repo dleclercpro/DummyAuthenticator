@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import useAuth from '../contexts/AuthContext';
+import useAuthContext from '../contexts/AuthContext';
 import { getURL, Page } from './Router';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 const UnauthenticatedRoute: React.FC<Props> = (props) => {
     const { children } = props;
 
-    const { ping, isLogged } = useAuth();
+    const { ping, isLogged } = useAuthContext();
     const location = useLocation();
 
     if (!ping.isDone) {

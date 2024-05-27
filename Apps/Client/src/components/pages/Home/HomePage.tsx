@@ -6,7 +6,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PasswordIcon from '@mui/icons-material/Key';
 import DeleteIcon from '@mui/icons-material/Delete';
-import useAuth from '../../../contexts/AuthContext';
+import useAuthContext from '../../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
 import useSecret from '../../../hooks/useSecret';
@@ -25,7 +25,7 @@ interface Props {
 const HomePage: React.FC<Props> = () => {
     const { classes } = useHomePageStyles();
 
-    const { userEmail, isAdmin, isSuperAdmin, setIsLogged, signOut } = useAuth();
+    const { userEmail, isAdmin, isSuperAdmin, setIsLogged, signOut } = useAuthContext();
     const secret = useSecret();
 
     const navigate = useNavigate();

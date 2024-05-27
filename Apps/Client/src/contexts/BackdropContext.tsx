@@ -18,7 +18,7 @@ interface Props {
 export const BackdropContextProvider: React.FC<Props> = (props) => {
     const { children } = props;
 
-    const auth = useBackdrop();
+    const auth = useBackdropContext();
     
     return (
         <BackdropContext.Provider value={auth}>
@@ -33,7 +33,7 @@ export default function BackdropContextConsumer() {
 
 
 
-const useBackdrop = () => {
+const useBackdropContext = () => {
     const [isVisible, setIsVisible] = useState(false);
 
     const show = () => setIsVisible(true);

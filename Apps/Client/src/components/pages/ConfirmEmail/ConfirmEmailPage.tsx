@@ -1,7 +1,7 @@
 import { Button, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import useAuth from '../../../contexts/AuthContext';
+import useAuthContext from '../../../contexts/AuthContext';
 import { Page, getURL } from '../../../routes/Router';
 import SuccessIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/WarningSharp';
@@ -22,7 +22,7 @@ const ConfirmEmailPage: React.FC<Props> = () => {
 
     const queryParams = new URLSearchParams(location.search);
 
-    const { confirmEmail } = useAuth();
+    const { confirmEmail } = useAuthContext();
     const token = useToken<ConfirmEmailToken>(queryParams.get('token') ?? '');
 
     const [loading, setLoading] = useState(false);

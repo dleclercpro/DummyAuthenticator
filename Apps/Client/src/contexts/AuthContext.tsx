@@ -47,7 +47,7 @@ interface Props {
 export const AuthContextProvider: React.FC<Props> = (props) => {
     const { children } = props;
 
-    const auth = useAuth();
+    const auth = useAuthContext();
     
     return (
         <AuthContext.Provider value={auth}>
@@ -62,7 +62,7 @@ export default function AuthContextConsumer() {
 
 
 
-const useAuth = () => {
+const useAuthContext = () => {
     const [userEmail, setUserEmail] = useState('');
 
     const [isLogged, setIsLogged] = useState(false);

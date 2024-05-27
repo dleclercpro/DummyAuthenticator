@@ -56,7 +56,7 @@ interface Props {
 export const DialogContextProvider: React.FC<Props> = (props) => {
     const { children } = props;
 
-    const Dialog = useDialog();
+    const Dialog = useDialogContext();
     
     return (
         <DialogContext.Provider value={Dialog}>
@@ -71,7 +71,7 @@ export default function DialogContextConsumer() {
 
 
 
-const useDialog = () => {
+const useDialogContext = () => {
     const [dialogs, setDialogs] = useState<Dialogs>(DIALOGS_INIT_STATE);
 
     const isDialogOpen = (name: DialogName) => {

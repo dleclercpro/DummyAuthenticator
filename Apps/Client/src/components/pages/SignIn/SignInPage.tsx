@@ -9,7 +9,7 @@ import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import LoginIcon from '@mui/icons-material/Login';
 import KeyIcon from '@mui/icons-material/Key';
-import useAuth from '../../../contexts/AuthContext';
+import useAuthContext from '../../../contexts/AuthContext';
 import useSignInPageStyles from './SignInPageStyles';
 
 interface Props {
@@ -19,7 +19,7 @@ interface Props {
 const SignInPage: React.FC<Props> = () => {
     const { classes } = useSignInPageStyles();
 
-    const { signIn } = useAuth();
+    const { signIn } = useAuthContext();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);

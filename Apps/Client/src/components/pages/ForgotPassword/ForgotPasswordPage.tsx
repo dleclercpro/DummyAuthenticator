@@ -6,7 +6,7 @@ import EmailField from '../../fields/EmailField';
 import LoadingButton from '../../buttons/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
 import BackIcon from '@mui/icons-material/ArrowBack';
-import useAuth from '../../../contexts/AuthContext';
+import useAuthContext from '../../../contexts/AuthContext';
 import { Page, getURL } from '../../../routes/Router';
 import { Link, useNavigate } from 'react-router-dom';
 import TimeDuration from '../../../models/TimeDuration';
@@ -31,7 +31,7 @@ const ForgotPasswordPage: React.FC<Props> = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(!!error);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    const { forgotPassword } = useAuth();
+    const { forgotPassword } = useAuthContext();
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);

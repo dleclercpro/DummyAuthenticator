@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import YesNoDialog from './YesNoDialog';
-import useDialog from '../../contexts/DialogContext';
+import useDialogContext from '../../contexts/DialogContext';
 import { DialogName } from '../../constants';
 import Snackbar from '../Snackbar';
 import { Severity } from '../../types/CommonTypes';
 import useUser from '../../hooks/useUser';
-import useBackdrop from '../../contexts/BackdropContext';
+import useBackdropContext from '../../contexts/BackdropContext';
 
 const DIALOG_NAME = DialogName.ConfirmOrInfirmEmailAddress;
 
@@ -14,9 +14,9 @@ interface Props {
 }
 
 const ConfirmOrInfirmEmailAddressDialog: React.FC<Props> = (props) => {
-    const { isDialogOpen, closeDialog, getDialogUser, getDialogBeforeAction, getDialogAfterAction } = useDialog();
+    const { isDialogOpen, closeDialog, getDialogUser, getDialogBeforeAction, getDialogAfterAction } = useDialogContext();
 
-    const backdrop = useBackdrop();
+    const backdrop = useBackdropContext();
 
     const isOpen = isDialogOpen(DIALOG_NAME);
     const user = getDialogUser(DIALOG_NAME);

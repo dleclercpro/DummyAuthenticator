@@ -15,7 +15,7 @@ import UnbanUserIcon from '@mui/icons-material/Check';
 import { Page, getURL } from '../../../routes/Router';
 import { Link } from 'react-router-dom';
 import useDatabase from '../../../hooks/useDatabase';
-import useAuth from '../../../contexts/AuthContext';
+import useAuthContext from '../../../contexts/AuthContext';
 import { DialogName, UserType } from '../../../constants';
 import { UserJSON } from '../../../types/JSONTypes';
 import UserComparators from '../../../models/comparators/UserComparators';
@@ -23,7 +23,7 @@ import { createCompareFunction } from '../../../utils/comparison';
 import { SEARCH_MIN_CHARACTERS } from '../../../config/Config';
 import useSearchPageStyles from './SearchPageStyles';
 import UserActionButton from '../../buttons/UserActionButton';
-import useDialog from '../../../contexts/DialogContext';
+import useDialogContext from '../../../contexts/DialogContext';
 
 interface Props {
 
@@ -32,14 +32,14 @@ interface Props {
 const SearchPage: React.FC<Props> = () => {
     const { classes } = useSearchPageStyles();
 
-    const { openDialog, setDialogUser, setDialogAfterAction } = useDialog();
+    const { openDialog, setDialogUser, setDialogAfterAction } = useDialogContext();
 
     const [value, setValue] = useState('');
     const [error, setError] = useState(false);
 
     const canSearch = value.length >= SEARCH_MIN_CHARACTERS;
 
-    const { userEmail, isAdmin, isSuperAdmin } = useAuth();
+    const { userEmail, isAdmin, isSuperAdmin } = useAuthContext();
     const { users, isSearching, setUsers, searchUsers } = useDatabase();
 
 

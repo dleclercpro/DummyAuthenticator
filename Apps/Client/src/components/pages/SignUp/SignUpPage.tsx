@@ -9,7 +9,7 @@ import PasswordField from '../../fields/PasswordField';
 import LoadingButton from '../../buttons/LoadingButton';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import CreateIcon from '@mui/icons-material/Create';
-import useAuth from '../../../contexts/AuthContext';
+import useAuthContext from '../../../contexts/AuthContext';
 import { sleep } from '../../../utils/time';
 import TimeDuration from '../../../models/TimeDuration';
 import { TimeUnit } from '../../../types/TimeTypes';
@@ -22,7 +22,7 @@ interface Props {
 const SignUpPage: React.FC<Props> = () => {
     const { classes } = useSignUpPageStyles();
 
-    const { signUp } = useAuth();
+    const { signUp } = useAuthContext();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);

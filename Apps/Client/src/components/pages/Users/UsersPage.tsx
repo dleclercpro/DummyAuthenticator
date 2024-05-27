@@ -13,14 +13,14 @@ import RemoveFavoriteIcon from '@mui/icons-material/StarBorder';
 import AddFavoriteIcon from '@mui/icons-material/Star';
 import BanUserIcon from '@mui/icons-material/Cancel';
 import UnbanUserIcon from '@mui/icons-material/Check';
-import useAuth from '../../../contexts/AuthContext';
+import useAuthContext from '../../../contexts/AuthContext';
 import { DialogName, UserType } from '../../../constants';
 import { UserJSON } from '../../../types/JSONTypes';
 import { createCompareFunction } from '../../../utils/comparison';
 import UserComparators from '../../../models/comparators/UserComparators';
 import useUsersPageStyles from './UsersPageStyles';
 import UserActionButton from '../../buttons/UserActionButton';
-import useDialog from '../../../contexts/DialogContext';
+import useDialogContext from '../../../contexts/DialogContext';
 
 interface Props {
 
@@ -29,9 +29,9 @@ interface Props {
 const UsersPage: React.FC<Props> = () => {
     const { classes } = useUsersPageStyles();
 
-    const { openDialog, setDialogUser, setDialogAfterAction } = useDialog();
+    const { openDialog, setDialogUser, setDialogAfterAction } = useDialogContext();
 
-    const { userEmail, isAdmin, isSuperAdmin } = useAuth();
+    const { userEmail, isAdmin, isSuperAdmin } = useAuthContext();
     const { users, fetchUsers } = useDatabase();
 
 

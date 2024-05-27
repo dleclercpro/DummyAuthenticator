@@ -10,7 +10,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
 import StopServerIcon from '@mui/icons-material/Dangerous';
-import useAuth from '../../../contexts/AuthContext';
+import useAuthContext from '../../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { getURL, Page } from '../../../routes/Router';
 import useSecret from '../../../hooks/useSecret';
@@ -28,7 +28,7 @@ interface Props {
 const AdminPage: React.FC<Props> = () => {
     const { classes } = useAdminPageStyles();
 
-    const { isSuperAdmin, userEmail, setIsLogged, signOut } = useAuth();
+    const { isSuperAdmin, userEmail, setIsLogged, signOut } = useAuthContext();
 
     const secret = useSecret();
     const server = useServer();

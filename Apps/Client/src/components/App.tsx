@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useAppStyles from './AppStyles';
 import Router from '../routes/Router';
 import { Container } from '@mui/system';
-import useAuth from '../contexts/AuthContext';
+import useAuthContext from '../contexts/AuthContext';
 import Spinner from './Spinner';
 import ErrorIcon from '@mui/icons-material/WarningSharp';
 import { SERVER_RETRY_CONN_MAX_ATTEMPTS, VERSION } from '../config/Config';
@@ -24,7 +24,7 @@ interface Props {
 const App: React.FC<Props> = () => {
     const { classes } = useAppStyles();
 
-    const { ping } = useAuth();
+    const { ping } = useAuthContext();
 
     const [attempts, setAttempts] = useState(0);
     const [backoff, setBackoff] = useState<TimeDuration>(new TimeDuration(0, TimeUnit.Second));
