@@ -4,12 +4,14 @@ import * as CallDeleteUser from '../models/calls/user/CallDeleteUser';
 import { translateServerError } from '../errors/ServerErrors';
 import { UserType } from '../constants';
 
-const useUser = (email: string) => {    
+const useUser = (email: string) => {        
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState('');
 
     const ban = async () => {
+        if (email === '') throw new Error('MISSING_USER_EMAIL');
+
         setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, ban: true })
@@ -29,6 +31,8 @@ const useUser = (email: string) => {
     };
 
     const unban = async () => {
+        if (email === '') throw new Error('MISSING_USER_EMAIL');
+
         setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, ban: false })
@@ -48,6 +52,8 @@ const useUser = (email: string) => {
     };
 
     const addToFavorites = async () => {
+        if (email === '') throw new Error('MISSING_USER_EMAIL');
+
         setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, favorite: true })
@@ -67,6 +73,8 @@ const useUser = (email: string) => {
     };
 
     const removeFromFavorites = async () => {
+        if (email === '') throw new Error('MISSING_USER_EMAIL');
+
         setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, favorite: false })
@@ -86,6 +94,8 @@ const useUser = (email: string) => {
     };
 
     const infirmEmail = async () => {
+        if (email === '') throw new Error('MISSING_USER_EMAIL');
+
         setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, confirm: false })
@@ -105,6 +115,8 @@ const useUser = (email: string) => {
     };
 
     const confirmEmail = async () => {
+        if (email === '') throw new Error('MISSING_USER_EMAIL');
+
         setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, confirm: true })
@@ -124,6 +136,8 @@ const useUser = (email: string) => {
     };
 
     const demoteToRegular = async () => {
+        if (email === '') throw new Error('MISSING_USER_EMAIL');
+        
         setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, type: UserType.Regular })
@@ -143,6 +157,8 @@ const useUser = (email: string) => {
     };
 
     const promoteToAdmin = async () => {
+        if (email === '') throw new Error('MISSING_USER_EMAIL');
+        
         setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, type: UserType.Admin })
@@ -162,6 +178,8 @@ const useUser = (email: string) => {
     };
 
     const deleteUser = async () => {
+        if (email === '') throw new Error('MISSING_USER_EMAIL');
+        
         setIsDeleting(true);
 
         return await new CallDeleteUser.default().execute({ email })

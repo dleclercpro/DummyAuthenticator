@@ -15,7 +15,7 @@ interface Props {
 
 const ConfirmOrInfirmEmailAddressDialog: React.FC<Props> = (props) => {
     const dialog = useDialog(DIALOG_NAME);
-    const user = dialog.user ? useUser(dialog.user.email) : null;
+    const user = useUser(dialog.user?.email ?? '')
 
     const backdrop = useBackdropContext();
 
@@ -59,8 +59,8 @@ const ConfirmOrInfirmEmailAddressDialog: React.FC<Props> = (props) => {
                 title={dialog.user ? `${dialog.user.confirmed ? 'Unconfirm' : 'Confirm'} e-mail` : ''}
                 text={dialog.user ? `Are you sure you want to ${dialog.user.confirmed ? 'unconfirm' : 'confirm'} the e-mail address of user '${dialog.user.email}'?` : ''}
                 handleYes={handleConfirmOrInfirmUserEmail}
-                handleNo={close}
-                handleClose={close}
+                handleNo={dialog.close}
+                handleClose={dialog.close}
             />
             <Snackbar
                 open={snackbarOpen}

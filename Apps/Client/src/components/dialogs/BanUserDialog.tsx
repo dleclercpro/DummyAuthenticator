@@ -15,7 +15,7 @@ interface Props {
 
 const BanUserDialog: React.FC<Props> = (props) => {
     const dialog = useDialog(DIALOG_NAME);
-    const user = dialog.user ? useUser(dialog.user.email) : null;
+    const user = useUser(dialog.user?.email ?? '')
     
     const backdrop = useBackdropContext();
 
@@ -59,8 +59,8 @@ const BanUserDialog: React.FC<Props> = (props) => {
                 title={dialog.user ? `${dialog.user.banned ? 'Unban' : 'Ban'} user` : ''}
                 text={dialog.user ? `Are you sure you want to ${dialog.user.banned ? 'unban' : 'ban'} user '${dialog.user.email}'?` : ''}
                 handleYes={handleBanUser}
-                handleNo={close}
-                handleClose={close}
+                handleNo={dialog.close}
+                handleClose={dialog.close}
             />
             <Snackbar
                 open={snackbarOpen}
