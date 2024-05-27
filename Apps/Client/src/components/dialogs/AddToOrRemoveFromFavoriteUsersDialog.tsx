@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import YesNoDialog from './YesNoDialog';
-import useDialogContext from '../../contexts/DialogContext';
 import { DialogName } from '../../constants';
 import Snackbar from '../Snackbar';
 import { Severity } from '../../types/CommonTypes';
 import useUser from '../../hooks/useUser';
 import useBackdropContext from '../../contexts/BackdropContext';
+import useDialog from '../../hooks/useDialog';
 
 const DIALOG_NAME = DialogName.AddToOrRemoveFromFavoriteUsers;
 
@@ -14,15 +14,9 @@ interface Props {
 }
 
 const AddToOrRemoveFromFavoriteUsersDialog: React.FC<Props> = (props) => {
-    const { isDialogOpen, closeDialog, getDialogUser, getDialogBeforeAction, getDialogAfterAction } = useDialogContext();
+    const { isOpen, user, close, beforeAction, afterAction } = useDialog(DIALOG_NAME);
 
     const backdrop = useBackdropContext();
-
-    const isOpen = isDialogOpen(DIALOG_NAME);
-    const user = getDialogUser(DIALOG_NAME);
-    const close = () => closeDialog(DIALOG_NAME);
-    const beforeAction = getDialogBeforeAction(DIALOG_NAME);
-    const afterAction = getDialogAfterAction(DIALOG_NAME);
 
     const { addUserToFavorites, removeUserFromFavorites } = useUser();
 
