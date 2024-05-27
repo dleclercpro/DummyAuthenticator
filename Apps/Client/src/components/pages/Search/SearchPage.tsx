@@ -39,7 +39,7 @@ const SearchPage: React.FC<Props> = () => {
 
     const canSearch = value.length >= SEARCH_MIN_CHARACTERS;
 
-    const { userEmail, isAdmin, isSuperAdmin } = useAuthContext();
+    const { appUserEmail, isAdmin, isSuperAdmin } = useAuthContext();
     const { users, isSearching, setUsers, searchUsers } = useDatabase();
 
 
@@ -157,11 +157,11 @@ const SearchPage: React.FC<Props> = () => {
                                                     <td>
                                                         <UserActionButton
                                                             user={user}
-                                                            isSelf={user.email === userEmail}
+                                                            isSelf={user.email === appUserEmail}
                                                             selfText={`${user.type === UserType.Regular ? 'Promote' : 'Demote'} yourself`}
                                                             text={user.type === UserType.Regular ? 'Promote regular user to admin' : 'Demote admin to regular user'}
                                                             color={user.type === UserType.Regular ? 'primary' : 'secondary'}
-                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                            disabled={user.email === appUserEmail || user.type === UserType.SuperAdmin}
                                                             onClick={() => {
                                                                 setDialogUser(DialogName.PromoteOrDemoteUser, user);
                                                                 setDialogAfterAction(DialogName.PromoteOrDemoteUser, handleSearchUsers);
@@ -173,11 +173,11 @@ const SearchPage: React.FC<Props> = () => {
 
                                                         <UserActionButton
                                                             user={user}
-                                                            isSelf={user.email === userEmail}
+                                                            isSelf={user.email === appUserEmail}
                                                             selfText='You cannot remove your e-mail confirmation'
                                                             text={user.confirmed ? `Unconfirm user's e-mail address` : `Confirm user's e-mail address`}
                                                             color={user.confirmed ? 'error' : 'success'}
-                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                            disabled={user.email === appUserEmail || user.type === UserType.SuperAdmin}
                                                             onClick={() => {
                                                                 setDialogUser(DialogName.ConfirmOrInfirmEmailAddress, user);
                                                                 setDialogAfterAction(DialogName.ConfirmOrInfirmEmailAddress, handleSearchUsers);
@@ -189,21 +189,21 @@ const SearchPage: React.FC<Props> = () => {
 
                                                         <UserActionButton
                                                             user={user}
-                                                            isSelf={user.email === userEmail}
+                                                            isSelf={user.email === appUserEmail}
                                                             selfText='You cannot add yourself to your favorites'
                                                             text={user.favorited ? 'Remove user from favorites' : 'Add user to favorites'}
                                                             color={user.banned ? 'success' : 'error'}
-                                                            disabled={user.email === userEmail}
+                                                            disabled={user.email === appUserEmail}
                                                             onClick={() => {
                                                                 setDialogUser(DialogName.AddToOrRemoveFromFavoriteUsers, user);
                                                                 setDialogAfterAction(DialogName.AddToOrRemoveFromFavoriteUsers, handleSearchUsers);
                                                                 openDialog(DialogName.AddToOrRemoveFromFavoriteUsers);
                                                             }}
                                                         >
-                                                            {user.email === userEmail && (
+                                                            {user.email === appUserEmail && (
                                                                 <AddFavoriteIcon />
                                                             )}
-                                                            {user.email !== userEmail && (
+                                                            {user.email !== appUserEmail && (
                                                                 user.favorited ? (
                                                                     <RemoveFavoriteIcon color='warning' />
                                                                 ) : (
@@ -214,11 +214,11 @@ const SearchPage: React.FC<Props> = () => {
 
                                                         <UserActionButton
                                                             user={user}
-                                                            isSelf={user.email === userEmail}
+                                                            isSelf={user.email === appUserEmail}
                                                             selfText='You cannot ban yourself'
                                                             text={user.banned ? 'Unban user' : 'Ban user'}
                                                             color={user.banned ? 'success' : 'error'}
-                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                            disabled={user.email === appUserEmail || user.type === UserType.SuperAdmin}
                                                             onClick={() => {
                                                                 setDialogUser(DialogName.BanUser, user);
                                                                 setDialogAfterAction(DialogName.BanUser, handleSearchUsers);
@@ -230,11 +230,11 @@ const SearchPage: React.FC<Props> = () => {
 
                                                         <UserActionButton
                                                             user={user}
-                                                            isSelf={user.email === userEmail}
+                                                            isSelf={user.email === appUserEmail}
                                                             selfText='Delete your account'
                                                             text='Delete user'
                                                             color='error'
-                                                            disabled={user.email === userEmail || user.type === UserType.SuperAdmin}
+                                                            disabled={user.email === appUserEmail || user.type === UserType.SuperAdmin}
                                                             onClick={() => {
                                                                 setDialogUser(DialogName.DeleteUser, user);
                                                                 setDialogAfterAction(DialogName.DeleteUser, handleSearchUsers);

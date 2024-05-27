@@ -14,27 +14,26 @@ interface Props {
 }
 
 const DeleteUserDialog: React.FC<Props> = (props) => {
-    const { isOpen, user, close, beforeAction, afterAction } = useDialog(DIALOG_NAME);
+    const dialog = useDialog(DIALOG_NAME);
+    const user = dialog.user ? useUser(dialog.user.email) : null;
 
     const backdrop = useBackdropContext();
-
-    const { deleteUser } = useUser();
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const handleDeleteUser = async () => {
-        if (user === null) return;
+        if (user === null || dialog.user === null) return;
 
         setSnackbarOpen(false);
 
         backdrop.show();
 
-        close();
+        dialog.close();
 
-        beforeAction()
-            .then(() => deleteUser(user.email))
-            .then(() => afterAction())
+        dialog.beforeAction()
+            .then(() => user.delete())
+            .then(() => dialog.afterAction())
             .catch((err) => {
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
@@ -44,16 +43,16 @@ const DeleteUserDialog: React.FC<Props> = (props) => {
             });
     }
 
-    if (user === null) {
+    if (user === null || dialog.user === null) {
         return null;
     }
 
     return (
         <>
             <YesNoDialog
-                open={isOpen}
+                open={dialog.isOpen}
                 title='Delete account'
-                text={`Are you sure you want to delete the account of user '${user.email}'? This cannot be undone!`}
+                text={`Are you sure you want to delete the account of user '${dialog.user.email}'? This cannot be undone!`}
                 handleYes={handleDeleteUser}
                 handleNo={close}
                 handleClose={close}

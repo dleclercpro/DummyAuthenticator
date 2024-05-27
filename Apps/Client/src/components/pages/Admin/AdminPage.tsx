@@ -29,9 +29,8 @@ interface Props {
 const AdminPage: React.FC<Props> = () => {
     const { classes } = useAdminPageStyles();
 
-    const { isSuperAdmin, userEmail, setIsLogged, signOut } = useAuthContext();
-
-    const { isDeletingUser, deleteUser } = useUser();
+    const { isSuperAdmin, appUserEmail, setIsLogged, signOut } = useAuthContext();
+    const user = useUser(appUserEmail);
 
     const secret = useSecret();
     const server = useServer();
@@ -131,7 +130,7 @@ const AdminPage: React.FC<Props> = () => {
 
         closeDeleteUserConfirmDialog();
 
-        return deleteUser(userEmail)
+        return user.delete()
             .catch((err) => {
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
@@ -176,7 +175,7 @@ const AdminPage: React.FC<Props> = () => {
             <YesNoDialog
                 open={isDeleteUserConfirmDialogOpen}
                 title='Delete account'
-                text={`Are you sure you want to delete user '${userEmail}'? This cannot be undone!`}
+                text={`Are you sure you want to delete user '${appUserEmail}'? This cannot be undone!`}
                 handleYes={handleDeleteUser}
                 handleNo={closeDeleteUserConfirmDialog}
                 handleClose={closeDeleteUserConfirmDialog}
@@ -212,7 +211,7 @@ const AdminPage: React.FC<Props> = () => {
                 </Typography>
                 
                 <Typography className={classes.text}>
-                    Hello, <strong>[{userEmail}]</strong>. You are logged in as an administrator. Here is your secret:
+                    Hello, <strong>[{appUserEmail}]</strong>. You are logged in as an administrator. Here is your secret:
                 </Typography>
 
                 <Typography className={classes.secret}>
@@ -269,7 +268,7 @@ const AdminPage: React.FC<Props> = () => {
                         variant='contained'
                         color='error'
                         icon={<DeleteIcon />}
-                        loading={isDeletingUser}
+                        loading={user.isDeleting}
                         disabled={isSuperAdmin}
                         onClick={openDeleteUserConfirmDialog}
                     >

@@ -14,32 +14,31 @@ interface Props {
 }
 
 const AddToOrRemoveFromFavoriteUsersDialog: React.FC<Props> = (props) => {
-    const { isOpen, user, close, beforeAction, afterAction } = useDialog(DIALOG_NAME);
+    const dialog = useDialog(DIALOG_NAME);
+    const user = dialog.user ? useUser(dialog.user.email) : null;
 
     const backdrop = useBackdropContext();
-
-    const { addUserToFavorites, removeUserFromFavorites } = useUser();
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const handleAddToOrRemoveFromFavoriteUsers = async () => {
-        if (user === null) return;
+        if (user === null || dialog.user === null) return;
 
         setSnackbarOpen(false);
 
         backdrop.show();
 
-        close();
+        dialog.close();
 
-        beforeAction()
+        dialog.beforeAction()
             .then(() => {
-                if (user.favorited) {
-                    return removeUserFromFavorites(user.email);
+                if (dialog.user!.favorited) {
+                    return user.removeFromFavorites();
                 }
-                return addUserToFavorites(user.email);
+                return user.addToFavorites();
             })
-            .then(() => afterAction())
+            .then(() => dialog.afterAction())
             .catch((err) => {
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
@@ -49,16 +48,16 @@ const AddToOrRemoveFromFavoriteUsersDialog: React.FC<Props> = (props) => {
             });
     }
 
-    if (user === null) {
+    if (user === null || dialog.user === null) {
         return null;
     }
 
     return (
         <>
             <YesNoDialog
-                open={isOpen}
-                title={user ? (user.favorited ? 'Remove user from favorite' : 'Add user to favorites') : ''}
-                text={user ? `Are you sure you want to ${user.favorited ? 'remove' : 'add'} user '${user.email}' ${user.favorited ? 'from' : 'to'} your favorites?` : ''}
+                open={dialog.isOpen}
+                title={dialog.user ? (dialog.user.favorited ? 'Remove user from favorite' : 'Add user to favorites') : ''}
+                text={dialog.user ? `Are you sure you want to ${dialog.user.favorited ? 'remove' : 'add'} user '${dialog.user.email}' ${dialog.user.favorited ? 'from' : 'to'} your favorites?` : ''}
                 handleYes={handleAddToOrRemoveFromFavoriteUsers}
                 handleNo={close}
                 handleClose={close}

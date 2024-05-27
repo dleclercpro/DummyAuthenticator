@@ -33,7 +33,7 @@ const App: React.FC<Props> = () => {
     // Try connecting to server until a response is received
     useEffect(() => {
         const tryConnection = async (attempts: number) => {
-            if (ping.isOnline) {
+            if (ping.isServerOnline) {
                 console.log(`Connected to server.`);
                 setIsDone(true);
                 return;
@@ -91,7 +91,7 @@ const App: React.FC<Props> = () => {
             <Container className={classes.root} maxWidth='lg'>
                 <Router />
                 <div className={classes.status}>
-                    <strong className={classes.statusIcon}>{ping.isOnline ? '🟢' : '🔴'}</strong>
+                    <strong className={classes.statusIcon}>{ping.isServerOnline ? '🟢' : '🔴'}</strong>
                     <p className={classes.version}>{VERSION}</p>
                 </div>
             </Container>

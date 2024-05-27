@@ -11,7 +11,7 @@ import * as CallSignUp from '../models/calls/auth/CallSignUp';
 interface IPingContext {
     isLoading: boolean,
     isDone: boolean,
-    isOnline: boolean,
+    isServerOnline: boolean,
     error: string,
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setIsDone: React.Dispatch<React.SetStateAction<boolean>>,
@@ -21,7 +21,7 @@ interface IPingContext {
 
 interface IAuthContext {
     ping: IPingContext,
-    userEmail: string,
+    appUserEmail: string,
     isLogged: boolean,
     isAdmin: boolean,
     isSuperAdmin: boolean,
@@ -63,12 +63,13 @@ export default function AuthContextConsumer() {
 
 
 const useAuthContext = () => {
-    const [userEmail, setUserEmail] = useState('');
+    const [appUserEmail, setUserEmail] = useState('');
 
     const [isLogged, setIsLogged] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-    const [isOnline, setIsOnline] = useState(false);
+
+    const [isServerOnline, setIsServerOnline] = useState(false);
 
     const [pingIsLoading, setPingIsLoading] = useState(false);
     const [pingIsDone, setPingIsDone] = useState(false);
@@ -89,7 +90,7 @@ const useAuthContext = () => {
             setIsLogged(true);
             setPingError('');
 
-            setIsOnline(true);
+            setIsServerOnline(true);
 
             return user;
         } catch (err: any) {
@@ -99,7 +100,7 @@ const useAuthContext = () => {
             setIsSuperAdmin(false);
             setPingError(err.message);
 
-            setIsOnline(err.message !== 'NO_SERVER_CONNECTION');
+            setIsServerOnline(err.message !== 'NO_SERVER_CONNECTION');
 
             return { email: '', isAdmin: false, isSuperAdmin: false };
         } finally {
@@ -109,7 +110,7 @@ const useAuthContext = () => {
     }
 
     const ping = {
-        isOnline,
+        isServerOnline,
         isLoading: pingIsLoading,
         isDone: pingIsDone,
         error: pingError,
@@ -229,7 +230,7 @@ const useAuthContext = () => {
 
     return {
         ping,
-        userEmail,
+        appUserEmail,
         isLogged,
         isAdmin,
         isSuperAdmin,

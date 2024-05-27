@@ -4,13 +4,13 @@ import * as CallDeleteUser from '../models/calls/user/CallDeleteUser';
 import { translateServerError } from '../errors/ServerErrors';
 import { UserType } from '../constants';
 
-const useUser = () => {    
-    const [isEditingUser, setIsEditingUser] = useState(false);
-    const [isDeletingUser, setIsDeletingUser] = useState(false);
+const useUser = (email: string) => {    
+    const [isEditing, setIsEditing] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState('');
 
-    const banUser = async (email: string) => {
-        setIsEditingUser(true);
+    const ban = async () => {
+        setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, ban: true })
             .then(({ data }) => {
@@ -24,12 +24,12 @@ const useUser = () => {
                 throw new Error(err);
             })
             .finally(() => {
-                setIsEditingUser(false);
+                setIsEditing(false);
             });
     };
 
-    const unbanUser = async (email: string) => {
-        setIsEditingUser(true);
+    const unban = async () => {
+        setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, ban: false })
             .then(({ data }) => {
@@ -43,12 +43,12 @@ const useUser = () => {
                 throw new Error(err);
             })
             .finally(() => {
-                setIsEditingUser(false);
+                setIsEditing(false);
             });
     };
 
-    const addUserToFavorites = async (email: string) => {
-        setIsEditingUser(true);
+    const addToFavorites = async () => {
+        setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, favorite: true })
             .then(({ data }) => {
@@ -62,12 +62,12 @@ const useUser = () => {
                 throw new Error(err);
             })
             .finally(() => {
-                setIsEditingUser(false);
+                setIsEditing(false);
             });
     };
 
-    const removeUserFromFavorites = async (email: string) => {
-        setIsEditingUser(true);
+    const removeFromFavorites = async () => {
+        setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, favorite: false })
             .then(({ data }) => {
@@ -81,12 +81,12 @@ const useUser = () => {
                 throw new Error(err);
             })
             .finally(() => {
-                setIsEditingUser(false);
+                setIsEditing(false);
             });
     };
 
-    const infirmUserEmail = async (email: string) => {
-        setIsEditingUser(true);
+    const infirmEmail = async () => {
+        setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, confirm: false })
             .then(({ data }) => {
@@ -100,12 +100,12 @@ const useUser = () => {
                 throw new Error(err);
             })
             .finally(() => {
-                setIsEditingUser(false);
+                setIsEditing(false);
             });
     };
 
-    const confirmUserEmail = async (email: string) => {
-        setIsEditingUser(true);
+    const confirmEmail = async () => {
+        setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, confirm: true })
             .then(({ data }) => {
@@ -119,12 +119,12 @@ const useUser = () => {
                 throw new Error(err);
             })
             .finally(() => {
-                setIsEditingUser(false);
+                setIsEditing(false);
             });
     };
 
-    const demoteUserToRegular = async (email: string) => {
-        setIsEditingUser(true);
+    const demoteToRegular = async () => {
+        setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, type: UserType.Regular })
             .then(({ data }) => {
@@ -138,12 +138,12 @@ const useUser = () => {
                 throw new Error(err);
             })
             .finally(() => {
-                setIsEditingUser(false);
+                setIsEditing(false);
             });
     };
 
-    const promoteUserToAdmin = async (email: string) => {
-        setIsEditingUser(true);
+    const promoteToAdmin = async () => {
+        setIsEditing(true);
 
         return new CallEditUser.default().execute({ email, type: UserType.Admin })
             .then(({ data }) => {
@@ -157,12 +157,12 @@ const useUser = () => {
                 throw new Error(err);
             })
             .finally(() => {
-                setIsEditingUser(false);
+                setIsEditing(false);
             });
     };
 
-    const deleteUser = async (email: string) => {
-        setIsDeletingUser(true);
+    const deleteUser = async () => {
+        setIsDeleting(true);
 
         return await new CallDeleteUser.default().execute({ email })
             .then(() => {
@@ -172,23 +172,23 @@ const useUser = () => {
                 throw new Error(translateServerError(error));
             })
             .finally(() => {
-                setIsDeletingUser(false);
+                setIsDeleting(false);
             });
     };
 
     return {
         error,
-        isEditingUser,
-        isDeletingUser,
-        demoteUserToRegular,
-        promoteUserToAdmin,
-        infirmUserEmail,
-        confirmUserEmail,
-        banUser,
-        unbanUser,
-        addUserToFavorites,
-        removeUserFromFavorites,
-        deleteUser,
+        isEditing,
+        isDeleting,
+        demoteToRegular,
+        promoteToAdmin,
+        infirmEmail,
+        confirmEmail,
+        ban,
+        unban,
+        addToFavorites,
+        removeFromFavorites,
+        delete: deleteUser,
     };
 }
 

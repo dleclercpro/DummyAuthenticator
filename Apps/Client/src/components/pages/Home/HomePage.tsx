@@ -25,7 +25,8 @@ interface Props {
 const HomePage: React.FC<Props> = () => {
     const { classes } = useHomePageStyles();
 
-    const { userEmail, isAdmin, isSuperAdmin, setIsLogged, signOut } = useAuthContext();
+    const { appUserEmail, isAdmin, isSuperAdmin, setIsLogged, signOut } = useAuthContext();
+    const user = useUser(appUserEmail);
     const secret = useSecret();
 
     const navigate = useNavigate();
@@ -47,8 +48,6 @@ const HomePage: React.FC<Props> = () => {
     const closeDeleteUserConfirmDialog = () => {
         setIsDeleteUserConfirmDialogOpen(false);
     }
-
-    const { isDeletingUser, deleteUser } = useUser();
 
     // Redirect admin
     useEffect(() => {
@@ -90,7 +89,7 @@ const HomePage: React.FC<Props> = () => {
     const handleDeleteUser = async () => {
         setIsDeleteUserConfirmDialogOpen(false);
 
-        return deleteUser(userEmail)
+        return user.delete()
             .finally(() => {
                 setIsLogged(false);
             });
@@ -128,7 +127,7 @@ const HomePage: React.FC<Props> = () => {
                 </Typography>
 
                 <Typography className={classes.text}>
-                    Hello, <strong>[{userEmail}]</strong>. Here is your secret:
+                    Hello, <strong>[{appUserEmail}]</strong>. Here is your secret:
                 </Typography>
 
                 <Typography className={classes.secret}>
@@ -183,7 +182,7 @@ const HomePage: React.FC<Props> = () => {
                         variant='contained'
                         color='error'
                         icon={<DeleteIcon />}
-                        loading={isDeletingUser}
+                        loading={user.isDeleting}
                         disabled={isSuperAdmin}
                         onClick={openDeleteUserConfirmDialog}
                     >

@@ -14,32 +14,31 @@ interface Props {
 }
 
 const PromoteOrDemoteUserDialog: React.FC<Props> = (props) => {
-    const { isOpen, user, close, beforeAction, afterAction } = useDialog(DIALOG_NAME);
+    const dialog = useDialog(DIALOG_NAME);
+    const user = dialog.user ? useUser(dialog.user.email) : null;
 
     const backdrop = useBackdropContext();
-
-    const { promoteUserToAdmin, demoteUserToRegular } = useUser();
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const handlePromoteOrDemoteUser = async () => {
-        if (user === null) return;
+        if (user === null || dialog.user === null) return;
 
         setSnackbarOpen(false);
 
         backdrop.show();
 
-        close();
+        dialog.close();
 
-        beforeAction()
+        dialog.beforeAction()
             .then(() => {
-                if (user.type === UserType.Regular) {
-                    return promoteUserToAdmin(user.email);
+                if (dialog.user!.type === UserType.Regular) {
+                    return user.promoteToAdmin();
                 }
-                return demoteUserToRegular(user.email);
+                return user.demoteToRegular();
             })
-            .then(() => afterAction())
+            .then(() => dialog.afterAction())
             .catch((err) => {
                 setSnackbarMessage(err.message);
                 setSnackbarOpen(true);
@@ -49,16 +48,16 @@ const PromoteOrDemoteUserDialog: React.FC<Props> = (props) => {
             });
     }
 
-    if (user === null) {
+    if (user === null || dialog.user === null) {
         return null;
     }
 
     return (
         <>
             <YesNoDialog
-                open={isOpen}
-                title={user ? `${user.type === UserType.Regular ? 'Promote' : 'Demote'} user` : ''}
-                text={user ? `Are you sure you want to ${user.type === UserType.Regular ? 'promote' : 'demote'} user '${user.email}'?` : ''}
+                open={dialog.isOpen}
+                title={dialog.user ? `${dialog.user.type === UserType.Regular ? 'Promote' : 'Demote'} user` : ''}
+                text={dialog.user ? `Are you sure you want to ${dialog.user.type === UserType.Regular ? 'promote' : 'demote'} user '${dialog.user.email}'?` : ''}
                 handleYes={handlePromoteOrDemoteUser}
                 handleNo={close}
                 handleClose={close}
